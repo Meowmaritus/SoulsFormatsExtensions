@@ -11,6 +11,9 @@ namespace SoulsFormatsExtensions
     {
         public class ASTPool1
         {
+            public static int GetSize(bool isLong)
+                => isLong ? 8 : 4;
+
             public Function Func;
 
             public static ASTPool1 Read(BinaryReaderEx br, FxrEnvironment env)

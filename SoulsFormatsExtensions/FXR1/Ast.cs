@@ -43,8 +43,10 @@ namespace SoulsFormatsExtensions
                 ast.Pool1List = new List<ASTPool1>(commandPool1TableCount);
                 for (int i = 0; i < commandPool1TableCount; i++)
                 {
-                    int next = br.ReadInt32();
-                    ast.Pool1List.Add(env.GetASTPool1(br, next));
+                    //int next = br.ReadInt32();
+                    //ast.Pool1List.Add(env.GetASTPool1(br, next));
+                    ast.Pool1List.Add(env.GetASTPool1(br, br.Position));
+                    br.Position += ASTPool1.GetSize(br.VarintLong);
                 }
                 br.StepOut();
 

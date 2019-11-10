@@ -4,11 +4,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace SoulsFormatsExtensions
 {
     public partial class FXR1
     {
+        [XmlInclude(typeof(ASTPool3Type0))]
+        [XmlInclude(typeof(ASTPool3Type1))]
+        [XmlInclude(typeof(ASTPool3Type2))]
+        [XmlInclude(typeof(ASTPool3Type3))]
+        [XmlInclude(typeof(ASTPool3Type4))]
+        [XmlInclude(typeof(ASTPool3Type5))]
+        [XmlInclude(typeof(ASTPool3Type6))]
+        [XmlInclude(typeof(ASTPool3Type7))]
         public abstract class ASTPool3
         {
             public int CommandType;
