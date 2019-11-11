@@ -16,6 +16,10 @@ namespace SoulsFormatsExtensions
 
         public Function RootFunction { get; set; }
 
+        public List<FlowNode> FlowNodes { get; set; }
+        public List<FlowEdge> FlowEdges { get; set; }
+        public List<FlowAction> FlowActions { get; set; }
+
         protected override void Read(BinaryReaderEx br)
         {
             br.AssertASCII("FXR\0");
@@ -37,6 +41,12 @@ namespace SoulsFormatsExtensions
             br.Pad(16);
 
             RootFunction = env.GetFunction(br, br.Position);
+
+            env.CalculateAllIndices();
+
+            FlowNodes = env.masterFlowNodeList;
+            FlowEdges = env.masterFlowEdgeList;
+            FlowActions = env.masterFlowActionList;
         }
 
     }

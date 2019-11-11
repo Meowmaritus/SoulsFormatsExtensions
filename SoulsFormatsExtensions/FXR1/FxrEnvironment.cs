@@ -13,14 +13,60 @@ namespace SoulsFormatsExtensions
         {
             private Dictionary<long, object> stuff = new Dictionary<long, object>();
 
-            public ASTPool1 GetASTPool1(BinaryReaderEx br, long offset)
+            internal List<FlowEdge> masterFlowEdgeList = new List<FlowEdge>();
+            internal List<FlowNode> masterFlowNodeList = new List<FlowNode>();
+            internal List<FlowAction> masterFlowActionList = new List<FlowAction>();
+
+            public void CalculateAllIndices()
+            {
+                foreach (var edge in masterFlowEdgeList)
+                    edge.CalculateIndices(this);
+
+                foreach (var node in masterFlowNodeList)
+                    node.CalculateIndices(this);
+            }
+
+            public int GetFlowEdgeIndex(FlowEdge edge)
+            {
+                return masterFlowEdgeList.IndexOf(edge);
+            }
+
+            public int GetFlowNodeIndex(FlowNode node)
+            {
+                return masterFlowNodeList.IndexOf(node);
+            }
+
+            public int GetFlowActionIndex(FlowAction action)
+            {
+                return masterFlowActionList.IndexOf(action);
+            }
+
+            private void RegisterFlowNode(FlowNode node)
+            {
+                if (!masterFlowNodeList.Contains(node))
+                    masterFlowNodeList.Add(node);
+            }
+
+            private void RegisterFlowEdge(FlowEdge edge)
+            {
+                if (!masterFlowEdgeList.Contains(edge))
+                    masterFlowEdgeList.Add(edge);
+            }
+
+            private void RegisterFlowAction(FlowAction action)
+            {
+                if (!masterFlowActionList.Contains(action))
+                    masterFlowActionList.Add(action);
+            }
+
+            public ASTFunction GetASTFunction(BinaryReaderEx br, long offset)
             {
                 if (offset == 0)
                     return null;
 
                 if (stuff.ContainsKey(offset))
                 {
-                    if (stuff[offset] is ASTPool1 v)
+                    if (stuff[offset] is ASTFunction v)
                         return v;
                     else 
                         throw new InvalidOperationException();
@@ -28,7 +74,7 @@ namespace SoulsFormatsExtensions
                 else
                 {
                     br.StepIn(offset);
-                    var newVal = ASTPool1.Read(br, this);
+                    var newVal = ASTFunction.Read(br, this);
                     br.StepOut();
 
                     stuff.Add(offset, newVal);
@@ -36,14 +82,14 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public ASTPool2 GetASTPool2(BinaryReaderEx br, long offset)
+            public ASTAction GetASTAction(BinaryReaderEx br, long offset)
             {
                 if (offset == 0)
                     return null;
 
                 if (stuff.ContainsKey(offset))
                 {
-                    if (stuff[offset] is ASTPool2 v)
+                    if (stuff[offset] is ASTAction v)
                         return v;
                     else
                         throw new InvalidOperationException();
@@ -51,7 +97,7 @@ namespace SoulsFormatsExtensions
                 else
                 {
                     br.StepIn(offset);
-                    var newVal = ASTPool2.Read(br, this);
+                    var newVal = ASTAction.Read(br, this);
                     br.StepOut();
 
                     stuff.Add(offset, newVal);
@@ -119,11 +165,12 @@ namespace SoulsFormatsExtensions
                 }
                 else
                 {
-                    br.StepIn(offset);
-                    var newVal = AST.Read(br, this);
-                    br.StepOut();
-
+                    var newVal = new AST();
                     stuff.Add(offset, newVal);
+                    br.StepIn(offset);
+                    newVal.Read(br, this);
+                    br.StepOut();
+                    
                     return newVal;
                 }
             }
@@ -142,11 +189,13 @@ namespace SoulsFormatsExtensions
                 }
                 else
                 {
-                    br.StepIn(offset);
-                    var newVal = FlowNode.Read(br, this);
-                    br.StepOut();
-
+                    var newVal = new FlowNode();
+                    RegisterFlowNode(newVal);
                     stuff.Add(offset, newVal);
+                    br.StepIn(offset);
+                    newVal.Read(br, this);
+                    br.StepOut();
+                    
                     return newVal;
                 }
             }
@@ -165,11 +214,13 @@ namespace SoulsFormatsExtensions
                 }
                 else
                 {
+                    var newVal = new FlowEdge();
+                    RegisterFlowEdge(newVal);
+                    stuff.Add(offset, newVal);
                     br.StepIn(offset);
-                    var newVal = FlowEdge.Read(br, this);
+                    newVal.Read(br, this);
                     br.StepOut();
 
-                    stuff.Add(offset, newVal);
                     return newVal;
                 }
             }
@@ -190,6 +241,7 @@ namespace SoulsFormatsExtensions
                 {
                     br.StepIn(offset);
                     var newVal = FlowAction.Read(br, this);
+                    RegisterFlowAction(newVal);
                     br.StepOut();
 
                     stuff.Add(offset, newVal);

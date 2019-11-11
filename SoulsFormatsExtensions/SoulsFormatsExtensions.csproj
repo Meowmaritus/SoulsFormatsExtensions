@@ -34,6 +34,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -44,15 +45,17 @@
   <ItemGroup>
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="FXR1\AST.cs" />
-    <Compile Include="FXR1\ASTPool1.cs" />
+    <Compile Include="FXR1\ASTFunction.cs" />
+    <Compile Include="FXR1\Curve3.cs" />
     <Compile Include="FXR1\FlowAction.cs" />
     <Compile Include="FXR1\FlowEdge.cs" />
     <Compile Include="FXR1\FlowNode.cs" />
     <Compile Include="FXR1\ASTPool3.cs" />
-    <Compile Include="FXR1\ASTPool2Field.cs" />
+    <Compile Include="FXR1\Param.cs" />
     <Compile Include="FXR1\Function.cs" />
-    <Compile Include="FXR1\ASTPool2.cs" />
+    <Compile Include="FXR1\ASTAction.cs" />
     <Compile Include="FXR1\FXR1.cs" />
+    <Compile Include="FXR1\Curve1.cs" />
     <Compile Include="FXR1\FxrEnvironment.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

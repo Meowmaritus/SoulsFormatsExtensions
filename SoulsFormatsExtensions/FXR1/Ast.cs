@@ -15,23 +15,21 @@ namespace SoulsFormatsExtensions
             public byte UnkFlag2;
             public byte UnkFlag3;
 
-            public List<ASTPool1> Pool1List;
-            public ASTPool2 Pool2;
+            public List<ASTFunction> AstFunctions;
+            public ASTAction AstAction;
             public ASTPool3 Pool3;
 
             public static int GetSize(bool isLong)
                 => (isLong ? 24 : 12) + (isLong ? 16 : 12);
 
-            public static AST Read(BinaryReaderEx br, FxrEnvironment env)
+            public void Read(BinaryReaderEx br, FxrEnvironment env)
             {
-                var ast = new AST();
-
                 int commandPool1TableOffset = br.ReadFXR1Varint();
                 int commandPool1TableCount = br.ReadInt32();
                 br.AssertInt32(commandPool1TableCount);
-                ast.UnkFlag1 = br.ReadByte();
-                ast.UnkFlag2 = br.ReadByte();
-                ast.UnkFlag3 = br.ReadByte();
+                UnkFlag1 = br.ReadByte();
+                UnkFlag2 = br.ReadByte();
+                UnkFlag3 = br.ReadByte();
                 br.AssertByte(0);
 
                 br.AssertFXR1Garbage(); // ???
@@ -40,20 +38,18 @@ namespace SoulsFormatsExtensions
                 int commandPool3Offset = br.ReadFXR1Varint();
 
                 br.StepIn(commandPool1TableOffset);
-                ast.Pool1List = new List<ASTPool1>(commandPool1TableCount);
+                AstFunctions = new List<ASTFunction>(commandPool1TableCount);
                 for (int i = 0; i < commandPool1TableCount; i++)
                 {
                     //int next = br.ReadInt32();
                     //ast.Pool1List.Add(env.GetASTPool1(br, next));
-                    ast.Pool1List.Add(env.GetASTPool1(br, br.Position));
-                    br.Position += ASTPool1.GetSize(br.VarintLong);
+                    AstFunctions.Add(env.GetASTFunction(br, br.Position));
+                    br.Position += ASTFunction.GetSize(br.VarintLong);
                 }
                 br.StepOut();
 
-                ast.Pool2 = env.GetASTPool2(br, commandPool2Offset);
-                ast.Pool3 = env.GetASTPool3(br, commandPool3Offset);
-
-                return ast;
+                AstAction = env.GetASTAction(br, commandPool2Offset);
+                Pool3 = env.GetASTPool3(br, commandPool3Offset);
             }
         }
     }

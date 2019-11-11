@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace SoulsFormatsExtensions
 {
@@ -11,28 +12,44 @@ namespace SoulsFormatsExtensions
     {
         public class FlowNode
         {
-            public List<FlowEdge> Edges;
-            public List<FlowAction> Actions;
+            [XmlIgnore]
+            internal List<FlowEdge> Edges;
+
+            public List<int> FlowEdgeIndices = new List<int>();
+
+            internal void CalculateIndices(FxrEnvironment env)
+            {
+                FlowEdgeIndices = new List<int>(Edges.Count);
+                for (int i = 0; i < Edges.Count; i++)
+                    FlowEdgeIndices.Add(env.GetFlowEdgeIndex(Edges[i]));
+                FlowActionIndices = new List<int>(Actions.Count);
+                for (int i = 0; i < Actions.Count; i++)
+                    FlowActionIndices.Add(env.GetFlowActionIndex(Actions[i]));
+                Actions = null;
+            }
+
+            [XmlIgnore]
+            internal List<FlowAction> Actions;
+
+            public List<int> FlowActionIndices = new List<int>();
 
             public static int GetSize(bool isLong)
                 => isLong ? 24 : 16;
 
-            public static FlowNode Read(BinaryReaderEx br, FxrEnvironment env)
+            public void Read(BinaryReaderEx br, FxrEnvironment env)
             {
                 int edgesOffset = br.ReadFXR1Varint();
                 int actionsOffset = br.ReadFXR1Varint();
                 int edgeNum = br.ReadInt32();
                 int actionNum = br.ReadInt32();
 
-                var node = new FlowNode();
-
-                node.Edges = new List<FlowEdge>(edgeNum);
-                node.Actions = new List<FlowAction>(actionNum);
+                Edges = new List<FlowEdge>(edgeNum);
+                Actions = new List<FlowAction>(actionNum);
 
                 br.StepIn(edgesOffset);
                 for (int i = 0; i < edgeNum; i++)
                 {
-                    node.Edges.Add(env.GetFlowEdge(br, br.Position));
+                    Edges.Add(env.GetFlowEdge(br, br.Position));
                     br.Position += FlowEdge.GetSize(br.VarintLong);
                 }
                 br.StepOut();
@@ -40,12 +57,10 @@ namespace SoulsFormatsExtensions
                 br.StepIn(actionsOffset);
                 for (int i = 0; i < actionNum; i++)
                 {
-                    node.Actions.Add(env.GetFlowAction(br, br.Position));
+                    Actions.Add(env.GetFlowAction(br, br.Position));
                     br.Position += FlowAction.GetSize(br.VarintLong);
                 }
                 br.StepOut();
-
-                return node;
             }
         }
     }

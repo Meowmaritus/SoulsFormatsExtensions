@@ -9,16 +9,16 @@ namespace SoulsFormatsExtensions
 {
     public partial class FXR1
     {
-        public class ASTPool1
+        public class ASTFunction
         {
             public static int GetSize(bool isLong)
                 => isLong ? 8 : 4;
 
             public Function Func;
 
-            public static ASTPool1 Read(BinaryReaderEx br, FxrEnvironment env)
+            public static ASTFunction Read(BinaryReaderEx br, FxrEnvironment env)
             {
-                var ast = new ASTPool1();
+                var ast = new ASTFunction();
                 long funcOffset = br.ReadFXR1Varint();
                 ast.Func = env.GetFunction(br, funcOffset);
                 return ast;

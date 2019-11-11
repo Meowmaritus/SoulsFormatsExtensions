@@ -48,6 +48,7 @@ namespace SoulsFormatsExtensions
         [XmlInclude(typeof(Function87))]
         [XmlInclude(typeof(Function89))]
         [XmlInclude(typeof(Function91))]
+        [XmlInclude(typeof(Function95))]
         [XmlInclude(typeof(Function111))]
         [XmlInclude(typeof(Function112))]
         [XmlInclude(typeof(Function113))]
@@ -126,6 +127,7 @@ namespace SoulsFormatsExtensions
                     case 87: func = new Function87(); break;
                     case 89: func = new Function89(); break;
                     case 91: func = new Function91(); break;
+                    case 95: func = new Function95(); break;
                     case 111: func = new Function111(); break;
                     case 112: func = new Function112(); break;
                     case 113: func = new Function113(); break;
@@ -150,7 +152,8 @@ namespace SoulsFormatsExtensions
                     case 138: func = new Function138(); break;
                     case 139: func = new Function139(); break;
                     case 140: func = new Function140(); break;
-                    default: throw new NotImplementedException();
+                    default: 
+                        throw new NotImplementedException();
                 }
 
                 func.ReadInner(br, env);
@@ -1283,6 +1286,50 @@ namespace SoulsFormatsExtensions
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(91);
+
+                    throw new NotImplementedException();
+                }
+            }
+
+            public class Function95 : Function
+            {
+                public List<float> FloatList1;
+                public List<float> FloatList2;
+                public Function Func;
+                internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
+                {
+                    br.AssertFXR1Varint(95);
+
+                    long floatList1Offset = br.ReadFXR1Varint();
+                    long floatList2Offset = br.ReadFXR1Varint();
+                    long listCount = br.ReadFXR1Varint();
+                    br.AssertFXR1Varint(1);
+                    long functionOffset = br.ReadFXR1Varint();
+
+                    FloatList1 = new List<float>((int)listCount);
+                    br.StepIn(floatList1Offset);
+                    for (int i = 0; i < listCount; i++)
+                    {
+                        FloatList1.Add(br.ReadSingle());
+                    }
+                    br.StepOut();
+
+                    listCount *= 4;
+
+                    FloatList2 = new List<float>((int)listCount);
+                    br.StepIn(floatList2Offset);
+                    for (int i = 0; i < listCount; i++)
+                    {
+                        FloatList2.Add(br.ReadSingle());
+                    }
+                    br.StepOut();
+
+                    Func = env.GetFunction(br, functionOffset);
+                }
+
+                internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
+                {
+                    bw.WriteFXR1Varint(95);
 
                     throw new NotImplementedException();
                 }
