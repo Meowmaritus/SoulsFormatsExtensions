@@ -82,14 +82,14 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public ASTAction GetASTAction(BinaryReaderEx br, long offset)
+            public ASTPool2 GetASTPool2(BinaryReaderEx br, long offset)
             {
                 if (offset == 0)
                     return null;
 
                 if (stuff.ContainsKey(offset))
                 {
-                    if (stuff[offset] is ASTAction v)
+                    if (stuff[offset] is ASTPool2 v)
                         return v;
                     else
                         throw new InvalidOperationException();
@@ -97,7 +97,7 @@ namespace SoulsFormatsExtensions
                 else
                 {
                     br.StepIn(offset);
-                    var newVal = ASTAction.Read(br, this);
+                    var newVal = ASTPool2.Read(br, this);
                     br.StepOut();
 
                     stuff.Add(offset, newVal);

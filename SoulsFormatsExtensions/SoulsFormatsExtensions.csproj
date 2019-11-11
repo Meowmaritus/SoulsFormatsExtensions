@@ -53,10 +53,11 @@
     <Compile Include="FXR1\ASTPool3.cs" />
     <Compile Include="FXR1\Param.cs" />
     <Compile Include="FXR1\Function.cs" />
-    <Compile Include="FXR1\ASTAction.cs" />
+    <Compile Include="FXR1\ASTPool2.cs" />
     <Compile Include="FXR1\FXR1.cs" />
     <Compile Include="FXR1\Curve1.cs" />
     <Compile Include="FXR1\FxrEnvironment.cs" />
+    <Compile Include="FXR1\PreDataEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -16,7 +16,7 @@ namespace SoulsFormatsExtensions
             public byte UnkFlag3;
 
             public List<ASTFunction> AstFunctions;
-            public ASTAction AstAction;
+            public ASTPool2 AstPool2;
             public ASTPool3 Pool3;
 
             public static int GetSize(bool isLong)
@@ -48,7 +48,7 @@ namespace SoulsFormatsExtensions
                 }
                 br.StepOut();
 
-                AstAction = env.GetASTAction(br, commandPool2Offset);
+                AstPool2 = env.GetASTPool2(br, commandPool2Offset);
                 Pool3 = env.GetASTPool3(br, commandPool3Offset);
             }
         }

@@ -10,26 +10,26 @@ namespace SoulsFormatsExtensions
 {
     public partial class FXR1
     {
-        [XmlInclude(typeof(ASTActionType27))]
-        [XmlInclude(typeof(ASTActionType28))]
-        [XmlInclude(typeof(ASTActionType29))]
-        [XmlInclude(typeof(ASTActionType30))]
-        [XmlInclude(typeof(ASTActionType31))]
-        [XmlInclude(typeof(ASTActionType32))]
-        [XmlInclude(typeof(ASTActionType40))]
-        [XmlInclude(typeof(ASTActionType43))]
-        [XmlInclude(typeof(ASTActionType55))]
-        [XmlInclude(typeof(ASTActionType59))]
-        [XmlInclude(typeof(ASTActionType61))]
-        [XmlInclude(typeof(ASTActionType66))]
-        [XmlInclude(typeof(ASTActionType70))]
-        [XmlInclude(typeof(ASTActionType71))]
-        [XmlInclude(typeof(ASTActionType84))]
-        [XmlInclude(typeof(ASTActionType105))]
-        [XmlInclude(typeof(ASTActionType107))]
-        [XmlInclude(typeof(ASTActionType108))]
-        [XmlInclude(typeof(ASTActionType117))]
-        public abstract class ASTAction
+        [XmlInclude(typeof(ASTPool2Type27))]
+        [XmlInclude(typeof(ASTPool2Type28))]
+        [XmlInclude(typeof(ASTPool2Type29))]
+        [XmlInclude(typeof(ASTPool2Type30))]
+        [XmlInclude(typeof(ASTPool2Type31))]
+        [XmlInclude(typeof(ASTPool2Type32))]
+        [XmlInclude(typeof(ASTPool2Type40))]
+        [XmlInclude(typeof(ASTPool2Type43))]
+        [XmlInclude(typeof(ASTPool2Type55))]
+        [XmlInclude(typeof(ASTPool2Type59))]
+        [XmlInclude(typeof(ASTPool2Type61))]
+        [XmlInclude(typeof(ASTPool2Type66))]
+        [XmlInclude(typeof(ASTPool2Type70))]
+        [XmlInclude(typeof(ASTPool2Type71))]
+        [XmlInclude(typeof(ASTPool2Type84))]
+        [XmlInclude(typeof(ASTPool2Type105))]
+        [XmlInclude(typeof(ASTPool2Type107))]
+        [XmlInclude(typeof(ASTPool2Type108))]
+        [XmlInclude(typeof(ASTPool2Type117))]
+        public abstract class ASTPool2
         {
             [XmlAttribute]
             public int SubType;
@@ -37,50 +37,49 @@ namespace SoulsFormatsExtensions
             [XmlIgnore]
             public AST ParentAst;
 
-            public List<int> PreDataNumbers;
-            public List<int> PreDataSubtypes;
+            public List<PreDataEntry> PreDatas;
 
             public abstract void InnerRead(BinaryReaderEx br, FxrEnvironment env);
             public abstract void InnerWrite(BinaryWriterEx bw, FxrEnvironment env);
 
             //public byte[] TEMP_DATA;
 
-            public static ASTAction Read(BinaryReaderEx br, FxrEnvironment env)
+            public static ASTPool2 Read(BinaryReaderEx br, FxrEnvironment env)
             {
                 long startOffset = br.Position;
 
                 int subType = br.ReadInt32();
                 int size = br.ReadInt32();
-                long preDataCount = br.ReadFXR1Varint();
-                long offsetToPreDataNumbers = br.ReadFXR1Varint();
-                long offsetToPreDataSubtypes = br.ReadFXR1Varint();
+                int preDataCount = br.ReadFXR1Varint();
+                int offsetToPreDataNumbers = br.ReadFXR1Varint();
+                int offsetToPreDataParams = br.ReadFXR1Varint();
 
-                long offsetToParentAst = br.ReadFXR1Varint();
+                int offsetToParentAst = br.ReadFXR1Varint();
                 var parentAst = env.GetAST(br, offsetToParentAst);
 
-                ASTAction data;
+                ASTPool2 data;
 
                 switch (subType)
                 {
-                    case 27: data = new ASTActionType27(); break;
-                    case 28: data = new ASTActionType28(); break;
-                    case 29: data = new ASTActionType29(); break;
-                    case 30: data = new ASTActionType30(); break;
-                    case 31: data = new ASTActionType31(); break;
-                    case 32: data = new ASTActionType32(); break;
-                    case 40: data = new ASTActionType40(); break;
-                    case 43: data = new ASTActionType43(); break;
-                    case 55: data = new ASTActionType55(); break;
-                    case 59: data = new ASTActionType59(); break;
-                    case 61: data = new ASTActionType61(); break;
-                    case 66: data = new ASTActionType66(); break;
-                    case 70: data = new ASTActionType70(); break;
-                    case 71: data = new ASTActionType71(); break;
-                    case 84: data = new ASTActionType84(); break;
-                    case 105: data = new ASTActionType105(); break;
-                    case 107: data = new ASTActionType107(); break;
-                    case 108: data = new ASTActionType108(); break;
-                    case 117: data = new ASTActionType117(); break;
+                    case 27: data = new ASTPool2Type27(); break;
+                    case 28: data = new ASTPool2Type28(); break;
+                    case 29: data = new ASTPool2Type29(); break;
+                    case 30: data = new ASTPool2Type30(); break;
+                    case 31: data = new ASTPool2Type31(); break;
+                    case 32: data = new ASTPool2Type32(); break;
+                    case 40: data = new ASTPool2Type40(); break;
+                    case 43: data = new ASTPool2Type43(); break;
+                    case 55: data = new ASTPool2Type55(); break;
+                    case 59: data = new ASTPool2Type59(); break;
+                    case 61: data = new ASTPool2Type61(); break;
+                    case 66: data = new ASTPool2Type66(); break;
+                    case 70: data = new ASTPool2Type70(); break;
+                    case 71: data = new ASTPool2Type71(); break;
+                    case 84: data = new ASTPool2Type84(); break;
+                    case 105: data = new ASTPool2Type105(); break;
+                    case 107: data = new ASTPool2Type107(); break;
+                    case 108: data = new ASTPool2Type108(); break;
+                    case 117: data = new ASTPool2Type117(); break;
                     default: throw new NotImplementedException();
                 }
 
@@ -91,23 +90,26 @@ namespace SoulsFormatsExtensions
 
                 //data.TEMP_DATA = br.GetBytes(startOffset, size);
 
-                //data.ParentAst = parentAst;
+                data.ParentAst = parentAst;
+
+                data.PreDatas = new List<PreDataEntry>(preDataCount);
 
                 //pre data nubmers go here during write
-                data.PreDataNumbers = new List<int>();
                 br.StepIn(offsetToPreDataNumbers);
                 for (int i = 0; i < preDataCount; i++)
                 {
-                    data.PreDataNumbers.Add(br.ReadInt32());
+                    data.PreDatas.Add(new PreDataEntry()
+                    {
+                        Unknown = br.ReadInt32()
+                    });
                 }
                 br.StepOut();
 
                 //pre data subtypes go here during write
-                data.PreDataSubtypes = new List<int>();
-                br.StepIn(offsetToPreDataNumbers);
+                br.StepIn(offsetToPreDataParams);
                 for (int i = 0; i < preDataCount; i++)
                 {
-                    data.PreDataSubtypes.Add(br.ReadInt32());
+                    data.PreDatas[i].Data = Param.Read(br, env);
                 }
                 br.StepOut();
 
@@ -125,7 +127,7 @@ namespace SoulsFormatsExtensions
 
 
 
-        public class ASTActionType27 : ASTAction
+        public class ASTPool2Type27 : ASTPool2
         {
             public float Unk1;
             public float Unk2;
@@ -183,7 +185,7 @@ namespace SoulsFormatsExtensions
 
 
 
-        public class ASTActionType28 : ASTAction
+        public class ASTPool2Type28 : ASTPool2
         {
             public Param[] Unk1;
             public int Unk2;
@@ -201,7 +203,7 @@ namespace SoulsFormatsExtensions
         }
 
 
-        public class ASTActionType29 : ASTAction
+        public class ASTPool2Type29 : ASTPool2
         {
             public Param[] Unk1;
             public int Unk2;
@@ -218,7 +220,7 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class ASTActionType30 : ASTAction
+        public class ASTPool2Type30 : ASTPool2
         {
             public Param[] Unk1;
             public float Unk2;
@@ -240,7 +242,7 @@ namespace SoulsFormatsExtensions
         }
 
 
-        public class ASTActionType31 : ASTAction
+        public class ASTPool2Type31 : ASTPool2
         {
             public Param[] Unk1;
             public int Unk2;
@@ -259,7 +261,7 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class ASTActionType32 : ASTAction
+        public class ASTPool2Type32 : ASTPool2
         {
             public Param OffsetX;
             public Param OffsetY;
@@ -284,7 +286,7 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class ASTActionType40 : ASTAction
+        public class ASTPool2Type40 : ASTPool2
         {
             public float Unk1;
             public int TextureID;
@@ -363,7 +365,7 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class ASTActionType43 : ASTAction
+        public class ASTPool2Type43 : ASTPool2
         {
             public float Unk1;
             public int TextureID;
@@ -396,7 +398,7 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class ASTActionType55 : ASTAction
+        public class ASTPool2Type55 : ASTPool2
         {
             public Param[] Unk1;
             public float Unk2;
@@ -414,7 +416,7 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class ASTActionType59 : ASTAction
+        public class ASTPool2Type59 : ASTPool2
         {
             public float Unk1;
             public int TextureID;
@@ -481,7 +483,7 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class ASTActionType61 : ASTAction
+        public class ASTPool2Type61 : ASTPool2
         {
             public int TextureID;
             public int Unk1;
@@ -551,7 +553,7 @@ namespace SoulsFormatsExtensions
         }
 
 
-        public class ASTActionType66 : ASTAction
+        public class ASTPool2Type66 : ASTPool2
         {
             public float Unk1;
             public float Unk2;
@@ -606,7 +608,7 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class ASTActionType70 : ASTAction
+        public class ASTPool2Type70 : ASTPool2
         {
             public float Unk1;
             public float Unk2;
@@ -696,7 +698,7 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class ASTActionType71 : ASTAction
+        public class ASTPool2Type71 : ASTPool2
         {
             public float Unk1;
             public float Unk2;
@@ -795,7 +797,7 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class ASTActionType84 : ASTAction
+        public class ASTPool2Type84 : ASTPool2
         {
             public Param[] Unk1;
             public float Unk2;
@@ -817,7 +819,7 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class ASTActionType105 : ASTAction
+        public class ASTPool2Type105 : ASTPool2
         {
             public Param[] Unk1;
             public float Unk2;
@@ -841,7 +843,7 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class ASTActionType107 : ASTAction
+        public class ASTPool2Type107 : ASTPool2
         {
             public float Unk1;
             public int TextureID;
@@ -863,7 +865,7 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class ASTActionType108 : ASTAction
+        public class ASTPool2Type108 : ASTPool2
         {
             public float Unk1;
             public float Unk2;
@@ -976,7 +978,7 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class ASTActionType117 : ASTAction
+        public class ASTPool2Type117 : ASTPool2
         {
             public Param[] Unk1;
             public int Unk2;
