@@ -25,7 +25,8 @@ namespace SoulsFormatsExtensions
                 FlowActionIndices = new List<int>(Actions.Count);
                 for (int i = 0; i < Actions.Count; i++)
                     FlowActionIndices.Add(env.GetFlowActionIndex(Actions[i]));
-                Actions = null;
+                //Actions = null;
+                //Edges = null;
             }
 
             [XmlIgnore]

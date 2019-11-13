@@ -49,5 +49,39 @@ namespace SoulsFormatsExtensions
             FlowActions = env.masterFlowActionList;
         }
 
+        protected override void Write(BinaryWriterEx bw)
+        {
+            bw.WriteASCII("FXR\0");
+            bw.BigEndian = BigEndian;
+            bw.WriteUInt32(0x10000);
+            bw.VarintLong = Wide;
+            var env = new FxrEnvironment();
+            env.bw = bw;
+
+            bw.ReserveInt32("OffsetToMainData");
+            bw.WriteFXR1Garbage();
+
+            bw.ReserveInt32("OffsetToTable");
+            bw.WriteFXR1Garbage();
+
+            bw.ReserveInt32("TablePointerCount");
+            bw.ReserveInt32("TableFunctionCount");
+
+            bw.WriteInt32(Unknown1);
+            bw.WriteInt32(Unknown2);
+
+            bw.Pad(16);
+            bw.FillInt32("OffsetToMainData", (int)bw.Position);
+            env.RegisterFunctionOffsetHere();
+            RootFunction.WriteInner(bw, env);
+
+            env.FillAllPointers();
+
+            bw.FillInt32("OffsetToTable", (int)bw.Position);
+            env.WritePointerTable("TablePointerCount");
+            env.WriteFunctionTable("TableFunctionCount");
+
+        }
+
     }
 }

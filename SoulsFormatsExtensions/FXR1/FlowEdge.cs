@@ -20,7 +20,7 @@ namespace SoulsFormatsExtensions
             internal void CalculateIndices(FxrEnvironment env)
             {
                 EndFlowNodeIndex = env.GetFlowNodeIndex(EndNode);
-                EndNode = null;
+                //EndNode = null;
             }
 
             public Function Func;
