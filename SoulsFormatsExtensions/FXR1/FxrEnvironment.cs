@@ -303,14 +303,14 @@ namespace SoulsFormatsExtensions
 
             public void RegisterPointer(object pointToObject, bool useExistingPointerOnly = false)
             {
+                if (!PointerOffsets.Contains(bw.Position))
+                    PointerOffsets.Add(bw.Position);
+
                 if (pointToObject == null)
                 {
                     bw.WriteFXR1Varint(0);
                     return;
                 }
-
-                if (!PointerOffsets.Contains(bw.Position))
-                    PointerOffsets.Add(bw.Position);
 
                 if (OffsetsByObject.ContainsKey(pointToObject))
                 {
