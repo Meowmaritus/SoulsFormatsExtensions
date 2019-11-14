@@ -15,7 +15,7 @@ namespace SoulsFormatsExtensions
             public byte UnkFlag2;
             public byte UnkFlag3;
 
-            public List<ASTFunction> AstFunctions;
+            public List<FunctionPointer> AstFunctions;
             public ASTPool2 AstPool2;
             public ASTPool3 AstPool3;
 
@@ -38,13 +38,13 @@ namespace SoulsFormatsExtensions
                 int commandPool3Offset = br.ReadFXR1Varint();
 
                 br.StepIn(commandPool1TableOffset);
-                AstFunctions = new List<ASTFunction>(commandPool1TableCount);
+                AstFunctions = new List<FunctionPointer>(commandPool1TableCount);
                 for (int i = 0; i < commandPool1TableCount; i++)
                 {
                     //int next = br.ReadInt32();
                     //ast.Pool1List.Add(env.GetASTPool1(br, next));
                     AstFunctions.Add(env.GetASTFunction(br, br.Position));
-                    br.Position += ASTFunction.GetSize(br.VarintLong);
+                    br.Position += FunctionPointer.GetSize(br.VarintLong);
                 }
                 br.StepOut();
 
@@ -54,6 +54,9 @@ namespace SoulsFormatsExtensions
 
             public void Write(BinaryWriterEx bw, FxrEnvironment env)
             {
+                if (AstPool2 != null)
+                    AstPool2.ParentAst = this;
+
                 env.RegisterPointer(AstFunctions);
                 bw.WriteInt32(AstFunctions.Count);
                 bw.WriteInt32(AstFunctions.Count); //Not a typo

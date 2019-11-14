@@ -66,8 +66,10 @@ namespace SoulsFormatsExtensions
 
             public void Write(BinaryWriterEx bw, FxrEnvironment env)
             {
-                env.RegisterPointer(FlowEdgeIndices.Select(e => env.fxr.FlowEdges[e]).ToList());
-                env.RegisterPointer(FlowActionIndices.Select(e => env.fxr.FlowActions[e]).ToList());
+                env.RegisterPointer(FlowEdgeIndices.Count > 0 ? 
+                    FlowEdgeIndices.Select(e => env.fxr.FlowEdges[e]).ToList() : null);
+                env.RegisterPointer(FlowActionIndices.Count > 0 ? 
+                    FlowActionIndices.Select(e => env.fxr.FlowActions[e]).ToList() : null);
                 bw.WriteInt32(FlowEdgeIndices.Count);
                 bw.WriteInt32(FlowActionIndices.Count);
             }

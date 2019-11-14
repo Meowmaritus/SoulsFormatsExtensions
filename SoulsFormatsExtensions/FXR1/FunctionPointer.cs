@@ -9,7 +9,7 @@ namespace SoulsFormatsExtensions
 {
     public partial class FXR1
     {
-        public class ASTFunction
+        public class FunctionPointer
         {
             public static int GetSize(bool isLong)
                 => isLong ? 8 : 4;

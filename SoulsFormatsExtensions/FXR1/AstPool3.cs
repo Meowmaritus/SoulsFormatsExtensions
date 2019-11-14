@@ -84,7 +84,7 @@ namespace SoulsFormatsExtensions
             public float OffsetY;
             public float Unk6;
             public int Unk7;
-            public int Unk8;
+            public float Unk8;
             public float Unk9;
             public float Unk10;
             public float Unk11;
@@ -100,7 +100,7 @@ namespace SoulsFormatsExtensions
                 OffsetY = br.ReadSingle();
                 Unk6 = br.ReadSingle();
                 Unk7 = br.ReadInt32();
-                Unk8 = br.ReadInt32();
+                Unk8 = br.ReadSingle();
                 Unk9 = br.ReadSingle();
                 Unk10 = br.ReadSingle();
                 Unk11 = br.ReadSingle();
@@ -117,7 +117,7 @@ namespace SoulsFormatsExtensions
                 bw.WriteSingle(OffsetY);
                 bw.WriteSingle(Unk6);
                 bw.WriteInt32(Unk7);
-                bw.WriteInt32(Unk8);
+                bw.WriteSingle(Unk8);
                 bw.WriteSingle(Unk9);
                 bw.WriteSingle(Unk10);
                 bw.WriteSingle(Unk11);

@@ -316,7 +316,8 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(2);
 
-                    throw new NotImplementedException();
+                    env.RegisterPointer(IntList);
+                    bw.WriteFXR1Varint(IntList.Count);
                 }
             }
 
@@ -1403,7 +1404,11 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(89);
 
-                    throw new NotImplementedException();
+                    env.RegisterPointer(FloatList);
+                    env.RegisterPointer(IntList);
+                    bw.WriteFXR1Varint(FloatList.Count);
+                    bw.WriteFXR1Varint(1);
+                    bw.WriteFXR1Varint(0);
                 }
             }
 
@@ -1447,7 +1452,11 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(91);
 
-                    throw new NotImplementedException();
+                    env.RegisterPointer(FloatList1);
+                    env.RegisterPointer(FloatList2);
+                    bw.WriteFXR1Varint(FloatList1.Count);
+                    bw.WriteFXR1Varint(1);
+                    env.RegisterPointer(Func);
                 }
             }
 
@@ -1491,7 +1500,11 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(95);
 
-                    throw new NotImplementedException();
+                    env.RegisterPointer(FloatList1);
+                    env.RegisterPointer(FloatList2);
+                    bw.WriteFXR1Varint(FloatList1.Count);
+                    bw.WriteFXR1Varint(1);
+                    env.RegisterPointer(Func);
                 }
             }
 

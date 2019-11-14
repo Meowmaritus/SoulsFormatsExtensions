@@ -15,6 +15,14 @@ namespace SoulsFormatsExtensions
 
             public FXR1 fxr;
 
+            public List<Param> Debug_AllReadParams = new List<Param>();
+
+            public void Debug_RegisterReadParam(Param p)
+            {
+                if (!Debug_AllReadParams.Contains(p))
+                    Debug_AllReadParams.Add(p);
+            }
+
             private List<long> PointerOffsets = new List<long>();
             private List<long> FunctionOffets = new List<long>();
 
@@ -22,6 +30,12 @@ namespace SoulsFormatsExtensions
             private Dictionary<object, long> OffsetsByObject = new Dictionary<object, long>();
 
             private List<object> ThingsToWrite = new List<object>();
+
+            public void RegisterPointerOffset(long offset)
+            {
+                if (!PointerOffsets.Contains(offset))
+                    PointerOffsets.Add(offset);
+            }
 
             public void AddThingToWrite(object thingToWrite)
             {
@@ -94,21 +108,21 @@ namespace SoulsFormatsExtensions
                     masterFlowActionList.Add(action);
             }
 
-            public ASTFunction GetASTFunction(BinaryReaderEx br, long offset)
+            public FunctionPointer GetASTFunction(BinaryReaderEx br, long offset)
             {
                 if (offset == 0)
                     return null;
 
                 if (ObjectsByOffset.ContainsKey(offset))
                 {
-                    if (ObjectsByOffset[offset] is ASTFunction v)
+                    if (ObjectsByOffset[offset] is FunctionPointer v)
                         return v;
                     else 
                         throw new InvalidOperationException();
                 }
                 else
                 {
-                    var newVal = new ASTFunction();
+                    var newVal = new FunctionPointer();
                     RegisterOffset(offset, newVal);
                     br.StepIn(offset);
                     newVal.Read(br, this);
@@ -303,14 +317,14 @@ namespace SoulsFormatsExtensions
 
             public void RegisterPointer(object pointToObject, bool useExistingPointerOnly = false)
             {
-                if (!PointerOffsets.Contains(bw.Position))
-                    PointerOffsets.Add(bw.Position);
-
                 if (pointToObject == null)
                 {
                     bw.WriteFXR1Varint(0);
                     return;
                 }
+
+                if (!PointerOffsets.Contains(bw.Position))
+                    PointerOffsets.Add(bw.Position);
 
                 if (OffsetsByObject.ContainsKey(pointToObject))
                 {
@@ -354,7 +368,7 @@ namespace SoulsFormatsExtensions
                     {
                         switch (data)
                         {
-                            case ASTFunction asASTFunction: asASTFunction.Write(bw, this); break;
+                            case FunctionPointer asASTFunction: asASTFunction.Write(bw, this); break;
                             case ASTPool2 asASTPool2: asASTPool2.Write(bw, this); break;
                             case ASTPool3 asASTPool3: asASTPool3.Write(bw, this); break;
                             case AST asAST: asAST.Write(bw, this); break;
@@ -367,46 +381,44 @@ namespace SoulsFormatsExtensions
                                     RegisterPointer(v);
                                 break;
                             case List<FlowEdge> asFlowEdgeList:
-                                if (!PointerOffsets.Contains(bw.Position))
-                                    PointerOffsets.Add(bw.Position);
+                                //if (!PointerOffsets.Contains(bw.Position))
+                                //    PointerOffsets.Add(bw.Position);
 
                                 foreach (var v in asFlowEdgeList)
+                                {
+                                    RegisterOffset(bw.Position, v);
                                     v.Write(bw, this);
+                                }
                                 break;
                             case List<FlowAction> asFlowActionList:
-                                if (!PointerOffsets.Contains(bw.Position))
-                                    PointerOffsets.Add(bw.Position);
-
                                 foreach (var v in asFlowActionList)
+                                {
+                                    RegisterOffset(bw.Position, v);
                                     v.Write(bw, this);
+                                }
                                 break;
                             case List<FlowNode> asFlowNodeList:
-                                if (!PointerOffsets.Contains(bw.Position))
-                                    PointerOffsets.Add(bw.Position);
-
                                 foreach (var v in asFlowNodeList)
+                                {
+                                    RegisterOffset(bw.Position, v);
                                     v.Write(bw, this);
+                                }
                                 break;
-                            case List<ASTFunction> asASTFunctionList:
-                                if (!PointerOffsets.Contains(bw.Position))
-                                    PointerOffsets.Add(bw.Position);
-
+                            case List<FunctionPointer> asASTFunctionList:
                                 foreach (var v in asASTFunctionList)
+                                {
+                                    RegisterOffset(bw.Position, v);
+                                    RegisterPointerOffset(bw.Position);
                                     v.Write(bw, this);
+                                }
                                 break;
                             case List<float> asFloatList:
-                                if (!PointerOffsets.Contains(bw.Position))
-                                    PointerOffsets.Add(bw.Position);
-
                                 foreach (var v in asFloatList)
                                 {
                                     bw.WriteSingle(v);
                                 }
                                 break;
                             case List<int> asIntList:
-                                if (!PointerOffsets.Contains(bw.Position))
-                                    PointerOffsets.Add(bw.Position);
-
                                 foreach (var v in asIntList)
                                 {
                                     bw.WriteInt32(v);
@@ -422,6 +434,7 @@ namespace SoulsFormatsExtensions
                     foreach (var location in kvp.Value)
                     {
                         bw.StepIn(location);
+                        RegisterPointerOffset(bw.Position);
                         bw.WriteInt32((int)locationItPointsTo);
                         bw.StepOut();
                     }
@@ -464,6 +477,13 @@ namespace SoulsFormatsExtensions
                     bw.WriteFXR1Varint((int)offset);
                 }
                 bw.FillInt32(tableCountFillLabel, PointerOffsets.Count);
+            }
+
+            public void ReadPointerTable(BinaryReaderEx br, int count)
+            {
+                PointerOffsets = new List<long>();
+                for (int i = 0; i < count; i++)
+                    PointerOffsets.Add(br.ReadFXR1Varint());
             }
         }
     }

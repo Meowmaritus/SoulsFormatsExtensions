@@ -20,6 +20,8 @@ namespace SoulsFormatsExtensions
         public List<FlowEdge> FlowEdges { get; set; }
         public List<FlowAction> FlowActions { get; set; }
 
+        public List<Param> Debug_AllLoadedParams;
+
         protected override void Read(BinaryReaderEx br)
         {
             br.AssertASCII("FXR\0");
@@ -31,12 +33,17 @@ namespace SoulsFormatsExtensions
 
             long mainDataOffset = br.ReadFXR1Varint();
             int metadataTableOffset = br.ReadInt32();
+
             int pointerTableCount = br.ReadInt32();
             int functionTableCount = br.ReadInt32();
             Unknown1 = br.ReadInt32();
             Unknown2 = br.ReadInt32();
 
             var env = new FxrEnvironment();
+
+            //br.StepIn(metadataTableOffset);
+            //env.ReadPointerTable();
+            //br.StepOut();
 
             br.Pad(16);
 
@@ -47,6 +54,9 @@ namespace SoulsFormatsExtensions
             FlowNodes = env.masterFlowNodeList;
             FlowEdges = env.masterFlowEdgeList;
             FlowActions = env.masterFlowActionList;
+
+
+            Debug_AllLoadedParams = env.Debug_AllReadParams;
         }
 
         protected override void Write(BinaryWriterEx bw)

@@ -45,7 +45,7 @@
   <ItemGroup>
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="FXR1\AST.cs" />
-    <Compile Include="FXR1\ASTFunction.cs" />
+    <Compile Include="FXR1\FunctionPointer.cs" />
     <Compile Include="FXR1\Curve3.cs" />
     <Compile Include="FXR1\FlowAction.cs" />
     <Compile Include="FXR1\FlowEdge.cs" />

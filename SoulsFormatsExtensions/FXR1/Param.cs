@@ -34,6 +34,8 @@ namespace SoulsFormatsExtensions
             public abstract void InnerRead(BinaryReaderEx br, FxrEnvironment env);
             public abstract void InnerWrite(BinaryWriterEx bw, FxrEnvironment env);
 
+            internal virtual bool IsEmptyPointer() => false;
+
             public static Param Read(BinaryReaderEx br, FxrEnvironment env)
             {
                 int type = br.ReadFXR1Varint();
@@ -68,7 +70,9 @@ namespace SoulsFormatsExtensions
                 br.StepIn(offset);
                 v.InnerRead(br, env);
                 br.StepOut();
-                
+
+                env.Debug_RegisterReadParam(v);
+
                 return v;
             }
 
@@ -352,6 +356,10 @@ namespace SoulsFormatsExtensions
         public class ParamType17 : Param
         {
             public Curve1[] Values;
+            [XmlAttribute]
+            public float Min;
+            [XmlAttribute]
+            public float Max;
 
             public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
             {
@@ -361,6 +369,8 @@ namespace SoulsFormatsExtensions
                     Values[i].Time = br.ReadSingle();
                 for (int i = 0; i < listSize; i++)
                     Values[i].Value = br.ReadSingle();
+                Min = br.ReadSingle();
+                Max = br.ReadSingle();
             }
 
             public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
@@ -370,6 +380,8 @@ namespace SoulsFormatsExtensions
                     bw.WriteSingle(Values[i].Time);
                 for (int i = 0; i < Values.Length; i++)
                     bw.WriteSingle(Values[i].Value);
+                bw.WriteSingle(Min);
+                bw.WriteSingle(Max);
             }
         }
 
@@ -426,21 +438,21 @@ namespace SoulsFormatsExtensions
             [XmlAttribute]
             public float Base;
             [XmlAttribute]
-            public float Unk1;
+            public float Min;
             [XmlAttribute]
-            public float Unk2;
+            public float Max;
 
             public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
             {
                 Base = br.ReadSingle();
-                Unk1 = br.ReadSingle();
-                Unk2 = br.ReadSingle();
+                Min = br.ReadSingle();
+                Max = br.ReadSingle();
             }
             public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
             {
                 bw.WriteSingle(Base);
-                bw.WriteSingle(Unk1);
-                bw.WriteSingle(Unk2);
+                bw.WriteSingle(Min);
+                bw.WriteSingle(Max);
             }
         }
 
@@ -492,6 +504,8 @@ namespace SoulsFormatsExtensions
 
         public class ParamType28 : Param
         {
+            internal override bool IsEmptyPointer() => true;
+
             public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
             {
 
