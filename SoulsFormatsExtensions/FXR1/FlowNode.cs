@@ -63,6 +63,14 @@ namespace SoulsFormatsExtensions
                 }
                 br.StepOut();
             }
+
+            public void Write(BinaryWriterEx bw, FxrEnvironment env)
+            {
+                env.RegisterPointer(FlowEdgeIndices.Select(e => env.fxr.FlowEdges[e]).ToList());
+                env.RegisterPointer(FlowActionIndices.Select(e => env.fxr.FlowActions[e]).ToList());
+                bw.WriteInt32(FlowEdgeIndices.Count);
+                bw.WriteInt32(FlowActionIndices.Count);
+            }
         }
     }
 }

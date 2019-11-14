@@ -34,8 +34,14 @@ namespace SoulsFormatsExtensions
                 int functionOffset = br.ReadFXR1Varint();
 
                 //TESTING
-                //EndNode = env.GetFlowNode(br, endNodeOffset);
+                EndNode = env.GetFlowNode(br, endNodeOffset);
                 Func = env.GetFunction(br, functionOffset);
+            }
+
+            public void Write(BinaryWriterEx bw, FxrEnvironment env)
+            {
+                env.RegisterPointer(env.fxr.FlowNodes[EndFlowNodeIndex]);
+                env.RegisterPointer(Func);
             }
 
         }

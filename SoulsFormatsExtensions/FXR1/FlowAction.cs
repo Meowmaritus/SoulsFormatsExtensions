@@ -17,14 +17,17 @@ namespace SoulsFormatsExtensions
             public static int GetSize(bool isLong)
                 => (isLong ? 8 : 4) + AST.GetSize(isLong);
 
-            public static FlowAction Read(BinaryReaderEx br, FxrEnvironment env)
+            public void Read(BinaryReaderEx br, FxrEnvironment env)
             {
-                var action = new FlowAction();
-                action.ActionType = br.ReadFXR1Varint();
-                action.ActionAst = env.GetAST(br, br.Position);
+                ActionType = br.ReadFXR1Varint();
+                ActionAst = env.GetAST(br, br.Position);
                 br.Position += AST.GetSize(br.VarintLong);
+            }
 
-                return action;
+            public void Write(BinaryWriterEx bw, FxrEnvironment env)
+            {
+                bw.WriteFXR1Varint(ActionType);
+                ActionAst.Write(bw, env);
             }
         }
     }

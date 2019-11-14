@@ -13,6 +13,9 @@ namespace SoulsFormatsExtensions
         {
             public BinaryWriterEx bw;
 
+            public FXR1 fxr;
+
+            private List<long> PointerOffsets = new List<long>();
             private List<long> FunctionOffets = new List<long>();
 
             private Dictionary<long, object> ObjectsByOffset = new Dictionary<long, object>();
@@ -29,6 +32,7 @@ namespace SoulsFormatsExtensions
             internal List<FlowEdge> masterFlowEdgeList = new List<FlowEdge>();
             internal List<FlowNode> masterFlowNodeList = new List<FlowNode>();
             internal List<FlowAction> masterFlowActionList = new List<FlowAction>();
+            internal List<Function.Function133> masterFunction133List = new List<Function.Function133>();
 
             public void RegisterOffset(long offset, object thingThere)
             {
@@ -46,6 +50,9 @@ namespace SoulsFormatsExtensions
 
                 foreach (var node in masterFlowNodeList)
                     node.CalculateIndices(this);
+
+                foreach (var func in masterFunction133List)
+                    func.CalculateIndices(this);
             }
 
             public int GetFlowEdgeIndex(FlowEdge edge)
@@ -67,6 +74,12 @@ namespace SoulsFormatsExtensions
             {
                 if (!masterFlowNodeList.Contains(node))
                     masterFlowNodeList.Add(node);
+            }
+
+            public void RegisterFunction133(Function.Function133 func)
+            {
+                if (!masterFunction133List.Contains(func))
+                    masterFunction133List.Add(func);
             }
 
             private void RegisterFlowEdge(FlowEdge edge)
@@ -95,11 +108,12 @@ namespace SoulsFormatsExtensions
                 }
                 else
                 {
+                    var newVal = new ASTFunction();
+                    RegisterOffset(offset, newVal);
                     br.StepIn(offset);
-                    var newVal = ASTFunction.Read(br, this);
+                    newVal.Read(br, this);
                     br.StepOut();
-
-                    ObjectsByOffset.Add(offset, newVal);
+                    
                     return newVal;
                 }
             }
@@ -122,7 +136,7 @@ namespace SoulsFormatsExtensions
                     var newVal = ASTPool2.Read(br, this);
                     br.StepOut();
 
-                    ObjectsByOffset.Add(offset, newVal);
+                    RegisterOffset(offset, newVal);
                     return newVal;
                 }
             }
@@ -142,10 +156,11 @@ namespace SoulsFormatsExtensions
                 else
                 {
                     br.StepIn(offset);
-                    var newVal = ASTPool3.Read(br, this);
+                    var newVal = ASTPool3.GetProperType(br, this);
+                    RegisterOffset(offset, newVal);
+                    newVal.Read(br, this);
                     br.StepOut();
-
-                    ObjectsByOffset.Add(offset, newVal);
+                    
                     return newVal;
                 }
             }
@@ -165,10 +180,11 @@ namespace SoulsFormatsExtensions
                 else
                 {
                     br.StepIn(offset);
-                    var newVal = Function.Read(br, this);
+                    var newVal = Function.GetProperFunctionType(br, this);
+                    RegisterOffset(offset, newVal);
+                    newVal.Read(br, this);
                     br.StepOut();
-
-                    ObjectsByOffset.Add(offset, newVal);
+                    
                     return newVal;
                 }
             }
@@ -188,7 +204,7 @@ namespace SoulsFormatsExtensions
                 else
                 {
                     var newVal = new AST();
-                    ObjectsByOffset.Add(offset, newVal);
+                    RegisterOffset(offset, newVal);
                     br.StepIn(offset);
                     newVal.Read(br, this);
                     br.StepOut();
@@ -213,7 +229,7 @@ namespace SoulsFormatsExtensions
                 {
                     var newVal = new FlowNode();
                     RegisterFlowNode(newVal);
-                    ObjectsByOffset.Add(offset, newVal);
+                    RegisterOffset(offset, newVal);
                     br.StepIn(offset);
                     newVal.Read(br, this);
                     br.StepOut();
@@ -238,7 +254,7 @@ namespace SoulsFormatsExtensions
                 {
                     var newVal = new FlowEdge();
                     RegisterFlowEdge(newVal);
-                    ObjectsByOffset.Add(offset, newVal);
+                    RegisterOffset(offset, newVal);
                     br.StepIn(offset);
                     newVal.Read(br, this);
                     br.StepOut();
@@ -260,55 +276,161 @@ namespace SoulsFormatsExtensions
                         throw new InvalidOperationException();
                 }
                 else
-                {
-                    br.StepIn(offset);
-                    var newVal = FlowAction.Read(br, this);
+                {   
+                    var newVal = new FlowAction();
                     RegisterFlowAction(newVal);
+                    br.StepIn(offset);
+                    newVal.Read(br, this);
                     br.StepOut();
 
-                    ObjectsByOffset.Add(offset, newVal);
+                    RegisterOffset(offset, newVal);
                     return newVal;
                 }
             }
 
             private Dictionary<object, List<long>> PointerWriteLocations = new Dictionary<object, List<long>>();
 
-            public void RegisterPointer32(object pointToObject)
+            //public void RegisterPointer32(object pointToObject)
+            //{
+            //    if (!PointerWriteLocations.ContainsKey(pointToObject))
+            //        PointerWriteLocations.Add(pointToObject, new List<long>());
+
+            //    if (!PointerWriteLocations[pointToObject].Contains(bw.Position))
+            //        PointerWriteLocations[pointToObject].Add(bw.Position);
+
+            //    bw.WriteUInt32(0xEFBEADDE); //DEADBEEF
+            //}
+
+            public void RegisterPointer(object pointToObject, bool useExistingPointerOnly = false)
             {
-                if (!PointerWriteLocations.ContainsKey(pointToObject))
-                    PointerWriteLocations.Add(pointToObject, new List<long>());
+                if (pointToObject == null)
+                {
+                    bw.WriteFXR1Varint(0);
+                    return;
+                }
 
-                if (!PointerWriteLocations[pointToObject].Contains(bw.Position))
-                    PointerWriteLocations[pointToObject].Add(bw.Position);
+                if (!PointerOffsets.Contains(bw.Position))
+                    PointerOffsets.Add(bw.Position);
 
-                bw.WriteUInt32(0xEFBEADDE); //DEADBEEF
+                if (OffsetsByObject.ContainsKey(pointToObject))
+                {
+                    bw.WriteFXR1Varint((int)OffsetsByObject[pointToObject]);
+                }
+                else
+                {
+                    if (useExistingPointerOnly)
+                        throw new InvalidOperationException("Assertion that pointer already existed failed.");
+
+                    if (!PointerWriteLocations.ContainsKey(pointToObject))
+                        PointerWriteLocations.Add(pointToObject, new List<long>());
+
+                    if (!PointerWriteLocations[pointToObject].Contains(bw.Position))
+                        PointerWriteLocations[pointToObject].Add(bw.Position);
+
+                    bw.WriteUInt32(0xEEEEEEEE);
+                    bw.WriteFXR1Garbage();
+                }
             }
 
-            public void RegisterPointer(object pointToObject)
+
+            public void FinishRecursiveWrite()
             {
-                if (!PointerWriteLocations.ContainsKey(pointToObject))
-                    PointerWriteLocations.Add(pointToObject, new List<long>());
-
-                if (!PointerWriteLocations[pointToObject].Contains(bw.Position))
-                    PointerWriteLocations[pointToObject].Add(bw.Position);
-
-                bw.WriteUInt32(0xEFBEADDE); //DEADBEEF
-                bw.WriteUInt32(0xCDCDCDCD); 
-            }
-
-            public void FillAllPointers()
-            {
-                long startOffset = bw.Position;
+                // Copy the current write shit to a new collection so we can start queueing the
+                // shit for the next recursive pass :demonicfatcat:
+                var currentWriteFeed = new Dictionary<object, List<long>>();
                 foreach (var kvp in PointerWriteLocations)
                 {
+                    currentWriteFeed.Add(kvp.Key, kvp.Value);
+                }
+                PointerWriteLocations.Clear();
+
+                foreach (var kvp in currentWriteFeed)
+                {
+                    // Register this as an offset for recursive write and pointer shit
+                    RegisterOffset(bw.Position, kvp.Key);
+
+                    // Write the actual data
+                    void DoDataWrite(object data)
+                    {
+                        switch (data)
+                        {
+                            case ASTFunction asASTFunction: asASTFunction.Write(bw, this); break;
+                            case ASTPool2 asASTPool2: asASTPool2.Write(bw, this); break;
+                            case ASTPool3 asASTPool3: asASTPool3.Write(bw, this); break;
+                            case AST asAST: asAST.Write(bw, this); break;
+                            case FlowAction asFlowAction: asFlowAction.Write(bw, this); break;
+                            case FlowEdge asFlowEdge: asFlowEdge.Write(bw, this); break;
+                            case FlowNode asFlowNode: asFlowNode.Write(bw, this); break;
+                            case Function asFunction: asFunction.Write(bw, this); break;
+                            case List<Function> asFunctionList:
+                                foreach (var v in asFunctionList)
+                                    RegisterPointer(v);
+                                break;
+                            case List<FlowEdge> asFlowEdgeList:
+                                if (!PointerOffsets.Contains(bw.Position))
+                                    PointerOffsets.Add(bw.Position);
+
+                                foreach (var v in asFlowEdgeList)
+                                    v.Write(bw, this);
+                                break;
+                            case List<FlowAction> asFlowActionList:
+                                if (!PointerOffsets.Contains(bw.Position))
+                                    PointerOffsets.Add(bw.Position);
+
+                                foreach (var v in asFlowActionList)
+                                    v.Write(bw, this);
+                                break;
+                            case List<FlowNode> asFlowNodeList:
+                                if (!PointerOffsets.Contains(bw.Position))
+                                    PointerOffsets.Add(bw.Position);
+
+                                foreach (var v in asFlowNodeList)
+                                    v.Write(bw, this);
+                                break;
+                            case List<ASTFunction> asASTFunctionList:
+                                if (!PointerOffsets.Contains(bw.Position))
+                                    PointerOffsets.Add(bw.Position);
+
+                                foreach (var v in asASTFunctionList)
+                                    v.Write(bw, this);
+                                break;
+                            case List<float> asFloatList:
+                                if (!PointerOffsets.Contains(bw.Position))
+                                    PointerOffsets.Add(bw.Position);
+
+                                foreach (var v in asFloatList)
+                                {
+                                    bw.WriteSingle(v);
+                                }
+                                break;
+                            case List<int> asIntList:
+                                if (!PointerOffsets.Contains(bw.Position))
+                                    PointerOffsets.Add(bw.Position);
+
+                                foreach (var v in asIntList)
+                                {
+                                    bw.WriteInt32(v);
+                                }
+                                break;
+                            default: throw new NotImplementedException($"FxrEnvironment recursive write not implemented for '{data.GetType().ToString()}'");
+                        }
+                    }
+                    DoDataWrite(kvp.Key);
+
+                    // Fill in any current references to this shit
                     var locationItPointsTo = OffsetsByObject[kvp.Key];
                     foreach (var location in kvp.Value)
                     {
-                        bw.Position = location;
+                        bw.StepIn(location);
                         bw.WriteInt32((int)locationItPointsTo);
+                        bw.StepOut();
                     }
                 }
-                bw.Position = startOffset;
+
+                if (PointerWriteLocations.Count > 0)
+                {
+                    FinishRecursiveWrite();
+                }
             }
 
             public void RegisterFunctionOffsetHere()
@@ -317,14 +439,14 @@ namespace SoulsFormatsExtensions
                     FunctionOffets.Add(bw.Position);
             }
 
-            public void WriteAllFunctions()
-            {
-                foreach (var func in ThingsToWrite.OfType<Function>())
-                {
-                    RegisterFunctionOffsetHere();
-                    func.WriteInner(bw, this);
-                }
-            }
+            //public void WriteAllFunctions()
+            //{
+            //    foreach (var func in ThingsToWrite.OfType<Function>())
+            //    {
+            //        RegisterFunctionOffsetHere();
+            //        func.WriteInner(bw, this);
+            //    }
+            //}
 
             public void WriteFunctionTable(string tableCountFillLabel)
             {
@@ -337,27 +459,11 @@ namespace SoulsFormatsExtensions
 
             public void WritePointerTable(string tableCountFillLabel)
             {
-                
-                List<long> allPointerWriteLocations = new List<long>();
-                foreach (var kvp in PointerWriteLocations)
-                {
-                    foreach (var offset in kvp.Value)
-                    {
-                        if (!allPointerWriteLocations.Contains(offset))
-                        {
-                            allPointerWriteLocations.Add(offset);
-                        }
-                    }
-                }
-
-                allPointerWriteLocations = allPointerWriteLocations.OrderBy(x => x).ToList();
-
-                foreach (var offset in allPointerWriteLocations)
+                foreach (var offset in PointerOffsets.OrderBy(x => x))
                 {
                     bw.WriteFXR1Varint((int)offset);
                 }
-
-                bw.FillInt32(tableCountFillLabel, allPointerWriteLocations.Count);
+                bw.FillInt32(tableCountFillLabel, PointerOffsets.Count);
             }
         }
     }

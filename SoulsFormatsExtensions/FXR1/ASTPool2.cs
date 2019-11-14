@@ -44,6 +44,77 @@ namespace SoulsFormatsExtensions
 
             //public byte[] TEMP_DATA;
 
+            private FxrEnvironment currentWriteEnvironment = null;
+            private Dictionary<Param, List<long>> paramWriteLocations = new Dictionary<Param, List<long>>();
+
+            protected void WriteParam(Param p)
+            {
+                currentWriteEnvironment.bw.WriteFXR1Varint(p.Type);
+
+                if (!paramWriteLocations.ContainsKey(p))
+                    paramWriteLocations.Add(p, new List<long>());
+
+                if (!paramWriteLocations[p].Contains(currentWriteEnvironment.bw.Position))
+                    paramWriteLocations[p].Add(currentWriteEnvironment.bw.Position);
+
+                currentWriteEnvironment.bw.WriteUInt32(0xEEEEEEEE);
+
+                // garbage on end of offset to packed data
+                currentWriteEnvironment.bw.WriteFXR1Garbage();
+            }
+
+            internal void Write(BinaryWriterEx bw, FxrEnvironment env)
+            {
+                long startPos = bw.Position;
+
+                bw.WriteInt32(SubType);
+                bw.ReserveInt32("ASTPool2.Size");
+                bw.WriteFXR1Varint(PreDatas.Count);
+                bw.ReserveInt32("ASTPool2.PreDatas.Numbers");
+                bw.ReserveInt32("ASTPool2.PreDatas.Params");
+                env.RegisterPointer(ParentAst, useExistingPointerOnly: true);
+
+                paramWriteLocations.Clear();
+                currentWriteEnvironment = env;
+                InnerWrite(bw, env);
+
+                if (bw.VarintLong)
+                    bw.Pad(8);
+
+                bw.FillInt32("ASTPool2.PreDatas.Numbers", (int)bw.Position);
+                for (int i = 0; i < PreDatas.Count; i++)
+                {
+                    bw.WriteInt32(PreDatas[i].Unknown);
+                }
+
+                bw.FillInt32("ASTPool2.PreDatas.Params", (int)bw.Position);
+                for (int i = 0; i < PreDatas.Count; i++)
+                {
+                    WriteParam(PreDatas[i].Data);
+                }
+
+                foreach (var kvp in paramWriteLocations)
+                {
+                    long offsetOfThisParam = bw.Position;
+
+                    kvp.Key.InnerWrite(bw, env);
+
+                    foreach (var location in kvp.Value)
+                    {
+                        bw.StepIn(location);
+                        bw.WriteInt32((int)offsetOfThisParam);
+                        bw.StepOut();
+                    }
+                }
+
+                bw.Pad(16); //Might be 16?
+
+                bw.FillInt32("ASTPool2.Size", (int)(bw.Position - startPos));
+
+                paramWriteLocations.Clear();
+                currentWriteEnvironment = null;
+            }
+
             public static ASTPool2 Read(BinaryReaderEx br, FxrEnvironment env)
             {
                 long startOffset = br.Position;
@@ -82,6 +153,8 @@ namespace SoulsFormatsExtensions
                     case 117: data = new ASTPool2Type117(); break;
                     default: throw new NotImplementedException();
                 }
+
+                env.RegisterOffset(startOffset, data);
 
                 //TEMPORARY
                 data.InnerRead(br, env);
@@ -140,46 +213,88 @@ namespace SoulsFormatsExtensions
             public int Unk9;
             public int Unk10;
             public float Unk11;
-            public Param[] DS1R_Unk5;
-            public float DS1R_Unk6;
+            public Param[] DS1R_Unk1;
+            public float DS1R_Unk2;
+            public int DS1R_Unk3;
+            public int DS1R_Unk4;
+            public int DS1R_Unk5;
+            public int DS1R_Unk6;
             public int DS1R_Unk7;
-            public int DS1R_Unk8;
-            public int DS1R_Unk9;
-            public int DS1R_Unk10;
-            public int DS1R_Unk11;
 
             public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
             {
                 Unk1 = br.ReadSingle();
                 Unk2 = br.ReadSingle();
                 Unk3 = br.ReadSingle();
+
                 br.AssertInt32(0);
+
                 Unk4 = br.ReadSingle();
+
                 if (br.VarintLong)
                     br.AssertInt32(0);
+
                 TextureID = br.ReadInt32();
                 Unk6 = br.ReadInt32();
+
                 br.AssertInt32(0);
+
                 Unk7 = Param.ReadMany(br, env, 10);
                 Unk8 = br.ReadInt32();
                 Unk9 = br.ReadInt32();
                 Unk10 = br.ReadInt32();
                 Unk11 = br.ReadSingle();
+
                 if (br.VarintLong)
                 {
-                    DS1R_Unk5 = Param.ReadMany(br, env, 5);
+                    DS1R_Unk1 = Param.ReadMany(br, env, 5);
+                    DS1R_Unk2 = br.ReadInt32();
+                    DS1R_Unk3 = br.ReadInt32();
+                    DS1R_Unk4 = br.ReadInt32();
+                    DS1R_Unk5 = br.ReadInt32();
                     DS1R_Unk6 = br.ReadInt32();
                     DS1R_Unk7 = br.ReadInt32();
-                    DS1R_Unk8 = br.ReadInt32();
-                    DS1R_Unk9 = br.ReadInt32();
-                    DS1R_Unk10 = br.ReadInt32();
-                    DS1R_Unk11 = br.ReadInt32();
                 }
             }
 
             public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
             {
-                throw new NotImplementedException();
+                bw.WriteSingle(Unk1);
+                bw.WriteSingle(Unk2);
+                bw.WriteSingle(Unk3);
+
+                bw.WriteInt32(0);
+
+                bw.WriteSingle(Unk4);
+
+                if (bw.VarintLong)
+                    bw.WriteInt32(0);
+
+                bw.WriteInt32(TextureID);
+                bw.WriteInt32(Unk6);
+
+                bw.WriteInt32(0);
+
+                foreach (var x in Unk7)
+                    WriteParam(x);
+
+                bw.WriteInt32(Unk8);
+                bw.WriteInt32(Unk9);
+                bw.WriteInt32(Unk10);
+                bw.WriteSingle(Unk11);
+
+                if (bw.VarintLong)
+                {
+                    foreach (var x in DS1R_Unk1)
+                        WriteParam(x);
+
+                    bw.WriteSingle(DS1R_Unk2);
+                    bw.WriteInt32(DS1R_Unk3);
+                    bw.WriteInt32(DS1R_Unk4);
+                    bw.WriteInt32(DS1R_Unk5);
+                    bw.WriteInt32(DS1R_Unk6);
+                    bw.WriteInt32(DS1R_Unk7);
+                }
             }
         }
 
@@ -198,7 +313,10 @@ namespace SoulsFormatsExtensions
 
             public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
             {
-                throw new NotImplementedException();
+                foreach (var x in Unk1)
+                    WriteParam(x);
+
+                bw.WriteInt32(Unk2);
             }
         }
 
@@ -237,7 +355,12 @@ namespace SoulsFormatsExtensions
 
             public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
             {
-                throw new NotImplementedException();
+                foreach (var x in Unk1)
+                    WriteParam(x);
+
+                bw.WriteSingle(Unk2);
+                bw.WriteInt32(Unk3);
+                bw.WriteFXR1Varint(Unk4);
             }
         }
 
@@ -257,7 +380,11 @@ namespace SoulsFormatsExtensions
 
             public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
             {
-                throw new NotImplementedException();
+                foreach (var x in Unk1)
+                    WriteParam(x);
+
+                bw.WriteInt32(Unk2);
+                bw.WriteInt32(Unk3);
             }
         }
 
@@ -361,7 +488,51 @@ namespace SoulsFormatsExtensions
 
             public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
             {
-                throw new NotImplementedException();
+                bw.WriteInt32(0);
+
+                bw.WriteSingle(Unk1);
+                bw.WriteInt32(TextureID);
+
+                bw.WriteInt32(0);
+
+                bw.WriteInt32(Unk3);
+                bw.WriteInt32(Unk4);
+                bw.WriteInt32(Unk5);
+                foreach (var x in Unk6)
+                    WriteParam(x);
+                bw.WriteSingle(Unk7);
+                bw.WriteSingle(Unk8);
+                bw.WriteInt32(Unk9);
+                bw.WriteInt32(Unk10);
+
+                bw.WriteInt32(0);
+
+                foreach (var x in Unk11)
+                    WriteParam(x);
+                bw.WriteInt32(Unk12);
+                bw.WriteInt32(Unk13);
+
+                bw.WriteInt32(0);
+
+                WriteParam(Unk14);
+                bw.WriteInt32(Unk15);
+                bw.WriteSingle(Unk16);
+                foreach (var x in Unk17)
+                    WriteParam(x);
+                bw.WriteInt32(Unk18);
+
+                if (bw.VarintLong)
+                {
+                    foreach (var x in DS1R_Unk1)
+                        WriteParam(x);
+
+                    bw.WriteSingle(DS1R_Unk2);
+                    bw.WriteInt32(DS1R_Unk3);
+                    bw.WriteInt32(DS1R_Unk4);
+                    bw.WriteInt32(DS1R_Unk5);
+                    bw.WriteInt32(DS1R_Unk6);
+                    bw.WriteInt32(DS1R_Unk7);
+                }
             }
         }
 
@@ -412,7 +583,11 @@ namespace SoulsFormatsExtensions
 
             public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
             {
-                throw new NotImplementedException();
+                foreach (var x in Unk1)
+                    WriteParam(x);
+
+                bw.WriteInt32(0);
+                bw.WriteSingle(Unk2);
             }
         }
 
@@ -479,7 +654,44 @@ namespace SoulsFormatsExtensions
 
             public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
             {
-                throw new NotImplementedException();
+                bw.WriteSingle(Unk1);
+
+                bw.WriteInt32(0);
+
+                bw.WriteInt32(TextureID);
+
+                bw.WriteInt32(0);
+
+                bw.WriteInt32(Unk2);
+                bw.WriteInt32(Unk3);
+                foreach (var x in Unk4)
+                    WriteParam(x);
+                bw.WriteInt32(Unk5);
+                bw.WriteInt32(Unk6);
+                foreach (var x in Unk7)
+                    WriteParam(x);
+                bw.WriteInt32(Unk8);
+                bw.WriteInt32(Unk9);
+
+                bw.WriteInt32(0);
+
+                bw.WriteInt32(Unk10);
+                bw.WriteSingle(Unk11);
+
+                bw.WriteInt32(0);
+
+                if (bw.VarintLong)
+                {
+                    foreach (var x in DS1R_Unk1)
+                        WriteParam(x);
+
+                    bw.WriteSingle(DS1R_Unk2);
+                    bw.WriteInt32(DS1R_Unk3);
+                    bw.WriteInt32(DS1R_Unk4);
+                    bw.WriteInt32(DS1R_Unk5);
+                    bw.WriteInt32(DS1R_Unk6);
+                    bw.WriteInt32(DS1R_Unk7);
+                }
             }
         }
 
@@ -548,6 +760,21 @@ namespace SoulsFormatsExtensions
 
             public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
             {
+
+
+                if (bw.VarintLong)
+                {
+                    foreach (var x in DS1R_Unk1)
+                        WriteParam(x);
+
+                    bw.WriteSingle(DS1R_Unk2);
+                    bw.WriteInt32(DS1R_Unk3);
+                    bw.WriteInt32(DS1R_Unk4);
+                    bw.WriteInt32(DS1R_Unk5);
+                    bw.WriteInt32(DS1R_Unk6);
+                    bw.WriteInt32(DS1R_Unk7);
+                }
+
                 throw new NotImplementedException();
             }
         }
@@ -604,6 +831,22 @@ namespace SoulsFormatsExtensions
 
             public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
             {
+
+
+                if (bw.VarintLong)
+                {
+                    bw.WriteInt32(0);
+                    foreach (var x in DS1R_Unk1)
+                        WriteParam(x);
+
+                    bw.WriteSingle(DS1R_Unk2);
+                    bw.WriteInt32(DS1R_Unk3);
+                    bw.WriteInt32(DS1R_Unk4);
+                    bw.WriteInt32(DS1R_Unk5);
+                    bw.WriteInt32(DS1R_Unk6);
+                    bw.WriteInt32(DS1R_Unk7);
+                }
+
                 throw new NotImplementedException();
             }
         }
@@ -694,6 +937,21 @@ namespace SoulsFormatsExtensions
 
             public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
             {
+
+
+                if (bw.VarintLong)
+                {
+                    foreach (var x in DS1R_Unk1)
+                        WriteParam(x);
+
+                    bw.WriteSingle(DS1R_Unk2);
+                    bw.WriteInt32(DS1R_Unk3);
+                    bw.WriteInt32(DS1R_Unk4);
+                    bw.WriteInt32(DS1R_Unk5);
+                    bw.WriteInt32(DS1R_Unk6);
+                    bw.WriteInt32(DS1R_Unk7);
+                }
+
                 throw new NotImplementedException();
             }
         }
@@ -750,7 +1008,6 @@ namespace SoulsFormatsExtensions
                 Unk8 = br.ReadInt32();
                 Unk9 = br.ReadInt32();
                 Unk10 = br.ReadInt32();
-                var DEBUG_POS = br.Position;
                 Unk11 = Param.ReadMany(br, env, 10);
                 Unk12 = br.ReadInt32();
                 Unk13 = br.ReadInt32();
@@ -793,7 +1050,61 @@ namespace SoulsFormatsExtensions
 
             public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
             {
-                throw new NotImplementedException();
+                bw.WriteSingle(Unk1);
+                bw.WriteSingle(Unk2);
+                bw.WriteSingle(Unk3);
+                bw.WriteInt32(Unk4);
+                bw.WriteSingle(Unk5);
+                bw.WriteInt32(TextureID);
+                bw.WriteInt32(Unk7);
+                bw.WriteInt32(Unk8);
+                bw.WriteInt32(Unk9);
+                bw.WriteInt32(Unk10);
+
+                foreach (var x in Unk11)
+                    WriteParam(x);
+
+                bw.WriteInt32(Unk12);
+                bw.WriteInt32(Unk13);
+
+                foreach (var x in Unk14)
+                    WriteParam(x);
+
+                if (bw.VarintLong)
+                {
+                    bw.WriteInt32(DS1R_UnkA1);
+                    bw.WriteInt32(DS1R_UnkA2);
+                    bw.WriteInt32(DS1R_UnkA3);
+                    bw.WriteInt32(DS1R_UnkA4);
+                }
+
+                bw.WriteInt32(Unk15);
+
+                bw.WriteInt32(0);
+                bw.WriteInt32(0);
+                bw.WriteInt32(0);
+                bw.WriteInt32(0);
+
+                bw.WriteInt32(Unk16);
+                bw.WriteInt32(Unk17);
+                bw.WriteInt32(Unk18);
+                bw.WriteSingle(Unk19);
+                bw.WriteInt32(Unk20);
+                bw.WriteSingle(Unk21);
+                bw.WriteInt32(Unk22);
+
+                if (bw.VarintLong)
+                {
+                    foreach (var x in DS1R_Unk1)
+                        WriteParam(x);
+
+                    bw.WriteSingle(DS1R_Unk2);
+                    bw.WriteInt32(DS1R_Unk3);
+                    bw.WriteInt32(DS1R_Unk4);
+                    bw.WriteInt32(DS1R_Unk5);
+                    bw.WriteInt32(DS1R_Unk6);
+                    bw.WriteInt32(DS1R_Unk7);
+                }
             }
         }
 
@@ -839,7 +1150,13 @@ namespace SoulsFormatsExtensions
 
             public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
             {
-                throw new NotImplementedException();
+                foreach (var x in Unk1)
+                    WriteParam(x);
+                bw.WriteInt32(0);
+                bw.WriteSingle(Unk2);
+                WriteParam(Unk3);
+                bw.WriteFXR1Varint(Unk4);
+                WriteParam(Unk5);
             }
         }
 
@@ -974,7 +1291,65 @@ namespace SoulsFormatsExtensions
 
             public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
             {
-                throw new NotImplementedException();
+                bw.WriteSingle(Unk1);
+                bw.WriteSingle(Unk2);
+                bw.WriteSingle(Unk3);
+                bw.WriteInt32(Unk4);
+                bw.WriteSingle(Unk5);
+
+                if (bw.VarintLong)
+                    bw.WriteInt32(0);
+
+                bw.WriteInt32(ModelID);
+                bw.WriteInt32(Unk6);
+                bw.WriteInt32(Unk7);
+                bw.WriteInt32(Unk8);
+
+                bw.WriteInt32(0);
+
+                WriteParam(Scale1X);
+                WriteParam(Scale1Y);
+                WriteParam(Scale1Z);
+                WriteParam(Scale2X);
+                WriteParam(Scale2Y);
+                WriteParam(Scale2Z);
+                WriteParam(RotSpeedX);
+                WriteParam(RotSpeedY);
+                WriteParam(RotSpeedZ);
+                WriteParam(Rot1);
+                WriteParam(Rot2);
+                WriteParam(Rot3);
+                bw.WriteInt32(Unk9);
+                bw.WriteInt32(Unk10);
+                foreach (var x in Unk11)
+                    WriteParam(x);
+                WriteParam(Color1R);
+                WriteParam(Color1G);
+                WriteParam(Color1B);
+                WriteParam(Color1A);
+                WriteParam(Color2R);
+                WriteParam(Color2G);
+                WriteParam(Color2B);
+                WriteParam(Color2A);
+
+                bw.WriteInt32(Unk12);
+                bw.WriteInt32(Unk13);
+                bw.WriteInt32(Unk14);
+                bw.WriteSingle(Unk15);
+                bw.WriteInt32(Unk16);
+
+                if (bw.VarintLong)
+                {
+                    foreach (var x in DS1R_Unk1)
+                        WriteParam(x);
+
+                    bw.WriteSingle(DS1R_Unk2);
+                    bw.WriteInt32(DS1R_Unk3);
+                    bw.WriteInt32(DS1R_Unk4);
+                    bw.WriteInt32(DS1R_Unk5);
+                    bw.WriteInt32(DS1R_Unk6);
+                    bw.WriteInt32(DS1R_Unk7);
+                }
             }
         }
 

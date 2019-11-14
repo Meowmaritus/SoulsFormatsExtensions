@@ -60,6 +60,18 @@ namespace SoulsFormatsExtensions
             bw.WriteFXR1Garbage();
         }
 
+        public static void ReserveFXR1Varint(this BinaryWriterEx bw, string name)
+        {
+            bw.ReserveInt32(name);
+            bw.WriteFXR1Garbage();
+        }
+
+        public static void FillFXR1Varint(this BinaryWriterEx bw, string name, int v)
+        {
+            bw.FillInt32(name, v);
+            bw.WriteFXR1Garbage();
+        }
+
         public static void WriteFXR1Single(this BinaryWriterEx bw, float v)
         {
             bw.WriteSingle(v);

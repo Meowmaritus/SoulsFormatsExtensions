@@ -17,10 +17,10 @@ namespace SoulsFormatsExtensions
 
             public List<ASTFunction> AstFunctions;
             public ASTPool2 AstPool2;
-            public ASTPool3 Pool3;
+            public ASTPool3 AstPool3;
 
             public static int GetSize(bool isLong)
-                => (isLong ? 24 : 12) + (isLong ? 16 : 12);
+                => isLong ? 40 : 24;
 
             public void Read(BinaryReaderEx br, FxrEnvironment env)
             {
@@ -49,7 +49,21 @@ namespace SoulsFormatsExtensions
                 br.StepOut();
 
                 AstPool2 = env.GetASTPool2(br, commandPool2Offset);
-                Pool3 = env.GetASTPool3(br, commandPool3Offset);
+                AstPool3 = env.GetASTPool3(br, commandPool3Offset);
+            }
+
+            public void Write(BinaryWriterEx bw, FxrEnvironment env)
+            {
+                env.RegisterPointer(AstFunctions);
+                bw.WriteInt32(AstFunctions.Count);
+                bw.WriteInt32(AstFunctions.Count); //Not a typo
+                bw.WriteByte(UnkFlag1);
+                bw.WriteByte(UnkFlag2);
+                bw.WriteByte(UnkFlag3);
+                bw.WriteByte(0);
+                bw.WriteFXR1Garbage();
+                env.RegisterPointer(AstPool2);
+                env.RegisterPointer(AstPool3);
             }
         }
     }

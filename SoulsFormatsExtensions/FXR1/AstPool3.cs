@@ -25,7 +25,7 @@ namespace SoulsFormatsExtensions
             public abstract void InnerRead(BinaryReaderEx br, FxrEnvironment env);
             public abstract void InnerWrite(BinaryWriterEx bw, FxrEnvironment env);
 
-            public static ASTPool3 Read(BinaryReaderEx br, FxrEnvironment env)
+            public static ASTPool3 GetProperType(BinaryReaderEx br, FxrEnvironment env)
             {
                 int commandType = br.GetInt32(br.Position);
                 ASTPool3 data = null;
@@ -41,8 +41,17 @@ namespace SoulsFormatsExtensions
                     case 7: data = new ASTPool3Type7(); break;
                 }
                 data.CommandType = commandType;
-                data.InnerRead(br, env);
                 return data;
+            }
+
+            public void Read(BinaryReaderEx br, FxrEnvironment env)
+            {
+                InnerRead(br, env);
+            }
+
+            public void Write(BinaryWriterEx bw, FxrEnvironment env)
+            {
+                InnerWrite(bw, env);
             }
         }
 

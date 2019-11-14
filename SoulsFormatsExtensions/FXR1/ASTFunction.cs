@@ -16,12 +16,15 @@ namespace SoulsFormatsExtensions
 
             public Function Func;
 
-            public static ASTFunction Read(BinaryReaderEx br, FxrEnvironment env)
+            public void Read(BinaryReaderEx br, FxrEnvironment env)
             {
-                var ast = new ASTFunction();
                 long funcOffset = br.ReadFXR1Varint();
-                ast.Func = env.GetFunction(br, funcOffset);
-                return ast;
+                Func = env.GetFunction(br, funcOffset);
+            }
+
+            public void Write(BinaryWriterEx bw, FxrEnvironment env)
+            {
+                env.RegisterPointer(Func);
             }
         }
     }

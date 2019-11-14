@@ -57,12 +57,11 @@ namespace SoulsFormatsExtensions
             bw.VarintLong = Wide;
             var env = new FxrEnvironment();
             env.bw = bw;
+            env.fxr = this;
 
-            bw.ReserveInt32("OffsetToMainData");
-            bw.WriteFXR1Garbage();
+            env.RegisterPointer(RootFunction);
 
-            bw.ReserveInt32("OffsetToTable");
-            bw.WriteFXR1Garbage();
+            bw.ReserveFXR1Varint("OffsetToTable");
 
             bw.ReserveInt32("TablePointerCount");
             bw.ReserveInt32("TableFunctionCount");
@@ -71,13 +70,11 @@ namespace SoulsFormatsExtensions
             bw.WriteInt32(Unknown2);
 
             bw.Pad(16);
-            bw.FillInt32("OffsetToMainData", (int)bw.Position);
-            env.RegisterFunctionOffsetHere();
-            RootFunction.WriteInner(bw, env);
+            
+            // Write RootFunction and everything else :fatcat:
+            env.FinishRecursiveWrite();
 
-            env.FillAllPointers();
-
-            bw.FillInt32("OffsetToTable", (int)bw.Position);
+            bw.FillFXR1Varint("OffsetToTable", (int)bw.Position);
             env.WritePointerTable("TablePointerCount");
             env.WriteFunctionTable("TableFunctionCount");
 

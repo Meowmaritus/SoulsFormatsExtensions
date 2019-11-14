@@ -83,7 +83,13 @@ namespace SoulsFormatsExtensions
             internal abstract void ReadInner(BinaryReaderEx br, FxrEnvironment env);
             internal abstract void WriteInner(BinaryWriterEx bw, FxrEnvironment env);
 
-            public static Function Read(BinaryReaderEx br, FxrEnvironment env)
+            public void Write(BinaryWriterEx bw, FxrEnvironment env)
+            {
+                env.RegisterFunctionOffsetHere();
+                WriteInner(bw, env);
+            }
+
+            public static Function GetProperFunctionType(BinaryReaderEx br, FxrEnvironment env)
             {
                 long functionID = br.GetFXR1Varint(br.Position);
                 Function func = null;
@@ -152,12 +158,120 @@ namespace SoulsFormatsExtensions
                     case 138: func = new Function138(); break;
                     case 139: func = new Function139(); break;
                     case 140: func = new Function140(); break;
-                    default: 
+                    default:
                         throw new NotImplementedException();
                 }
 
-                func.ReadInner(br, env);
                 return func;
+            }
+
+            public void Read(BinaryReaderEx br, FxrEnvironment env)
+            {
+                ReadInner(br, env);
+            }
+
+            public class Function133 : Function
+            {
+                public int FXRID;
+                public int Unknown;
+                public AST Ast1;
+                public AST Ast2;
+
+                [XmlIgnore]
+                internal List<FlowNode> Nodes;
+
+                public List<int> FlowNodeIndices;
+
+                internal void CalculateIndices(FxrEnvironment env)
+                {
+                    FlowNodeIndices = new List<int>(Nodes.Count);
+                    for (int i = 0; i < Nodes.Count; i++)
+                    {
+                        FlowNodeIndices.Add(env.GetFlowNodeIndex(Nodes[i]));
+                    }
+
+                    //Nodes = null;
+                }
+
+                internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
+                {
+                    env.RegisterFunction133(this);
+
+                    br.AssertFXR1Varint(133);
+
+                    FXRID = br.ReadFXR1Varint();
+                    for (int i = 0; i < 7; i++)
+                        br.AssertFXR1Varint(0);
+                    Unknown = br.ReadFXR1Varint();
+                    //throw new NotImplementedException();
+
+                    Ast1 = env.GetAST(br, br.Position);
+                    br.Position += AST.GetSize(br.VarintLong);
+
+                    Ast2 = env.GetAST(br, br.Position);
+                    br.Position += AST.GetSize(br.VarintLong);
+
+                    int offsetToNodeList = br.ReadFXR1Varint();
+                    int nodeCount = br.ReadFXR1Varint();
+                    Nodes = new List<FlowNode>();
+                    br.StepIn(offsetToNodeList);
+                    for (int i = 0; i < nodeCount; i++)
+                    {
+                        Nodes.Add(env.GetFlowNode(br, br.Position));
+                        br.Position += FlowNode.GetSize(br.VarintLong);
+                    }
+                    br.StepOut();
+                }
+
+                internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
+                {
+                    bw.WriteFXR1Varint(133);
+
+                    bw.WriteFXR1Varint(FXRID);
+                    for (int i = 0; i < 7; i++)
+                        bw.WriteFXR1Varint(0);
+                    bw.WriteFXR1Varint(Unknown);
+                    Ast1.Write(bw, env);
+                    Ast2.Write(bw, env);
+                    env.RegisterPointer(FlowNodeIndices.Select(x => env.fxr.FlowNodes[x]).ToList());
+                    bw.WriteFXR1Varint(FlowNodeIndices.Count);
+                }
+            }
+
+            public class Function134 : Function
+            {
+                public int FXRID;
+                public int Unknown;
+                public List<Function> Funcs;
+
+                internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
+                {
+                    br.AssertFXR1Varint(134);
+
+                    FXRID = br.ReadFXR1Varint();
+                    Unknown = br.ReadFXR1Varint();
+                    int offsetToFuncOffsetList = br.ReadFXR1Varint();
+                    int funcCount = br.ReadFXR1Varint();
+                    Funcs = new List<Function>(funcCount);
+                    br.StepIn(offsetToFuncOffsetList);
+                    for (int i = 0; i < funcCount; i++)
+                    {
+                        int nextFuncOffset = br.ReadInt32();
+                        var func = env.GetFunction(br, nextFuncOffset);
+                        Funcs.Add(func);
+                    }
+                    br.StepOut();
+                }
+
+                internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
+                {
+                    bw.WriteFXR1Varint(134);
+
+                    bw.WriteFXR1Varint(FXRID);
+                    bw.WriteFXR1Varint(Unknown);
+                    env.RegisterPointer(Funcs);
+                    bw.WriteFXR1Varint(Funcs.Count);
+                }
             }
 
             public class Function1 : Function
@@ -276,7 +390,10 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(5);
 
-                    throw new NotImplementedException();
+                    //TODO: MULTILIST
+                    env.RegisterPointer(FloatList);
+                    env.RegisterPointer(IntList);
+                    bw.WriteFXR1Varint(FloatList.Count);
                 }
             }
 
@@ -313,7 +430,10 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(6);
 
-                    throw new NotImplementedException();
+                    //TODO: MULTILIST
+                    env.RegisterPointer(FloatList);
+                    env.RegisterPointer(IntList);
+                    bw.WriteFXR1Varint(FloatList.Count);
                 }
             }
 
@@ -368,7 +488,10 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(9);
 
-                    throw new NotImplementedException();
+                    //TODO: MULTILIST
+                    env.RegisterPointer(FloatList);
+                    env.RegisterPointer(IntList);
+                    bw.WriteFXR1Varint(FloatList.Count);
                 }
             }
 
@@ -405,7 +528,10 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(11);
 
-                    throw new NotImplementedException();
+                    //TODO: MULTILIST
+                    env.RegisterPointer(FloatList1);
+                    env.RegisterPointer(FloatList2);
+                    bw.WriteFXR1Varint(FloatList1.Count);
                 }
             }
 
@@ -442,7 +568,10 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(12);
 
-                    throw new NotImplementedException();
+                    //TODO: MULTILIST
+                    env.RegisterPointer(FloatList1);
+                    env.RegisterPointer(FloatList2);
+                    bw.WriteFXR1Varint(FloatList1.Count);
                 }
             }
 
@@ -481,7 +610,10 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(13);
 
-                    throw new NotImplementedException();
+                    //TODO: MULTILIST
+                    env.RegisterPointer(FloatList1);
+                    env.RegisterPointer(FloatList2);
+                    bw.WriteFXR1Varint(FloatList1.Count);
                 }
             }
 
@@ -520,7 +652,10 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(14);
 
-                    throw new NotImplementedException();
+                    //TODO: MULTILIST
+                    env.RegisterPointer(FloatList1);
+                    env.RegisterPointer(FloatList2);
+                    bw.WriteFXR1Varint(FloatList1.Count);
                 }
             }
 
@@ -559,7 +694,10 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(19);
 
-                    throw new NotImplementedException();
+                    //TODO: MULTILIST
+                    env.RegisterPointer(FloatList1);
+                    env.RegisterPointer(FloatList2);
+                    bw.WriteFXR1Varint(FloatList1.Count);
                 }
             }
 
@@ -598,7 +736,10 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(20);
 
-                    throw new NotImplementedException();
+                    //TODO: MULTILIST
+                    env.RegisterPointer(FloatList1);
+                    env.RegisterPointer(FloatList2);
+                    bw.WriteFXR1Varint(FloatList1.Count);
                 }
             }
 
@@ -637,7 +778,10 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(21);
 
-                    throw new NotImplementedException();
+                    //TODO: MULTILIST
+                    env.RegisterPointer(FloatList1);
+                    env.RegisterPointer(FloatList2);
+                    bw.WriteFXR1Varint(FloatList1.Count);
                 }
             }
 
@@ -676,7 +820,10 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(22);
 
-                    throw new NotImplementedException();
+                    //TODO: MULTILIST
+                    env.RegisterPointer(FloatList1);
+                    env.RegisterPointer(FloatList2);
+                    bw.WriteFXR1Varint(FloatList1.Count);
                 }
             }
 
@@ -715,7 +862,10 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(27);
 
-                    throw new NotImplementedException();
+                    //TODO: MULTILIST
+                    env.RegisterPointer(FloatList1);
+                    env.RegisterPointer(FloatList2);
+                    bw.WriteFXR1Varint(FloatList1.Count);
                 }
             }
 
@@ -754,7 +904,10 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(28);
 
-                    throw new NotImplementedException();
+                    //TODO: MULTILIST
+                    env.RegisterPointer(FloatList1);
+                    env.RegisterPointer(FloatList2);
+                    bw.WriteFXR1Varint(FloatList1.Count);
                 }
             }
 
@@ -793,7 +946,10 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(29);
 
-                    throw new NotImplementedException();
+                    //TODO: MULTILIST
+                    env.RegisterPointer(FloatList1);
+                    env.RegisterPointer(FloatList2);
+                    bw.WriteFXR1Varint(FloatList1.Count);
                 }
             }
 
@@ -817,7 +973,9 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(37);
 
-                    throw new NotImplementedException();
+                    bw.WriteFXR1Varint(TemplateFXRID);
+                    env.RegisterPointer(Ast);
+                    bw.WriteInt32(Unknown);
                 }
             }
 
@@ -841,7 +999,9 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(38);
 
-                    throw new NotImplementedException();
+                    bw.WriteFXR1Varint(SubType);
+                    env.RegisterPointer(Ast);
+                    bw.WriteInt32(Unknown);
                 }
             }
 
@@ -1452,7 +1612,8 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(120);
 
-                    throw new NotImplementedException();
+                    env.RegisterPointer(Func1);
+                    env.RegisterPointer(Func2);
                 }
             }
 
@@ -1476,7 +1637,8 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(121);
 
-                    throw new NotImplementedException();
+                    env.RegisterPointer(Func1);
+                    env.RegisterPointer(Func2);
                 }
             }
 
@@ -1500,7 +1662,8 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(122);
 
-                    throw new NotImplementedException();
+                    env.RegisterPointer(Func1);
+                    env.RegisterPointer(Func2);
                 }
             }
 
@@ -1524,7 +1687,8 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(123);
 
-                    throw new NotImplementedException();
+                    env.RegisterPointer(Func1);
+                    env.RegisterPointer(Func2);
                 }
             }
 
@@ -1548,7 +1712,8 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(124);
 
-                    throw new NotImplementedException();
+                    env.RegisterPointer(Func1);
+                    env.RegisterPointer(Func2);
                 }
             }
             public class Function126 : Function
@@ -1571,7 +1736,8 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(126);
 
-                    throw new NotImplementedException();
+                    env.RegisterPointer(Func1);
+                    env.RegisterPointer(Func2);
                 }
             }
 
@@ -1595,7 +1761,8 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(127);
 
-                    throw new NotImplementedException();
+                    env.RegisterPointer(Func1);
+                    env.RegisterPointer(Func2);
                 }
             }
 
@@ -1616,7 +1783,7 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(128);
 
-                    throw new NotImplementedException();
+                    env.RegisterPointer(Func);
                 }
             }
 
@@ -1669,81 +1836,6 @@ namespace SoulsFormatsExtensions
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(132);
-                }
-            }
-
-            public class Function133 : Function
-            {
-                public int FXRID;
-                public int Unknown;
-                public AST Ast1;
-                public AST Ast2;
-                public List<FlowNode> Nodes;
-
-                internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
-                {
-                    br.AssertFXR1Varint(133);
-
-                    FXRID = br.ReadFXR1Varint();
-                    for (int i = 0; i < 7; i++)
-                        br.AssertFXR1Varint(0);
-                    Unknown = br.ReadFXR1Varint();
-                    //throw new NotImplementedException();
-
-                    Ast1 = env.GetAST(br, br.Position);
-                    br.Position += AST.GetSize(br.VarintLong);
-
-                    Ast2 = env.GetAST(br, br.Position);
-                    br.Position += AST.GetSize(br.VarintLong);
-
-                    int offsetToNodeList = br.ReadFXR1Varint();
-                    int nodeCount = br.ReadFXR1Varint();
-                    Nodes = new List<FlowNode>();
-                    br.StepIn(offsetToNodeList);
-                    for (int i = 0; i < nodeCount; i++)
-                    {
-                        Nodes.Add(env.GetFlowNode(br, br.Position));
-                        br.Position += FlowNode.GetSize(br.VarintLong);
-                    }
-                    br.StepOut();
-                }
-
-                internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
-                {
-                    bw.WriteFXR1Varint(133);
-                }
-            }
-
-            public class Function134 : Function
-            {
-                public int FXRID;
-                public int Unknown;
-                public List<Function> Funcs;
-
-                internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
-                {
-                    br.AssertFXR1Varint(134);
-
-                    FXRID = br.ReadFXR1Varint();
-                    Unknown = br.ReadFXR1Varint();
-                    int offsetToFuncOffsetList = br.ReadFXR1Varint();
-                    int funcCount = br.ReadFXR1Varint();
-                    Funcs = new List<Function>(funcCount);
-                    br.StepIn(offsetToFuncOffsetList);
-                    for (int i = 0; i < funcCount; i++)
-                    {
-                        int nextFuncOffset = br.ReadInt32();
-                        var func = env.GetFunction(br, nextFuncOffset);
-                        Funcs.Add(func);
-                    }
-                    br.StepOut();
-                }
-
-                internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
-                {
-                    bw.WriteFXR1Varint(134);
-
-                    throw new NotImplementedException();
                 }
             }
 
