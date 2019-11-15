@@ -32,15 +32,19 @@ namespace SoulsFormatsExtensions
         [XmlInclude(typeof(ASTPool2Ref))]
         public abstract class ASTPool2 : XIDable
         {
-            [XmlAttribute]
-            public int SubType;
+            public override bool ShouldSerializeXID() => FXR1.FlattenASTPool2s;
+
+            [XmlIgnore]
+            public abstract int Type { get; }
+
+            [XmlIgnore] // Set automatically during parent AST's Write()
             public AST ParentAst;
+
             public List<PreDataEntry> PreDatas;
 
             [XmlIgnore]
-            internal int SizeOnRead = -1;
+            internal int DEBUG_SizeOnRead = -1;
 
-            public virtual bool ShouldSerializeSubType() => true;
             public virtual bool ShouldSerializeParentAst() => true;
             public virtual bool ShouldSerializePreDatas() => true;
 
@@ -112,7 +116,7 @@ namespace SoulsFormatsExtensions
             {
                 long startPos = bw.Position;
 
-                bw.WriteInt32(SubType);
+                bw.WriteInt32(Type);
                 bw.ReserveInt32("ASTPool2.Size");
                 bw.WriteFXR1Varint(PreDatas.Count);
                 bw.ReserveInt32("ASTPool2.PreDatas.Numbers");
@@ -154,7 +158,7 @@ namespace SoulsFormatsExtensions
 
                 int writtenSize = (int)(bw.Position - startPos);
 
-                if (SizeOnRead != -1 && writtenSize != SizeOnRead)
+                if (DEBUG_SizeOnRead != -1 && writtenSize != DEBUG_SizeOnRead)
                     throw new Exception("sdfsgfdsgfds");
 
                 bw.FillInt32("ASTPool2.Size", writtenSize);
@@ -207,11 +211,9 @@ namespace SoulsFormatsExtensions
                 env.RegisterOffset(startOffset, data);
 
                 //TEMPORARY
-                data.SizeOnRead = size;
+                data.DEBUG_SizeOnRead = size;
 
                 data.InnerRead(br, env);
-
-                data.SubType = subType;
 
                 //data.TEMP_DATA = br.GetBytes(startOffset, size);
 
@@ -249,10 +251,11 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool2Ref : ASTPool2
         {
+            public override int Type => -1;
+
             [XmlAttribute]
             public string ReferenceXID;
 
-            public override bool ShouldSerializeSubType() => false;
             public override bool ShouldSerializeParentAst() => false;
             public override bool ShouldSerializePreDatas() => false;
 
@@ -282,6 +285,8 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool2Type27 : ASTPool2
         {
+            public override int Type => 27;
+
             public float Unk1;
             public float Unk2;
             public float Unk3;
@@ -378,6 +383,8 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool2Type28 : ASTPool2
         {
+            public override int Type => 28;
+
             public Param[] Unk1;
             public int Unk2;
 
@@ -398,6 +405,8 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool2Type29 : ASTPool2
         {
+            public override int Type => 29;
+
             public Param[] Unk1;
             public int Unk2;
 
@@ -416,6 +425,8 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool2Type30 : ASTPool2
         {
+            public override int Type => 30;
+
             public Param[] Unk1;
             public float Unk2;
             public int Unk3;
@@ -442,6 +453,8 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool2Type31 : ASTPool2
         {
+            public override int Type => 31;
+
             public Param[] Unk1;
             public int Unk2;
             public int Unk3;
@@ -464,6 +477,8 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool2Type32 : ASTPool2
         {
+            public override int Type => 32;
+
             public Param OffsetX;
             public Param OffsetY;
             public Param OffsetZ;
@@ -494,6 +509,8 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool2Type40 : ASTPool2
         {
+            public override int Type => 40;
+
             public float Unk1;
             public int TextureID;
             public int Unk3;
@@ -613,6 +630,8 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool2Type43 : ASTPool2
         {
+            public override int Type => 43;
+
             public float Unk1;
             public int TextureID;
             public int Unk2;
@@ -656,6 +675,8 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool2Type55 : ASTPool2
         {
+            public override int Type => 55;
+
             public Param[] Unk1;
             public float Unk2;
 
@@ -677,6 +698,8 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool2Type59 : ASTPool2
         {
+            public override int Type => 59;
+
             public float Unk1;
             public int TextureID;
             public int Unk2;
@@ -777,6 +800,8 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool2Type61 : ASTPool2
         {
+            public override int Type => 61;
+
             public int TextureID;
             public int Unk1;
             public int Unk2;
@@ -891,6 +916,8 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool2Type66 : ASTPool2
         {
+            public override int Type => 66;
+
             public float Unk1;
             public float Unk2;
             public int Unk3;
@@ -974,6 +1001,8 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool2Type70 : ASTPool2
         {
+            public override int Type => 70;
+
             public float Unk1;
             public float Unk2;
             public float Unk3;
@@ -1112,6 +1141,8 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool2Type71 : ASTPool2
         {
+            public override int Type => 71;
+
             public float Unk1;
             public float Unk2;
             public float Unk3;
@@ -1257,6 +1288,8 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool2Type84 : ASTPool2
         {
+            public override int Type => 84;
+
             public Param[] Unk1;
             public float Unk2;
             public Param Unk3;
@@ -1283,6 +1316,8 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool2Type105 : ASTPool2
         {
+            public override int Type => 105;
+
             public Param[] Unk1;
             public float Unk2;
             public Param Unk3;
@@ -1312,6 +1347,8 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool2Type107 : ASTPool2
         {
+            public override int Type => 107;
+
             public float Unk1;
             public int TextureID;
             public int Unk2;
@@ -1338,6 +1375,8 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool2Type108 : ASTPool2
         {
+            public override int Type => 108;
+
             public float Unk1;
             public float Unk2;
             public float Unk3;
@@ -1506,6 +1545,8 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool2Type117 : ASTPool2
         {
+            public override int Type => 117;
+
             public Param[] Unk1;
             public int Unk2;
             public int Unk3;

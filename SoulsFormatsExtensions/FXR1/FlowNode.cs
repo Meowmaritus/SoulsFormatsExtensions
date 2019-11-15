@@ -13,6 +13,8 @@ namespace SoulsFormatsExtensions
         [XmlInclude(typeof(FlowNodeRef))]
         public class FlowNode : XIDable
         {
+            public override bool ShouldSerializeXID() => FXR1.FlattenFlowNodes;
+
             public List<FlowEdge> Edges;
             public List<FlowAction> Actions;
 

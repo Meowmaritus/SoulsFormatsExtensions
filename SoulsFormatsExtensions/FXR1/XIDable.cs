@@ -14,6 +14,8 @@ namespace SoulsFormatsExtensions
             [XmlAttribute]
             public string XID;
 
+            public virtual bool ShouldSerializeXID() => true;
+
             internal virtual void ToXIDs(FXR1 fxr)
             {
 

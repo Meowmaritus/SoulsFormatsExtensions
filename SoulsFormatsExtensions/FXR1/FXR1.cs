@@ -17,10 +17,41 @@ namespace SoulsFormatsExtensions
 
         public Function RootFunction { get; set; }
 
+
+        [XmlIgnore]
+        public static bool FlattenFlowNodes = true;
+        [XmlIgnore]
+        public static bool FlattenFunctionPointers = false;
+        [XmlIgnore]
+        public static bool FlattenFlowEdges = true;
+        [XmlIgnore]
+        public static bool FlattenFlowActions = true;
+        [XmlIgnore]
+        public static bool FlattenFunctions = false;
+        [XmlIgnore]
+        public static bool FlattenASTs = false;
+        [XmlIgnore]
+        public static bool FlattenASTPool2s = false;
+        [XmlIgnore]
+        public static bool FlattenASTPool3s = false;
+
+
+        public bool ShouldSerializeAllFlowNodes() => FlattenFlowNodes;
+        public bool ShouldSerializeAllFunctionPointers() => FlattenFunctionPointers;
+        public bool ShouldSerializeAllFlowEdges() => FlattenFlowEdges;
+        public bool ShouldSerializeAllFlowActions() => FlattenFlowActions;
+        public bool ShouldSerializeAllFunctions() => FlattenFunctions;
+        public bool ShouldSerializeAllASTs() => FlattenASTs;
+        public bool ShouldSerializeAllASTPool2s() => FlattenASTPool2s;
+        public bool ShouldSerializeAllASTPool3s() => FlattenASTPool2s;
+
         public List<FlowNode> AllFlowNodes { get; set; } = new List<FlowNode>();
         public FlowNode GetFlowNode(string xid) => AllFlowNodes.FirstOrDefault(x => x.XID == xid);
         public FlowNode DereferenceFlowNode(FlowNode v)
         {
+            if (!FlattenFlowNodes)
+                return v;
+
             if (v is FlowNodeRef asRef)
                 return GetFlowNode(asRef.ReferenceXID);
             else
@@ -28,6 +59,9 @@ namespace SoulsFormatsExtensions
         }
         public FlowNode ReferenceFlowNode(FlowNode v)
         {
+            if (!FlattenFlowNodes)
+                return v;
+
             if (v is FlowNodeRef asRef)
                 return v;
             else
@@ -38,6 +72,9 @@ namespace SoulsFormatsExtensions
         public FunctionPointer GetFunctionPointer(string xid) => AllFunctionPointers.FirstOrDefault(x => x.XID == xid);
         public FunctionPointer DereferenceFunctionPointer(FunctionPointer v)
         {
+            if (!FlattenFunctionPointers)
+                return v;
+
             if (v is FunctionPointerRef asRef)
                 return GetFunctionPointer(asRef.ReferenceXID);
             else
@@ -45,6 +82,9 @@ namespace SoulsFormatsExtensions
         }
         public FunctionPointer ReferenceFunctionPointer(FunctionPointer v)
         {
+            if (!FlattenFunctionPointers)
+                return v;
+
             if (v is FunctionPointerRef asRef)
                 return v;
             else
@@ -55,13 +95,20 @@ namespace SoulsFormatsExtensions
         public FlowEdge GetFlowEdge(string xid) => AllFlowEdges.FirstOrDefault(x => x.XID == xid);
         public FlowEdge DereferenceFlowEdge(FlowEdge v)
         {
+            if (!FlattenFlowEdges)
+                return v;
+
             if (v is FlowEdgeRef asRef)
                 return GetFlowEdge(asRef.ReferenceXID);
             else
                 return v;
         }
+
         public FlowEdge ReferenceFlowEdge(FlowEdge v)
         {
+            if (!FlattenFlowEdges)
+                return v;
+
             if (v is FlowEdgeRef asRef)
                 return v;
             else
@@ -72,6 +119,9 @@ namespace SoulsFormatsExtensions
         public FlowAction GetFlowAction(string xid) => AllFlowActions.FirstOrDefault(x => x.XID == xid);
         public FlowAction DereferenceFlowAction(FlowAction v)
         {
+            if (!FlattenFlowActions)
+                return v;
+
             if (v is FlowActionRef asRef)
                 return GetFlowAction(asRef.ReferenceXID);
             else
@@ -79,17 +129,22 @@ namespace SoulsFormatsExtensions
         }
         public FlowAction ReferenceFlowAction(FlowAction v)
         {
+            if (!FlattenFlowActions)
+                return v;
+
             if (v is FlowActionRef asRef)
                 return v;
             else
                 return new FlowActionRef(v);
         }
 
-
         public List<Function> AllFunctions { get; set; } = new List<Function>();
         public Function GetFunction(string xid) => AllFunctions.FirstOrDefault(x => x.XID == xid);
         public Function DereferenceFunction(Function v)
         {
+            if (!FlattenFunctions)
+                return v;
+
             if (v is Function.FunctionRef asRef)
                 return GetFunction(asRef.ReferenceXID);
             else
@@ -97,6 +152,9 @@ namespace SoulsFormatsExtensions
         }
         public Function ReferenceFunction(Function v)
         {
+            if (!FlattenFunctions)
+                return v;
+
             if (v is Function.FunctionRef asRef)
                 return v;
             else
@@ -107,6 +165,9 @@ namespace SoulsFormatsExtensions
         public AST GetAST(string xid) => AllASTs.FirstOrDefault(x => x.XID == xid);
         public AST DereferenceAST(AST v)
         {
+            if (!FlattenASTs)
+                return v;
+
             if (v is ASTRef asRef)
                 return GetAST(asRef.ReferenceXID);
             else
@@ -114,6 +175,9 @@ namespace SoulsFormatsExtensions
         }
         public AST ReferenceAST(AST v)
         {
+            if (!FlattenASTs)
+                return v;
+
             if (v is ASTRef asRef)
                 return v;
             else
@@ -124,6 +188,9 @@ namespace SoulsFormatsExtensions
         public ASTPool2 GetASTPool2(string xid) => AllASTPool2s.FirstOrDefault(x => x.XID == xid);
         public ASTPool2 DereferenceASTPool2(ASTPool2 v)
         {
+            if (!FlattenASTPool2s)
+                return v;
+
             if (v is ASTPool2Ref asRef)
                 return GetASTPool2(asRef.ReferenceXID);
             else
@@ -131,6 +198,9 @@ namespace SoulsFormatsExtensions
         }
         public ASTPool2 ReferenceASTPool2(ASTPool2 v)
         {
+            if (!FlattenASTPool2s)
+                return v;
+
             if (v is ASTPool2Ref asRef)
                 return v;
             else
@@ -141,6 +211,9 @@ namespace SoulsFormatsExtensions
         public ASTPool3 GetASTPool3(string xid) => AllASTPool3s.FirstOrDefault(x => x.XID == xid);
         public ASTPool3 DereferenceASTPool3(ASTPool3 v)
         {
+            if (!FlattenASTPool3s)
+                return v;
+
             if (v is ASTPool3Ref asRef)
                 return GetASTPool3(asRef.ReferenceXID);
             else
@@ -148,6 +221,9 @@ namespace SoulsFormatsExtensions
         }
         public ASTPool3 ReferenceASTPool3(ASTPool3 v)
         {
+            if (!FlattenASTPool3s)
+                return v;
+
             if (v is ASTPool3Ref asRef)
                 return v;
             else
@@ -268,7 +344,7 @@ namespace SoulsFormatsExtensions
                 x.ToXIDs(this);
 
             RootFunction.ToXIDs(this);
-            RootFunction = ReferenceFunction(RootFunction);
+            //RootFunction = ReferenceFunction(RootFunction);
         }
 
         public void Unflatten()
@@ -291,7 +367,7 @@ namespace SoulsFormatsExtensions
                 x.FromXIDs(this);
 
             RootFunction.FromXIDs(this);
-            RootFunction = DereferenceFunction(RootFunction);
+            //RootFunction = DereferenceFunction(RootFunction);
         }
 
         protected override void Write(BinaryWriterEx bw)

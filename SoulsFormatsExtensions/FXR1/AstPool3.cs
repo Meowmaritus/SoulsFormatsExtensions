@@ -21,8 +21,10 @@ namespace SoulsFormatsExtensions
         [XmlInclude(typeof(ASTPool3Ref))]
         public abstract class ASTPool3 : XIDable
         {
-            [XmlAttribute]
-            public int CommandType;
+            public override bool ShouldSerializeXID() => FXR1.FlattenASTPool3s;
+
+            [XmlIgnore]
+            public abstract int Type { get; }
 
             public virtual bool ShouldSerializeCommandType() => true;
 
@@ -64,7 +66,6 @@ namespace SoulsFormatsExtensions
                     case 6: data = new ASTPool3Type6(); break;
                     case 7: data = new ASTPool3Type7(); break;
                 }
-                data.CommandType = commandType;
                 return data;
             }
 
@@ -82,6 +83,8 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool3Ref : ASTPool3
         {
+            public override int Type => -1;
+
             [XmlAttribute]
             public string ReferenceXID;
 
@@ -111,6 +114,8 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool3Type0 : ASTPool3
         {
+            public override int Type => 0;
+
             public int Unk;
             public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
             {
@@ -129,6 +134,8 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool3Type1 : ASTPool3
         {
+            public override int Type => 1;
+
             public int Unk1;
             public int Unk2;
             public int Unk3;
@@ -180,6 +187,8 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool3Type2 : ASTPool3
         {
+            public override int Type => 2;
+
             public float Lifetime;
             public float Unk2;
             public int Unk3;
@@ -218,6 +227,8 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool3Type3 : ASTPool3
         {
+            public override int Type => 3;
+
             public float Unk1;
             public int Unk2;
             public float Unk3;
@@ -246,6 +257,8 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool3Type4 : ASTPool3
         {
+            public override int Type => 4;
+
             public int Unk;
             public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
             {
@@ -264,6 +277,8 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool3Type5 : ASTPool3
         {
+            public override int Type => 5;
+
             public int Unk;
             public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
             {
@@ -282,6 +297,8 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool3Type6 : ASTPool3
         {
+            public override int Type => 6;
+
             public float Unk1;
             public int Unk2;
             public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
@@ -303,6 +320,8 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool3Type7 : ASTPool3
         {
+            public override int Type => 7;
+
             public int Unk;
             public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
             {

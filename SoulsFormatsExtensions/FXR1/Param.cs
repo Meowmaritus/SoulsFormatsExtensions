@@ -29,7 +29,7 @@ namespace SoulsFormatsExtensions
         public abstract class Param
         {
             [XmlIgnore]
-            public int Type { get; private set; }
+            public abstract int Type { get; }
 
             public abstract void InnerRead(BinaryReaderEx br, FxrEnvironment env);
             public abstract void InnerWrite(BinaryWriterEx bw, FxrEnvironment env);
@@ -65,8 +65,6 @@ namespace SoulsFormatsExtensions
                     default: throw new NotImplementedException();
                 }
 
-                v.Type = type;
-
                 br.StepIn(offset);
                 v.InnerRead(br, env);
                 br.StepOut();
@@ -91,6 +89,8 @@ namespace SoulsFormatsExtensions
 
         public class ParamType0 : Param
         {
+            public override int Type => 0;
+
             public Curve1[] Values;
 
             public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
@@ -115,6 +115,8 @@ namespace SoulsFormatsExtensions
 
         public class ParamType4 : Param
         {
+            public override int Type => 4;
+
             public Curve1[] Values;
 
             public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
@@ -139,6 +141,8 @@ namespace SoulsFormatsExtensions
 
         public class ParamType5 : Param
         {
+            public override int Type => 5;
+
             public Curve1[] Values;
             [XmlAttribute]
             public float Min;
@@ -171,6 +175,8 @@ namespace SoulsFormatsExtensions
 
         public class ParamType6 : Param
         {
+            public override int Type => 6;
+
             public Curve1[] Values;
             [XmlAttribute]
             public int PreDataIndex;
@@ -199,6 +205,8 @@ namespace SoulsFormatsExtensions
 
         public class ParamType7 : Param
         {
+            public override int Type => 7;
+
             public Curve1[] Values;
             [XmlAttribute]
             public float Min;
@@ -235,6 +243,8 @@ namespace SoulsFormatsExtensions
 
         public class ParamType8 : Param
         {
+            public override int Type => 8;
+
             public Curve3[] Values;
 
             public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
@@ -267,6 +277,8 @@ namespace SoulsFormatsExtensions
 
         public class ParamType9 : Param
         {
+            public override int Type => 9;
+
             public Curve3[] Values;
             [XmlAttribute]
             public float Min;
@@ -307,6 +319,8 @@ namespace SoulsFormatsExtensions
 
         public class ParamType12 : Param
         {
+            public override int Type => 12;
+
             public Curve1[] Values;
 
             public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
@@ -331,6 +345,8 @@ namespace SoulsFormatsExtensions
 
         public class ParamType16 : Param
         {
+            public override int Type => 16;
+
             public Curve1[] Values;
 
             public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
@@ -355,6 +371,8 @@ namespace SoulsFormatsExtensions
 
         public class ParamType17 : Param
         {
+            public override int Type => 17;
+
             public Curve1[] Values;
             [XmlAttribute]
             public float Min;
@@ -387,6 +405,8 @@ namespace SoulsFormatsExtensions
 
         public class ParamType20 : Param
         {
+            public override int Type => 20;
+
             public Curve3[] Values;
 
             public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
@@ -419,6 +439,8 @@ namespace SoulsFormatsExtensions
 
         public class ParamType24 : Param
         {
+            public override int Type => 24;
+
             [XmlAttribute]
             public float Value;
 
@@ -435,6 +457,8 @@ namespace SoulsFormatsExtensions
 
         public class ParamType25 : Param
         {
+            public override int Type => 25;
+
             [XmlAttribute]
             public float Base;
             [XmlAttribute]
@@ -458,6 +482,8 @@ namespace SoulsFormatsExtensions
 
         public class ParamType26 : Param
         {
+            public override int Type => 26;
+
             [XmlAttribute]
             public float Unk1;
             [XmlAttribute]
@@ -477,6 +503,8 @@ namespace SoulsFormatsExtensions
 
         public class ParamType27 : Param
         {
+            public override int Type => 27;
+
             [XmlAttribute]
             public float Unk1;
             [XmlAttribute]
@@ -504,6 +532,8 @@ namespace SoulsFormatsExtensions
 
         public class ParamType28 : Param
         {
+            public override int Type => 28;
+
             internal override bool IsEmptyPointer() => true;
 
             public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)

@@ -13,6 +13,8 @@ namespace SoulsFormatsExtensions
         [XmlInclude(typeof(ASTRef))]
         public class AST : XIDable
         {
+            public override bool ShouldSerializeXID() => FXR1.FlattenASTs;
+
             [XmlAttribute]
             public byte UnkFlag1;
             [XmlAttribute]
@@ -20,8 +22,13 @@ namespace SoulsFormatsExtensions
             [XmlAttribute]
             public byte UnkFlag3;
 
+            [XmlElement(IsNullable = true)]
             public List<FunctionPointer> AstFunctions;
+
+            [XmlElement(IsNullable = true)]
             public ASTPool2 AstPool2;
+
+            [XmlElement(IsNullable = true)]
             public ASTPool3 AstPool3;
 
             public virtual bool ShouldSerializeUnkFlag1() => true;

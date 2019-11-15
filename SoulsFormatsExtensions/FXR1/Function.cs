@@ -76,6 +76,8 @@ namespace SoulsFormatsExtensions
         [XmlInclude(typeof(FunctionRef))]
         public abstract class Function : XIDable
         {
+            public override bool ShouldSerializeXID() => FXR1.FlattenFunctions;
+
             //public readonly long ID;
             //internal Function(long id)
             //{

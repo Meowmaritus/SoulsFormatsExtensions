@@ -13,6 +13,8 @@ namespace SoulsFormatsExtensions
         [XmlInclude(typeof(FunctionPointerRef))]
         public class FunctionPointer : XIDable
         {
+            public override bool ShouldSerializeXID() => FXR1.FlattenFunctionPointers;
+
             public static int GetSize(bool isLong)
                 => isLong ? 8 : 4;
 

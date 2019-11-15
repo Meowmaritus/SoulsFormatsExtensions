@@ -13,6 +13,8 @@ namespace SoulsFormatsExtensions
         [XmlInclude(typeof(FlowActionRef))]
         public class FlowAction : XIDable
         {
+            public override bool ShouldSerializeXID() => FXR1.FlattenFlowActions;
+
             [XmlAttribute]
             public int ActionType;
             public AST ActionAst;
