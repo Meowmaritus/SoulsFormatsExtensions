@@ -17,6 +17,8 @@ namespace SoulsFormatsExtensions
 
             public List<Param> Debug_AllReadParams = new List<Param>();
 
+            public List<Function> XmlFunctionList = new List<Function>();
+
             public void Debug_RegisterReadParam(Param p)
             {
                 if (!Debug_AllReadParams.Contains(p))
@@ -26,8 +28,8 @@ namespace SoulsFormatsExtensions
             private List<long> PointerOffsets = new List<long>();
             private List<long> FunctionOffets = new List<long>();
 
-            private Dictionary<long, object> ObjectsByOffset = new Dictionary<long, object>();
-            private Dictionary<object, long> OffsetsByObject = new Dictionary<object, long>();
+            public Dictionary<long, object> ObjectsByOffset = new Dictionary<long, object>();
+            public Dictionary<object, long> OffsetsByObject = new Dictionary<object, long>();
 
             private List<object> ThingsToWrite = new List<object>();
 
@@ -43,11 +45,6 @@ namespace SoulsFormatsExtensions
                     ThingsToWrite.Add(thingToWrite);
             }
 
-            internal List<FlowEdge> masterFlowEdgeList = new List<FlowEdge>();
-            internal List<FlowNode> masterFlowNodeList = new List<FlowNode>();
-            internal List<FlowAction> masterFlowActionList = new List<FlowAction>();
-            internal List<Function.Function133> masterFunction133List = new List<Function.Function133>();
-
             public void RegisterOffset(long offset, object thingThere)
             {
                 if (!ObjectsByOffset.ContainsKey(offset))
@@ -55,57 +52,6 @@ namespace SoulsFormatsExtensions
 
                 if (!OffsetsByObject.ContainsKey(thingThere))
                     OffsetsByObject.Add(thingThere, offset);
-            }
-
-            public void CalculateAllIndices()
-            {
-                foreach (var edge in masterFlowEdgeList)
-                    edge.CalculateIndices(this);
-
-                foreach (var node in masterFlowNodeList)
-                    node.CalculateIndices(this);
-
-                foreach (var func in masterFunction133List)
-                    func.CalculateIndices(this);
-            }
-
-            public int GetFlowEdgeIndex(FlowEdge edge)
-            {
-                return masterFlowEdgeList.IndexOf(edge);
-            }
-
-            public int GetFlowNodeIndex(FlowNode node)
-            {
-                return masterFlowNodeList.IndexOf(node);
-            }
-
-            public int GetFlowActionIndex(FlowAction action)
-            {
-                return masterFlowActionList.IndexOf(action);
-            }
-
-            private void RegisterFlowNode(FlowNode node)
-            {
-                if (!masterFlowNodeList.Contains(node))
-                    masterFlowNodeList.Add(node);
-            }
-
-            public void RegisterFunction133(Function.Function133 func)
-            {
-                if (!masterFunction133List.Contains(func))
-                    masterFunction133List.Add(func);
-            }
-
-            private void RegisterFlowEdge(FlowEdge edge)
-            {
-                if (!masterFlowEdgeList.Contains(edge))
-                    masterFlowEdgeList.Add(edge);
-            }
-
-            private void RegisterFlowAction(FlowAction action)
-            {
-                if (!masterFlowActionList.Contains(action))
-                    masterFlowActionList.Add(action);
             }
 
             public FunctionPointer GetASTFunction(BinaryReaderEx br, long offset)
@@ -148,9 +94,10 @@ namespace SoulsFormatsExtensions
                 {
                     br.StepIn(offset);
                     var newVal = ASTPool2.Read(br, this);
+                    RegisterOffset(offset, newVal);
+                    newVal.XID = $"0x{offset:X}";
                     br.StepOut();
 
-                    RegisterOffset(offset, newVal);
                     return newVal;
                 }
             }
@@ -172,6 +119,7 @@ namespace SoulsFormatsExtensions
                     br.StepIn(offset);
                     var newVal = ASTPool3.GetProperType(br, this);
                     RegisterOffset(offset, newVal);
+                    newVal.XID = $"0x{offset:X}";
                     newVal.Read(br, this);
                     br.StepOut();
                     
@@ -196,6 +144,8 @@ namespace SoulsFormatsExtensions
                     br.StepIn(offset);
                     var newVal = Function.GetProperFunctionType(br, this);
                     RegisterOffset(offset, newVal);
+                    newVal.XID = $"0x{offset:X}";
+                    XmlFunctionList.Add(newVal);
                     newVal.Read(br, this);
                     br.StepOut();
                     
@@ -242,8 +192,8 @@ namespace SoulsFormatsExtensions
                 else
                 {
                     var newVal = new FlowNode();
-                    RegisterFlowNode(newVal);
                     RegisterOffset(offset, newVal);
+                    newVal.XID = $"0x{offset:X}";
                     br.StepIn(offset);
                     newVal.Read(br, this);
                     br.StepOut();
@@ -267,8 +217,8 @@ namespace SoulsFormatsExtensions
                 else
                 {
                     var newVal = new FlowEdge();
-                    RegisterFlowEdge(newVal);
                     RegisterOffset(offset, newVal);
+                    newVal.XID = $"0x{offset:X}";
                     br.StepIn(offset);
                     newVal.Read(br, this);
                     br.StepOut();
@@ -292,12 +242,11 @@ namespace SoulsFormatsExtensions
                 else
                 {   
                     var newVal = new FlowAction();
-                    RegisterFlowAction(newVal);
+                    RegisterOffset(offset, newVal);
+                    newVal.XID = $"0x{offset:X}";
                     br.StepIn(offset);
                     newVal.Read(br, this);
                     br.StepOut();
-
-                    RegisterOffset(offset, newVal);
                     return newVal;
                 }
             }

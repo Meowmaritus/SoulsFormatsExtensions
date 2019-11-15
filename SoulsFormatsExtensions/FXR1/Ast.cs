@@ -4,20 +4,48 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace SoulsFormatsExtensions
 {
     public partial class FXR1
     {
-        public class AST
+        [XmlInclude(typeof(ASTRef))]
+        public class AST : XIDable
         {
+            [XmlAttribute]
             public byte UnkFlag1;
+            [XmlAttribute]
             public byte UnkFlag2;
+            [XmlAttribute]
             public byte UnkFlag3;
 
             public List<FunctionPointer> AstFunctions;
             public ASTPool2 AstPool2;
             public ASTPool3 AstPool3;
+
+            public virtual bool ShouldSerializeUnkFlag1() => true;
+            public virtual bool ShouldSerializeUnkFlag2() => true;
+            public virtual bool ShouldSerializeUnkFlag3() => true;
+            public virtual bool ShouldSerializeAstFunctions() => true;
+            public virtual bool ShouldSerializeAstPool2() => true;
+            public virtual bool ShouldSerializeAstPool3() => true;
+
+            internal override void ToXIDs(FXR1 fxr)
+            {
+                AstPool2 = fxr.ReferenceASTPool2(AstPool2);
+                AstPool3 = fxr.ReferenceASTPool3(AstPool3);
+                for (int i = 0; i < AstFunctions.Count; i++)
+                    AstFunctions[i] = fxr.ReferenceFunctionPointer(AstFunctions[i]);
+            }
+
+            internal override void FromXIDs(FXR1 fxr)
+            {
+                AstPool2 = fxr.DereferenceASTPool2(AstPool2);
+                AstPool3 = fxr.DereferenceASTPool3(AstPool3);
+                for (int i = 0; i < AstFunctions.Count; i++)
+                    AstFunctions[i] = fxr.DereferenceFunctionPointer(AstFunctions[i]);
+            }
 
             public static int GetSize(bool isLong)
                 => isLong ? 40 : 24;
@@ -67,6 +95,28 @@ namespace SoulsFormatsExtensions
                 bw.WriteFXR1Garbage();
                 env.RegisterPointer(AstPool2);
                 env.RegisterPointer(AstPool3);
+            }
+        }
+
+        public class ASTRef : AST
+        {
+            [XmlAttribute]
+            public string ReferenceXID;
+
+            public override bool ShouldSerializeUnkFlag1() => false;
+            public override bool ShouldSerializeUnkFlag2() => false;
+            public override bool ShouldSerializeUnkFlag3() => false;
+            public override bool ShouldSerializeAstFunctions() => false;
+            public override bool ShouldSerializeAstPool2() => false;
+            public override bool ShouldSerializeAstPool3() => false;
+
+            public ASTRef(AST refVal)
+            {
+                ReferenceXID = refVal?.XID;
+            }
+            public ASTRef() 
+            {
+
             }
         }
     }

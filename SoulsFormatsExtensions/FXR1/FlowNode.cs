@@ -10,29 +10,30 @@ namespace SoulsFormatsExtensions
 {
     public partial class FXR1
     {
-        public class FlowNode
+        [XmlInclude(typeof(FlowNodeRef))]
+        public class FlowNode : XIDable
         {
-            [XmlIgnore]
-            internal List<FlowEdge> Edges;
+            public List<FlowEdge> Edges;
+            public List<FlowAction> Actions;
 
-            public List<int> FlowEdgeIndices = new List<int>();
+            public virtual bool ShouldSerializeEdges() => true;
+            public virtual bool ShouldSerializeActions() => true;
 
-            internal void CalculateIndices(FxrEnvironment env)
+            internal override void ToXIDs(FXR1 fxr)
             {
-                FlowEdgeIndices = new List<int>(Edges.Count);
                 for (int i = 0; i < Edges.Count; i++)
-                    FlowEdgeIndices.Add(env.GetFlowEdgeIndex(Edges[i]));
-                FlowActionIndices = new List<int>(Actions.Count);
+                    Edges[i] = fxr.ReferenceFlowEdge(Edges[i]);
                 for (int i = 0; i < Actions.Count; i++)
-                    FlowActionIndices.Add(env.GetFlowActionIndex(Actions[i]));
-                //Actions = null;
-                //Edges = null;
+                    Actions[i] = fxr.ReferenceFlowAction(Actions[i]);
             }
 
-            [XmlIgnore]
-            internal List<FlowAction> Actions;
-
-            public List<int> FlowActionIndices = new List<int>();
+            internal override void FromXIDs(FXR1 fxr)
+            {
+                for (int i = 0; i < Edges.Count; i++)
+                    Edges[i] = fxr.DereferenceFlowEdge(Edges[i]);
+                for (int i = 0; i < Actions.Count; i++)
+                    Actions[i] = fxr.DereferenceFlowAction(Actions[i]);
+            }
 
             public static int GetSize(bool isLong)
                 => isLong ? 24 : 16;
@@ -66,12 +67,28 @@ namespace SoulsFormatsExtensions
 
             public void Write(BinaryWriterEx bw, FxrEnvironment env)
             {
-                env.RegisterPointer(FlowEdgeIndices.Count > 0 ? 
-                    FlowEdgeIndices.Select(e => env.fxr.FlowEdges[e]).ToList() : null);
-                env.RegisterPointer(FlowActionIndices.Count > 0 ? 
-                    FlowActionIndices.Select(e => env.fxr.FlowActions[e]).ToList() : null);
-                bw.WriteInt32(FlowEdgeIndices.Count);
-                bw.WriteInt32(FlowActionIndices.Count);
+                env.RegisterPointer(Edges);
+                env.RegisterPointer(Actions);
+                bw.WriteInt32(Edges.Count);
+                bw.WriteInt32(Actions.Count);
+            }
+        }
+
+        public class FlowNodeRef : FlowNode
+        {
+            [XmlAttribute]
+            public string ReferenceXID;
+
+            public override bool ShouldSerializeEdges() => false;
+            public override bool ShouldSerializeActions() => false;
+
+            public FlowNodeRef(FlowNode refVal)
+            {
+                ReferenceXID = refVal?.XID;
+            }
+            public FlowNodeRef()
+            {
+
             }
         }
     }

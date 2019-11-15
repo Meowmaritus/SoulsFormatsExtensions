@@ -58,6 +58,7 @@
     <Compile Include="FXR1\Curve1.cs" />
     <Compile Include="FXR1\FxrEnvironment.cs" />
     <Compile Include="FXR1\PreDataEntry.cs" />
+    <Compile Include="FXR1\XIDable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

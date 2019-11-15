@@ -29,21 +29,45 @@ namespace SoulsFormatsExtensions
         [XmlInclude(typeof(ASTPool2Type107))]
         [XmlInclude(typeof(ASTPool2Type108))]
         [XmlInclude(typeof(ASTPool2Type117))]
-        public abstract class ASTPool2
+        [XmlInclude(typeof(ASTPool2Ref))]
+        public abstract class ASTPool2 : XIDable
         {
             [XmlAttribute]
             public int SubType;
-
-            [XmlIgnore]
             public AST ParentAst;
+            public List<PreDataEntry> PreDatas;
 
             [XmlIgnore]
             internal int SizeOnRead = -1;
 
-            public List<PreDataEntry> PreDatas;
+            public virtual bool ShouldSerializeSubType() => true;
+            public virtual bool ShouldSerializeParentAst() => true;
+            public virtual bool ShouldSerializePreDatas() => true;
 
             public abstract void InnerRead(BinaryReaderEx br, FxrEnvironment env);
             public abstract void InnerWrite(BinaryWriterEx bw, FxrEnvironment env);
+
+            internal override void ToXIDs(FXR1 fxr)
+            {
+                ParentAst = fxr.ReferenceAST(ParentAst);
+                InnerToXIDs(fxr);
+            }
+
+            internal override void FromXIDs(FXR1 fxr)
+            {
+                ParentAst = fxr.DereferenceAST(ParentAst);
+                InnerFromXIDs(fxr);
+            }
+
+            internal virtual void InnerToXIDs(FXR1 fxr)
+            {
+
+            }
+
+            internal virtual void InnerFromXIDs(FXR1 fxr)
+            {
+
+            }
 
             //public byte[] TEMP_DATA;
 
@@ -105,7 +129,7 @@ namespace SoulsFormatsExtensions
                 bw.FillInt32("ASTPool2.PreDatas.Numbers", (int)bw.Position);
                 for (int i = 0; i < PreDatas.Count; i++)
                 {
-                    bw.WriteInt32(PreDatas[i].Unknown);
+                    bw.WriteInt32(PreDatas[i].Unk);
                 }
 
                 bw.FillInt32("ASTPool2.PreDatas.Params", (int)bw.Position);
@@ -201,7 +225,7 @@ namespace SoulsFormatsExtensions
                 {
                     data.PreDatas.Add(new PreDataEntry()
                     {
-                        Unknown = br.ReadInt32()
+                        Unk = br.ReadInt32()
                     });
                 }
                 br.StepOut();
@@ -223,7 +247,35 @@ namespace SoulsFormatsExtensions
         }
 
 
+        public class ASTPool2Ref : ASTPool2
+        {
+            [XmlAttribute]
+            public string ReferenceXID;
 
+            public override bool ShouldSerializeSubType() => false;
+            public override bool ShouldSerializeParentAst() => false;
+            public override bool ShouldSerializePreDatas() => false;
+
+            public ASTPool2Ref(ASTPool2 refVal)
+            {
+                ReferenceXID = refVal?.XID;
+            }
+
+            public ASTPool2Ref()
+            {
+
+            }
+
+            public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+            {
+                throw new InvalidOperationException("Cannot actually serialize a reference class.");
+            }
+
+            public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+            {
+                throw new InvalidOperationException("Cannot actually deserialize a reference class.");
+            }
+        }
 
 
 

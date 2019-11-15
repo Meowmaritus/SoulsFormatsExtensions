@@ -10,20 +10,26 @@ namespace SoulsFormatsExtensions
 {
     public partial class FXR1
     {
-        public class FlowEdge
+        [XmlInclude(typeof(FlowEdgeRef))]
+        public class FlowEdge : XIDable
         {
-            public int EndFlowNodeIndex;
+            public FlowNode EndNode;
+            public Function Func;
 
-            [XmlIgnore]
-            internal FlowNode EndNode;
+            public virtual bool ShouldSerializeEndNode() => true;
+            public virtual bool ShouldSerializeFunc() => true;
 
-            internal void CalculateIndices(FxrEnvironment env)
+            internal override void ToXIDs(FXR1 fxr)
             {
-                EndFlowNodeIndex = env.GetFlowNodeIndex(EndNode);
-                //EndNode = null;
+                EndNode = fxr.ReferenceFlowNode(EndNode);
+                Func = fxr.ReferenceFunction(Func);
             }
 
-            public Function Func;
+            internal override void FromXIDs(FXR1 fxr)
+            {
+                EndNode = fxr.DereferenceFlowNode(EndNode);
+                Func = fxr.DereferenceFunction(Func);
+            }
 
             public static int GetSize(bool isLong)
                 => isLong ? 16 : 8;
@@ -40,10 +46,27 @@ namespace SoulsFormatsExtensions
 
             public void Write(BinaryWriterEx bw, FxrEnvironment env)
             {
-                env.RegisterPointer(env.fxr.FlowNodes[EndFlowNodeIndex]);
+                env.RegisterPointer(EndNode);
                 env.RegisterPointer(Func);
             }
+        }
 
+        public class FlowEdgeRef : FlowEdge
+        {
+            [XmlAttribute]
+            public string ReferenceXID;
+
+            public override bool ShouldSerializeEndNode() => false;
+            public override bool ShouldSerializeFunc() => false;
+
+            public FlowEdgeRef(FlowEdge refVal)
+            {
+                ReferenceXID = refVal?.XID;
+            }
+            public FlowEdgeRef()
+            {
+
+            }
         }
     }
 }

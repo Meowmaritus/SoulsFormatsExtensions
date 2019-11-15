@@ -1,5 +1,4 @@
-﻿using SoulsFormats;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,13 +9,20 @@ namespace SoulsFormatsExtensions
 {
     public partial class FXR1
     {
-        public class PreDataEntry
+        public abstract class XIDable
         {
             [XmlAttribute]
-            public int Unk;
+            public string XID;
 
-            public Param Data;
+            internal virtual void ToXIDs(FXR1 fxr)
+            {
+
+            }
+
+            internal virtual void FromXIDs(FXR1 fxr)
+            {
+
+            }
         }
     }
 }
-   

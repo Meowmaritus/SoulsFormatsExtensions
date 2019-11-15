@@ -4,17 +4,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace SoulsFormatsExtensions
 {
     public partial class FXR1
     {
-        public class FunctionPointer
+        [XmlInclude(typeof(FunctionPointerRef))]
+        public class FunctionPointer : XIDable
         {
             public static int GetSize(bool isLong)
                 => isLong ? 8 : 4;
 
             public Function Func;
+
+            internal override void ToXIDs(FXR1 fxr)
+            {
+                Func = fxr.ReferenceFunction(Func);
+            }
+
+            internal override void FromXIDs(FXR1 fxr)
+            {
+                Func = fxr.DereferenceFunction(Func);
+            }
+
+            public virtual bool ShouldSerializeFunc() => true;
 
             public void Read(BinaryReaderEx br, FxrEnvironment env)
             {
@@ -25,6 +39,23 @@ namespace SoulsFormatsExtensions
             public void Write(BinaryWriterEx bw, FxrEnvironment env)
             {
                 env.RegisterPointer(Func);
+            }
+        }
+
+        public class FunctionPointerRef : FunctionPointer
+        {
+            [XmlAttribute]
+            public string ReferenceXID;
+
+            public override bool ShouldSerializeFunc() => false;
+
+            public FunctionPointerRef(FunctionPointer refVal)
+            {
+                ReferenceXID = refVal.XID;
+            }
+            public FunctionPointerRef()
+            {
+
             }
         }
     }

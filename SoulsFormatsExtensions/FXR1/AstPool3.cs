@@ -18,12 +18,36 @@ namespace SoulsFormatsExtensions
         [XmlInclude(typeof(ASTPool3Type5))]
         [XmlInclude(typeof(ASTPool3Type6))]
         [XmlInclude(typeof(ASTPool3Type7))]
-        public abstract class ASTPool3
+        [XmlInclude(typeof(ASTPool3Ref))]
+        public abstract class ASTPool3 : XIDable
         {
+            [XmlAttribute]
             public int CommandType;
+
+            public virtual bool ShouldSerializeCommandType() => true;
 
             public abstract void InnerRead(BinaryReaderEx br, FxrEnvironment env);
             public abstract void InnerWrite(BinaryWriterEx bw, FxrEnvironment env);
+
+            internal override void ToXIDs(FXR1 fxr)
+            {
+                InnerToXIDs(fxr);
+            }
+
+            internal override void FromXIDs(FXR1 fxr)
+            {
+                InnerFromXIDs(fxr);
+            }
+
+            internal virtual void InnerToXIDs(FXR1 fxr)
+            {
+
+            }
+
+            internal virtual void InnerFromXIDs(FXR1 fxr)
+            {
+
+            }
 
             public static ASTPool3 GetProperType(BinaryReaderEx br, FxrEnvironment env)
             {
@@ -56,22 +80,50 @@ namespace SoulsFormatsExtensions
         }
 
 
+        public class ASTPool3Ref : ASTPool3
+        {
+            [XmlAttribute]
+            public string ReferenceXID;
+
+            public override bool ShouldSerializeCommandType() => false;
+
+            public ASTPool3Ref(ASTPool3 refVal)
+            {
+                ReferenceXID = refVal?.XID;
+            }
+
+            public ASTPool3Ref()
+            {
+
+            }
+
+            public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+            {
+                throw new InvalidOperationException("Cannot actually serialize a reference class.");
+            }
+
+            public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+            {
+                throw new InvalidOperationException("Cannot actually deserialize a reference class.");
+            }
+        }
+
 
         public class ASTPool3Type0 : ASTPool3
         {
-            public int Unknown;
+            public int Unk;
             public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
             {
                 br.AssertInt32(0);
 
-                Unknown = br.ReadInt32();
+                Unk = br.ReadInt32();
             }
 
             public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
             {
                 bw.WriteInt32(0);
 
-                bw.WriteInt32(Unknown);
+                bw.WriteInt32(Unk);
             }
         }
 
@@ -194,37 +246,37 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool3Type4 : ASTPool3
         {
-            public int Unknown;
+            public int Unk;
             public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
             {
                 br.AssertInt32(4);
 
-                Unknown = br.ReadInt32();
+                Unk = br.ReadInt32();
             }
 
             public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
             {
                 bw.WriteInt32(4);
 
-                bw.WriteInt32(Unknown);
+                bw.WriteInt32(Unk);
             }
         }
 
         public class ASTPool3Type5 : ASTPool3
         {
-            public int Unknown;
+            public int Unk;
             public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
             {
                 br.AssertInt32(5);
 
-                Unknown = br.ReadInt32();
+                Unk = br.ReadInt32();
             }
 
             public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
             {
                 bw.WriteInt32(5);
 
-                bw.WriteInt32(Unknown);
+                bw.WriteInt32(Unk);
             }
         }
 
@@ -251,19 +303,19 @@ namespace SoulsFormatsExtensions
 
         public class ASTPool3Type7 : ASTPool3
         {
-            public int Unknown;
+            public int Unk;
             public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
             {
                 br.AssertInt32(7);
 
-                Unknown = br.ReadInt32();
+                Unk = br.ReadInt32();
             }
 
             public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
             {
                 bw.WriteInt32(7);
 
-                bw.WriteInt32(Unknown);
+                bw.WriteInt32(Unk);
             }
         }
 

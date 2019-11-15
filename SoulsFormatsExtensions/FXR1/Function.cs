@@ -73,7 +73,8 @@ namespace SoulsFormatsExtensions
         [XmlInclude(typeof(Function138))]
         [XmlInclude(typeof(Function139))]
         [XmlInclude(typeof(Function140))]
-        public abstract class Function
+        [XmlInclude(typeof(FunctionRef))]
+        public abstract class Function : XIDable
         {
             //public readonly long ID;
             //internal Function(long id)
@@ -82,6 +83,26 @@ namespace SoulsFormatsExtensions
             //}
             internal abstract void ReadInner(BinaryReaderEx br, FxrEnvironment env);
             internal abstract void WriteInner(BinaryWriterEx bw, FxrEnvironment env);
+
+            internal override void ToXIDs(FXR1 fxr)
+            {
+                InnerToXIDs(fxr);
+            }
+
+            internal override void FromXIDs(FXR1 fxr)
+            {
+                InnerFromXIDs(fxr);
+            }
+
+            internal virtual void InnerToXIDs(FXR1 fxr)
+            {
+
+            }
+
+            internal virtual void InnerFromXIDs(FXR1 fxr)
+            {
+
+            }
 
             public void Write(BinaryWriterEx bw, FxrEnvironment env)
             {
@@ -170,39 +191,144 @@ namespace SoulsFormatsExtensions
                 ReadInner(br, env);
             }
 
-            public class Function133 : Function
+            public class FunctionRef : Function
             {
-                public int FXRID;
-                public int Unknown;
-                public AST Ast1;
-                public AST Ast2;
+                [XmlAttribute]
+                public string ReferenceXID;
 
-                [XmlIgnore]
-                internal List<FlowNode> Nodes;
-
-                public List<int> FlowNodeIndices;
-
-                internal void CalculateIndices(FxrEnvironment env)
+                public FunctionRef(Function refVal)
                 {
-                    FlowNodeIndices = new List<int>(Nodes.Count);
-                    for (int i = 0; i < Nodes.Count; i++)
-                    {
-                        FlowNodeIndices.Add(env.GetFlowNodeIndex(Nodes[i]));
-                    }
+                    ReferenceXID = refVal?.XID;
+                }
 
-                    //Nodes = null;
+                public FunctionRef()
+                {
+
                 }
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
-                    env.RegisterFunction133(this);
+                    throw new InvalidOperationException("Cannot actually deserialize a FunctionRef.");
+                }
 
+                internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
+                {
+                    throw new InvalidOperationException("Cannot actually serialize a FunctionRef.");
+                }
+            }
+
+            public class Function37 : Function
+            {
+                [XmlAttribute]
+                public int TemplateFXRID;
+                public AST Ast;
+                [XmlAttribute]
+                public int Unk;
+
+                internal override void InnerToXIDs(FXR1 fxr)
+                {
+                    Ast = fxr.ReferenceAST(Ast);
+                }
+
+                internal override void InnerFromXIDs(FXR1 fxr)
+                {
+                    Ast = fxr.DereferenceAST(Ast);
+                }
+
+                internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
+                {
+                    br.AssertFXR1Varint(37);
+
+                    TemplateFXRID = br.ReadFXR1Varint();
+                    int astOffset = br.ReadFXR1Varint();
+                    Unk = br.ReadInt32();
+
+                    Ast = env.GetAST(br, astOffset);
+                }
+
+                internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
+                {
+                    bw.WriteFXR1Varint(37);
+
+                    bw.WriteFXR1Varint(TemplateFXRID);
+                    env.RegisterPointer(Ast);
+                    bw.WriteInt32(Unk);
+                }
+            }
+
+            public class Function38 : Function
+            {
+                [XmlAttribute]
+                public int SubType;
+                public AST Ast;
+                [XmlAttribute]
+                public int Unk;
+
+                internal override void InnerToXIDs(FXR1 fxr)
+                {
+                    Ast = fxr.ReferenceAST(Ast);
+                }
+
+                internal override void InnerFromXIDs(FXR1 fxr)
+                {
+                    Ast = fxr.DereferenceAST(Ast);
+                }
+
+                internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
+                {
+                    br.AssertFXR1Varint(38);
+
+                    SubType = br.ReadFXR1Varint();
+                    int astOffset = br.ReadFXR1Varint();
+                    Unk = br.ReadInt32();
+
+                    Ast = env.GetAST(br, astOffset);
+                }
+
+                internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
+                {
+                    bw.WriteFXR1Varint(38);
+
+                    bw.WriteFXR1Varint(SubType);
+                    env.RegisterPointer(Ast);
+                    bw.WriteInt32(Unk);
+                }
+            }
+
+            public class Function133 : Function
+            {
+                [XmlAttribute]
+                public int FXRID;
+                [XmlAttribute]
+                public int Unk;
+                public AST Ast1;
+                public AST Ast2;
+                public List<FlowNode> Nodes;
+
+                internal override void InnerToXIDs(FXR1 fxr)
+                {
+                    for (int i = 0; i < Nodes.Count; i++)
+                        Nodes[i] = fxr.ReferenceFlowNode(Nodes[i]);
+                    Ast1 = fxr.ReferenceAST(Ast1);
+                    Ast2 = fxr.ReferenceAST(Ast2);
+                }
+
+                internal override void InnerFromXIDs(FXR1 fxr)
+                {
+                    for (int i = 0; i < Nodes.Count; i++)
+                        Nodes[i] = fxr.DereferenceFlowNode(Nodes[i]);
+                    Ast1 = fxr.DereferenceAST(Ast1);
+                    Ast2 = fxr.DereferenceAST(Ast2);
+                }
+
+                internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
+                {
                     br.AssertFXR1Varint(133);
 
                     FXRID = br.ReadFXR1Varint();
                     for (int i = 0; i < 7; i++)
                         br.AssertFXR1Varint(0);
-                    Unknown = br.ReadFXR1Varint();
+                    Unk = br.ReadFXR1Varint();
                     //throw new NotImplementedException();
 
                     Ast1 = env.GetAST(br, br.Position);
@@ -230,26 +356,40 @@ namespace SoulsFormatsExtensions
                     bw.WriteFXR1Varint(FXRID);
                     for (int i = 0; i < 7; i++)
                         bw.WriteFXR1Varint(0);
-                    bw.WriteFXR1Varint(Unknown);
+                    bw.WriteFXR1Varint(Unk);
                     Ast1.Write(bw, env);
                     Ast2.Write(bw, env);
-                    env.RegisterPointer(FlowNodeIndices.Select(x => env.fxr.FlowNodes[x]).ToList());
-                    bw.WriteFXR1Varint(FlowNodeIndices.Count);
+                    env.RegisterPointer(Nodes);
+                    bw.WriteFXR1Varint(Nodes.Count);
                 }
             }
 
             public class Function134 : Function
             {
+                [XmlAttribute]
                 public int FXRID;
-                public int Unknown;
+                [XmlAttribute]
+                public int Unk;
                 public List<Function> Funcs;
+
+                internal override void InnerToXIDs(FXR1 fxr)
+                {
+                    for (int i = 0; i < Funcs.Count; i++)
+                        Funcs[i] = fxr.ReferenceFunction(Funcs[i]);
+                }
+
+                internal override void InnerFromXIDs(FXR1 fxr)
+                {
+                    for (int i = 0; i < Funcs.Count; i++)
+                        Funcs[i] = fxr.DereferenceFunction(Funcs[i]);
+                }
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(134);
 
                     FXRID = br.ReadFXR1Varint();
-                    Unknown = br.ReadFXR1Varint();
+                    Unk = br.ReadFXR1Varint();
                     int offsetToFuncOffsetList = br.ReadFXR1Varint();
                     int funcCount = br.ReadFXR1Varint();
                     Funcs = new List<Function>(funcCount);
@@ -268,7 +408,7 @@ namespace SoulsFormatsExtensions
                     bw.WriteFXR1Varint(134);
 
                     bw.WriteFXR1Varint(FXRID);
-                    bw.WriteFXR1Varint(Unknown);
+                    bw.WriteFXR1Varint(Unk);
                     env.RegisterPointer(Funcs);
                     bw.WriteFXR1Varint(Funcs.Count);
                 }
@@ -276,19 +416,20 @@ namespace SoulsFormatsExtensions
 
             public class Function1 : Function
             {
-                public int Unknown;
+                [XmlAttribute]
+                public int Unk;
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(1);
 
-                    Unknown = br.ReadFXR1Varint();
+                    Unk = br.ReadFXR1Varint();
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(1);
 
-                    bw.WriteFXR1Varint(Unknown);
+                    bw.WriteFXR1Varint(Unk);
                 }
             }
 
@@ -440,19 +581,20 @@ namespace SoulsFormatsExtensions
 
             public class Function7 : Function
             {
-                public float Unknown;
+                [XmlAttribute]
+                public float Unk;
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(7);
 
-                    Unknown = br.ReadFXR1Single();
+                    Unk = br.ReadFXR1Single();
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(7);
 
-                    bw.WriteFXR1Single(Unknown);
+                    bw.WriteFXR1Single(Unk);
                 }
             }
 
@@ -954,87 +1096,38 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function37 : Function
-            {
-                public int TemplateFXRID;
-                public AST Ast;
-                public int Unknown;
-                internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
-                {
-                    br.AssertFXR1Varint(37);
-
-                    TemplateFXRID = br.ReadFXR1Varint();
-                    int astOffset = br.ReadFXR1Varint();
-                    Unknown = br.ReadInt32();
-
-                    Ast = env.GetAST(br, astOffset);
-                }
-
-                internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
-                {
-                    bw.WriteFXR1Varint(37);
-
-                    bw.WriteFXR1Varint(TemplateFXRID);
-                    env.RegisterPointer(Ast);
-                    bw.WriteInt32(Unknown);
-                }
-            }
-
-            public class Function38 : Function
-            {
-                public int SubType;
-                public AST Ast;
-                public int Unknown;
-                internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
-                {
-                    br.AssertFXR1Varint(38);
-
-                    SubType = br.ReadFXR1Varint();
-                    int astOffset = br.ReadFXR1Varint();
-                    Unknown = br.ReadInt32();
-
-                    Ast = env.GetAST(br, astOffset);
-                }
-
-                internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
-                {
-                    bw.WriteFXR1Varint(38);
-
-                    bw.WriteFXR1Varint(SubType);
-                    env.RegisterPointer(Ast);
-                    bw.WriteInt32(Unknown);
-                }
-            }
-
             public class Function41 : Function
             {
-                public int Unknown;
+                [XmlAttribute]
+                public int Unk;
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(41);
 
-                    Unknown = br.ReadFXR1Varint();
+                    Unk = br.ReadFXR1Varint();
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(41);
 
-                    bw.WriteFXR1Varint(Unknown);
+                    bw.WriteFXR1Varint(Unk);
                 }
             }
 
             public class Function44 : Function
             {
-                public short Unknown1;
-                public short Unknown2;
+                [XmlAttribute]
+                public short Unk1;
+                [XmlAttribute]
+                public short Unk2;
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(44);
 
-                    Unknown1 = br.ReadInt16();
-                    Unknown2 = br.ReadInt16();
+                    Unk1 = br.ReadInt16();
+                    Unk2 = br.ReadInt16();
 
                     br.AssertFXR1Garbage(); //????
                 }
@@ -1043,8 +1136,8 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(44);
 
-                    bw.WriteInt16(Unknown1);
-                    bw.WriteInt16(Unknown2);
+                    bw.WriteInt16(Unk1);
+                    bw.WriteInt16(Unk2);
 
                     bw.WriteFXR1Garbage(); //????
                 }
@@ -1052,15 +1145,15 @@ namespace SoulsFormatsExtensions
 
             public class Function45 : Function
             {
-                public short Unknown1;
-                public short Unknown2;
+                public short Unk1;
+                public short Unk2;
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(45);
 
-                    Unknown1 = br.ReadInt16();
-                    Unknown2 = br.ReadInt16();
+                    Unk1 = br.ReadInt16();
+                    Unk2 = br.ReadInt16();
 
                     br.AssertFXR1Garbage(); //????
                 }
@@ -1069,8 +1162,8 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(45);
 
-                    bw.WriteInt16(Unknown1);
-                    bw.WriteInt16(Unknown2);
+                    bw.WriteInt16(Unk1);
+                    bw.WriteInt16(Unk2);
 
                     bw.WriteFXR1Garbage(); //????
                 }
@@ -1078,15 +1171,17 @@ namespace SoulsFormatsExtensions
 
             public class Function46 : Function
             {
-                public short Unknown1;
-                public short Unknown2;
+                [XmlAttribute]
+                public short Unk1;
+                [XmlAttribute]
+                public short Unk2;
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(46);
 
-                    Unknown1 = br.ReadInt16();
-                    Unknown2 = br.ReadInt16();
+                    Unk1 = br.ReadInt16();
+                    Unk2 = br.ReadInt16();
 
                     br.AssertFXR1Garbage(); //????
                 }
@@ -1095,8 +1190,8 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(46);
 
-                    bw.WriteInt16(Unknown1);
-                    bw.WriteInt16(Unknown2);
+                    bw.WriteInt16(Unk1);
+                    bw.WriteInt16(Unk2);
 
                     bw.WriteFXR1Garbage(); //????
                 }
@@ -1104,15 +1199,17 @@ namespace SoulsFormatsExtensions
 
             public class Function47 : Function
             {
-                public short Unknown1;
-                public short Unknown2;
+                [XmlAttribute]
+                public short Unk1;
+                [XmlAttribute]
+                public short Unk2;
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(47);
 
-                    Unknown1 = br.ReadInt16();
-                    Unknown2 = br.ReadInt16();
+                    Unk1 = br.ReadInt16();
+                    Unk2 = br.ReadInt16();
 
                     br.AssertFXR1Garbage(); //????
                 }
@@ -1121,8 +1218,8 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(47);
 
-                    bw.WriteInt16(Unknown1);
-                    bw.WriteInt16(Unknown2);
+                    bw.WriteInt16(Unk1);
+                    bw.WriteInt16(Unk2);
 
                     bw.WriteFXR1Garbage(); //????
                 }
@@ -1130,34 +1227,37 @@ namespace SoulsFormatsExtensions
 
             public class Function59 : Function
             {
-                public int Unknown;
+                [XmlAttribute]
+                public int Unk;
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(59);
 
-                    Unknown = br.ReadFXR1Varint();
+                    Unk = br.ReadFXR1Varint();
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(59);
 
-                    bw.WriteFXR1Varint(Unknown);
+                    bw.WriteFXR1Varint(Unk);
                 }
             }
 
             public class Function60 : Function
             {
-                public short Unknown1;
-                public short Unknown2;
+                [XmlAttribute]
+                public short Unk1;
+                [XmlAttribute]
+                public short Unk2;
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(60);
 
-                    Unknown1 = br.ReadInt16();
-                    Unknown2 = br.ReadInt16();
+                    Unk1 = br.ReadInt16();
+                    Unk2 = br.ReadInt16();
 
                     br.AssertFXR1Garbage(); //????
                 }
@@ -1166,8 +1266,8 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(60);
 
-                    bw.WriteInt16(Unknown1);
-                    bw.WriteInt16(Unknown2);
+                    bw.WriteInt16(Unk1);
+                    bw.WriteInt16(Unk2);
 
                     bw.WriteFXR1Garbage(); //????
                 }
@@ -1176,92 +1276,98 @@ namespace SoulsFormatsExtensions
 
             public class Function66 : Function
             {
-                public int Unknown;
+                [XmlAttribute]
+                public int Unk;
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(66);
 
-                    Unknown = br.ReadFXR1Varint();
+                    Unk = br.ReadFXR1Varint();
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(66);
 
-                    bw.WriteFXR1Varint(Unknown);
+                    bw.WriteFXR1Varint(Unk);
                 }
             }
 
             public class Function68 : Function
             {
-                public int Unknown;
+                [XmlAttribute]
+                public int Unk;
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(68);
 
-                    Unknown = br.ReadFXR1Varint();
+                    Unk = br.ReadFXR1Varint();
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(68);
 
-                    bw.WriteFXR1Varint(Unknown);
+                    bw.WriteFXR1Varint(Unk);
                 }
             }
 
             public class Function69 : Function
             {
-                public int Unknown;
+                [XmlAttribute]
+                public int Unk;
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(69);
 
-                    Unknown = br.ReadFXR1Varint();
+                    Unk = br.ReadFXR1Varint();
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(69);
 
-                    bw.WriteFXR1Varint(Unknown);
+                    bw.WriteFXR1Varint(Unk);
                 }
             }
 
             public class Function70 : Function
             {
-                public float Unknown;
+                [XmlAttribute]
+                public float Unk;
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(70);
 
-                    Unknown = br.ReadFXR1Single();
+                    Unk = br.ReadFXR1Single();
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(70);
 
-                    bw.WriteFXR1Single(Unknown);
+                    bw.WriteFXR1Single(Unk);
                 }
             }
 
 
             public class Function71 : Function
             {
-                public short Unknown1;
-                public short Unknown2;
+                [XmlAttribute]
+                public short Unk1;
+                [XmlAttribute]
+                public short Unk2;
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(71);
 
-                    Unknown1 = br.ReadInt16();
-                    Unknown2 = br.ReadInt16();
+                    Unk1 = br.ReadInt16();
+                    Unk2 = br.ReadInt16();
 
                     br.AssertFXR1Garbage(); //????
                 }
@@ -1270,8 +1376,8 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(71);
 
-                    bw.WriteInt16(Unknown1);
-                    bw.WriteInt16(Unknown2);
+                    bw.WriteInt16(Unk1);
+                    bw.WriteInt16(Unk2);
 
                     bw.WriteFXR1Garbage(); //????
                 }
@@ -1279,81 +1385,89 @@ namespace SoulsFormatsExtensions
 
             public class Function79 : Function
             {
-                public int Unknown1;
-                public int Unknown2;
+                [XmlAttribute]
+                public int Unk1;
+                [XmlAttribute]
+                public int Unk2;
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(79);
 
-                    Unknown1 = br.ReadFXR1Varint();
-                    Unknown2 = br.ReadFXR1Varint();
+                    Unk1 = br.ReadFXR1Varint();
+                    Unk2 = br.ReadFXR1Varint();
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(79);
 
-                    bw.WriteFXR1Varint(Unknown1);
-                    bw.WriteFXR1Varint(Unknown2);
+                    bw.WriteFXR1Varint(Unk1);
+                    bw.WriteFXR1Varint(Unk2);
                 }
             }
 
             public class Function81 : Function
             {
-                public float Unknown1;
-                public float Unknown2;
+                [XmlAttribute]
+                public float Unk1;
+                [XmlAttribute]
+                public float Unk2;
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(81);
 
-                    Unknown1 = br.ReadFXR1Single();
-                    Unknown2 = br.ReadFXR1Single();
+                    Unk1 = br.ReadFXR1Single();
+                    Unk2 = br.ReadFXR1Single();
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(81);
 
-                    bw.WriteFXR1Single(Unknown1);
-                    bw.WriteFXR1Single(Unknown2);
+                    bw.WriteFXR1Single(Unk1);
+                    bw.WriteFXR1Single(Unk2);
                 }
             }
 
             public class Function85 : Function
             {
-                public float Unknown1;
-                public float Unknown2;
+                [XmlAttribute]
+                public float Unk1;
+                [XmlAttribute]
+                public float Unk2;
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(85);
 
-                    Unknown1 = br.ReadFXR1Single();
-                    Unknown2 = br.ReadFXR1Single();
+                    Unk1 = br.ReadFXR1Single();
+                    Unk2 = br.ReadFXR1Single();
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(85);
 
-                    bw.WriteFXR1Single(Unknown1);
-                    bw.WriteFXR1Single(Unknown2);
+                    bw.WriteFXR1Single(Unk1);
+                    bw.WriteFXR1Single(Unk2);
                 }
             }
 
             public class Function87 : Function
             {
-                public short Unknown1;
-                public short Unknown2;
+                [XmlAttribute]
+                public short Unk1;
+                [XmlAttribute]
+                public short Unk2;
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(87);
 
-                    Unknown1 = br.ReadInt16();
-                    Unknown2 = br.ReadInt16();
+                    Unk1 = br.ReadInt16();
+                    Unk2 = br.ReadInt16();
 
                     br.AssertFXR1Garbage(); //????
                 }
@@ -1362,8 +1476,8 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(87);
 
-                    bw.WriteInt16(Unknown1);
-                    bw.WriteInt16(Unknown2);
+                    bw.WriteInt16(Unk1);
+                    bw.WriteInt16(Unk2);
 
                     bw.WriteFXR1Garbage(); //????
                 }
@@ -1465,6 +1579,17 @@ namespace SoulsFormatsExtensions
                 public List<float> FloatList1;
                 public List<float> FloatList2;
                 public Function Func;
+
+                internal override void InnerToXIDs(FXR1 fxr)
+                {
+                    Func = fxr.ReferenceFunction(Func);
+                }
+
+                internal override void InnerFromXIDs(FXR1 fxr)
+                {
+                    Func = fxr.DereferenceFunction(Func);
+                }
+
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(95);
@@ -1510,20 +1635,21 @@ namespace SoulsFormatsExtensions
 
             public class Function111 : Function
             {
-                public int Unknown;
+                [XmlAttribute]
+                public int Unk;
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(111);
 
-                    Unknown = br.ReadFXR1Varint();
+                    Unk = br.ReadFXR1Varint();
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(111);
 
-                    bw.WriteFXR1Varint(Unknown);
+                    bw.WriteFXR1Varint(Unk);
                 }
             }
 
@@ -1555,15 +1681,17 @@ namespace SoulsFormatsExtensions
 
             public class Function114 : Function
             {
-                public short Unknown1;
-                public short Unknown2;
+                [XmlAttribute]
+                public short Unk1;
+                [XmlAttribute]
+                public short Unk2;
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(114);
 
-                    Unknown1 = br.ReadInt16();
-                    Unknown2 = br.ReadInt16();
+                    Unk1 = br.ReadInt16();
+                    Unk2 = br.ReadInt16();
 
                     br.AssertFXR1Garbage(); //????
                 }
@@ -1572,8 +1700,8 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(114);
 
-                    bw.WriteInt16(Unknown1);
-                    bw.WriteInt16(Unknown2);
+                    bw.WriteInt16(Unk1);
+                    bw.WriteInt16(Unk2);
 
                     bw.WriteFXR1Garbage(); //????
                 }
@@ -1581,15 +1709,17 @@ namespace SoulsFormatsExtensions
 
             public class Function115 : Function
             {
-                public short Unknown1;
-                public short Unknown2;
+                [XmlAttribute]
+                public short Unk1;
+                [XmlAttribute]
+                public short Unk2;
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(115);
 
-                    Unknown1 = br.ReadInt16();
-                    Unknown2 = br.ReadInt16();
+                    Unk1 = br.ReadInt16();
+                    Unk2 = br.ReadInt16();
 
                     br.AssertFXR1Garbage(); //????
                 }
@@ -1598,8 +1728,8 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(115);
 
-                    bw.WriteInt16(Unknown1);
-                    bw.WriteInt16(Unknown2);
+                    bw.WriteInt16(Unk1);
+                    bw.WriteInt16(Unk2);
 
                     bw.WriteFXR1Garbage(); //????
                 }
@@ -1609,6 +1739,18 @@ namespace SoulsFormatsExtensions
             {
                 public Function Func1;
                 public Function Func2;
+
+                internal override void InnerToXIDs(FXR1 fxr)
+                {
+                    Func1 = fxr.ReferenceFunction(Func1);
+                    Func2 = fxr.ReferenceFunction(Func2);
+                }
+
+                internal override void InnerFromXIDs(FXR1 fxr)
+                {
+                    Func1 = fxr.DereferenceFunction(Func1);
+                    Func2 = fxr.DereferenceFunction(Func2);
+                }
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
@@ -1635,6 +1777,18 @@ namespace SoulsFormatsExtensions
                 public Function Func1;
                 public Function Func2;
 
+                internal override void InnerToXIDs(FXR1 fxr)
+                {
+                    Func1 = fxr.ReferenceFunction(Func1);
+                    Func2 = fxr.ReferenceFunction(Func2);
+                }
+
+                internal override void InnerFromXIDs(FXR1 fxr)
+                {
+                    Func1 = fxr.DereferenceFunction(Func1);
+                    Func2 = fxr.DereferenceFunction(Func2);
+                }
+
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(121);
@@ -1659,6 +1813,18 @@ namespace SoulsFormatsExtensions
             {
                 public Function Func1;
                 public Function Func2;
+
+                internal override void InnerToXIDs(FXR1 fxr)
+                {
+                    Func1 = fxr.ReferenceFunction(Func1);
+                    Func2 = fxr.ReferenceFunction(Func2);
+                }
+
+                internal override void InnerFromXIDs(FXR1 fxr)
+                {
+                    Func1 = fxr.DereferenceFunction(Func1);
+                    Func2 = fxr.DereferenceFunction(Func2);
+                }
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
@@ -1685,6 +1851,18 @@ namespace SoulsFormatsExtensions
                 public Function Func1;
                 public Function Func2;
 
+                internal override void InnerToXIDs(FXR1 fxr)
+                {
+                    Func1 = fxr.ReferenceFunction(Func1);
+                    Func2 = fxr.ReferenceFunction(Func2);
+                }
+
+                internal override void InnerFromXIDs(FXR1 fxr)
+                {
+                    Func1 = fxr.DereferenceFunction(Func1);
+                    Func2 = fxr.DereferenceFunction(Func2);
+                }
+
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(123);
@@ -1710,6 +1888,18 @@ namespace SoulsFormatsExtensions
                 public Function Func1;
                 public Function Func2;
 
+                internal override void InnerToXIDs(FXR1 fxr)
+                {
+                    Func1 = fxr.ReferenceFunction(Func1);
+                    Func2 = fxr.ReferenceFunction(Func2);
+                }
+
+                internal override void InnerFromXIDs(FXR1 fxr)
+                {
+                    Func1 = fxr.DereferenceFunction(Func1);
+                    Func2 = fxr.DereferenceFunction(Func2);
+                }
+
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(124);
@@ -1733,6 +1923,18 @@ namespace SoulsFormatsExtensions
             {
                 public Function Func1;
                 public Function Func2;
+
+                internal override void InnerToXIDs(FXR1 fxr)
+                {
+                    Func1 = fxr.ReferenceFunction(Func1);
+                    Func2 = fxr.ReferenceFunction(Func2);
+                }
+
+                internal override void InnerFromXIDs(FXR1 fxr)
+                {
+                    Func1 = fxr.DereferenceFunction(Func1);
+                    Func2 = fxr.DereferenceFunction(Func2);
+                }
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
@@ -1759,6 +1961,18 @@ namespace SoulsFormatsExtensions
                 public Function Func1;
                 public Function Func2;
 
+                internal override void InnerToXIDs(FXR1 fxr)
+                {
+                    Func1 = fxr.ReferenceFunction(Func1);
+                    Func2 = fxr.ReferenceFunction(Func2);
+                }
+
+                internal override void InnerFromXIDs(FXR1 fxr)
+                {
+                    Func1 = fxr.DereferenceFunction(Func1);
+                    Func2 = fxr.DereferenceFunction(Func2);
+                }
+
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(127);
@@ -1782,6 +1996,16 @@ namespace SoulsFormatsExtensions
             public class Function128 : Function
             {
                 public Function Func;
+
+                internal override void InnerToXIDs(FXR1 fxr)
+                {
+                    Func = fxr.ReferenceFunction(Func);
+                }
+
+                internal override void InnerFromXIDs(FXR1 fxr)
+                {
+                    Func = fxr.DereferenceFunction(Func);
+                }
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
@@ -1867,86 +2091,93 @@ namespace SoulsFormatsExtensions
 
             public class Function137 : Function
             {
-                public int Unknown1;
-                public int Unknown2;
-                public int Unknown3;
+                [XmlAttribute]
+                public int Unk1;
+                [XmlAttribute]
+                public int Unk2;
+                [XmlAttribute]
+                public int Unk3;
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(137);
 
-                    Unknown1 = br.ReadFXR1Varint();
-                    Unknown2 = br.ReadFXR1Varint();
-                    Unknown3 = br.ReadFXR1Varint();
+                    Unk1 = br.ReadFXR1Varint();
+                    Unk2 = br.ReadFXR1Varint();
+                    Unk3 = br.ReadFXR1Varint();
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(137);
 
-                    bw.WriteFXR1Varint(Unknown1);
-                    bw.WriteFXR1Varint(Unknown2);
-                    bw.WriteFXR1Varint(Unknown3);
+                    bw.WriteFXR1Varint(Unk1);
+                    bw.WriteFXR1Varint(Unk2);
+                    bw.WriteFXR1Varint(Unk3);
                 }
             }
 
             public class Function138 : Function
             {
-                public int Unknown1;
+                [XmlAttribute]
+                public int Unk1;
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(138);
 
-                    Unknown1 = br.ReadFXR1Varint();
+                    Unk1 = br.ReadFXR1Varint();
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(138);
 
-                    bw.WriteFXR1Varint(Unknown1);
+                    bw.WriteFXR1Varint(Unk1);
                 }
             }
 
             public class Function139 : Function
             {
-                public int Unknown1;
+                [XmlAttribute]
+                public int Unk1;
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(139);
 
-                    Unknown1 = br.ReadFXR1Varint();
+                    Unk1 = br.ReadFXR1Varint();
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(139);
 
-                    bw.WriteFXR1Varint(Unknown1);
+                    bw.WriteFXR1Varint(Unk1);
                 }
             }
 
             public class Function140 : Function
             {
-                public int Unknown1;
-                public int Unknown2;
+                [XmlAttribute]
+                public int Unk1;
+                [XmlAttribute]
+                public int Unk2;
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(140);
 
-                    Unknown1 = br.ReadFXR1Varint();
-                    Unknown2 = br.ReadFXR1Varint();
+                    Unk1 = br.ReadFXR1Varint();
+                    Unk2 = br.ReadFXR1Varint();
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(140);
 
-                    bw.WriteFXR1Varint(Unknown1);
-                    bw.WriteFXR1Varint(Unknown2);
+                    bw.WriteFXR1Varint(Unk1);
+                    bw.WriteFXR1Varint(Unk2);
                 }
             }
 
