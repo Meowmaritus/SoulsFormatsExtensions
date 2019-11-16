@@ -78,16 +78,16 @@ namespace SoulsFormatsExtensions
             private FxrEnvironment currentWriteEnvironment = null;
             private Dictionary<Param, List<long>> paramWriteLocations = new Dictionary<Param, List<long>>();
 
-            protected void WriteParamArray(Param[] p, int expectedLength)
-            {
-                if (p.Length != expectedLength)
-                    throw new InvalidOperationException("Invalid number of params in param array.");
+            //protected void WriteParamArray(Param[] p, int expectedLength)
+            //{
+            //    if (p.Length != expectedLength)
+            //        throw new InvalidOperationException("Invalid number of params in param array.");
 
-                foreach (var x in p)
-                    WriteParam(x);
-            }
+            //    foreach (var x in p)
+            //        WriteParam(x);
+            //}
 
-            protected void WriteParam(Param p)
+            internal void WriteParam(Param p)
             {
                 currentWriteEnvironment.bw.WriteFXR1Varint(p.Type);
 
@@ -257,18 +257,21 @@ namespace SoulsFormatsExtensions
                 public float Unk4;
                 public int TextureID;
                 public int Unk6;
-                public Param[] Unk7;
+                public Param Unk7_1;
+                public Param Unk7_2;
+                public Param Unk7_3;
+                public Param Unk7_4;
+                public Param Unk7_5;
+                public Param Unk7_6;
+                public Param Unk7_7;
+                public Param Unk7_8;
+                public Param Unk7_9;
+                public Param Unk7_10;
                 public int Unk8;
                 public int Unk9;
                 public int Unk10;
                 public float Unk11;
-                public Param[] DS1R_Unk1;
-                public float DS1R_Unk2;
-                public int DS1R_Unk3;
-                public int DS1R_Unk4;
-                public int DS1R_Unk5;
-                public int DS1R_Unk6;
-                public int DS1R_Unk7;
+                public DS1RExtraParams DS1RData;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
@@ -288,22 +291,25 @@ namespace SoulsFormatsExtensions
 
                     br.AssertInt32(0);
 
-                    Unk7 = Param.ReadMany(br, env, 10);
+                    Unk7_1 = Param.Read(br, env);
+                    Unk7_2 = Param.Read(br, env);
+                    Unk7_3 = Param.Read(br, env);
+                    Unk7_4 = Param.Read(br, env);
+                    Unk7_5 = Param.Read(br, env);
+                    Unk7_6 = Param.Read(br, env);
+                    Unk7_7 = Param.Read(br, env);
+                    Unk7_8 = Param.Read(br, env);
+                    Unk7_9 = Param.Read(br, env);
+                    Unk7_10 = Param.Read(br, env);
+
                     Unk8 = br.ReadInt32();
                     Unk9 = br.ReadInt32();
                     Unk10 = br.ReadInt32();
                     Unk11 = br.ReadSingle();
 
                     if (br.VarintLong)
-                    {
-                        DS1R_Unk1 = Param.ReadMany(br, env, 5);
-                        DS1R_Unk2 = br.ReadInt32();
-                        DS1R_Unk3 = br.ReadInt32();
-                        DS1R_Unk4 = br.ReadInt32();
-                        DS1R_Unk5 = br.ReadInt32();
-                        DS1R_Unk6 = br.ReadInt32();
-                        DS1R_Unk7 = br.ReadInt32();
-                    }
+                        DS1RData = DS1RExtraParams.Read(br, env);
+                    
                 }
 
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
@@ -324,22 +330,23 @@ namespace SoulsFormatsExtensions
 
                     bw.WriteInt32(0);
 
-                    WriteParamArray(Unk7, 10);
+                    WriteParam(Unk7_1);
+                    WriteParam(Unk7_2);
+                    WriteParam(Unk7_3);
+                    WriteParam(Unk7_4);
+                    WriteParam(Unk7_5);
+                    WriteParam(Unk7_6);
+                    WriteParam(Unk7_7);
+                    WriteParam(Unk7_8);
+                    WriteParam(Unk7_9);
+                    WriteParam(Unk7_10);
                     bw.WriteInt32(Unk8);
                     bw.WriteInt32(Unk9);
                     bw.WriteInt32(Unk10);
                     bw.WriteSingle(Unk11);
 
                     if (bw.VarintLong)
-                    {
-                        WriteParamArray(DS1R_Unk1, 5);
-                        bw.WriteSingle(DS1R_Unk2);
-                        bw.WriteInt32(DS1R_Unk3);
-                        bw.WriteInt32(DS1R_Unk4);
-                        bw.WriteInt32(DS1R_Unk5);
-                        bw.WriteInt32(DS1R_Unk6);
-                        bw.WriteInt32(DS1R_Unk7);
-                    }
+                        DS1RData.Write(bw, this);
                 }
             }
 
@@ -349,20 +356,25 @@ namespace SoulsFormatsExtensions
             {
                 public override int Type => 28;
 
-                public Param[] Unk1;
-                public int Unk2;
+                public Param Unk1;
+                public Param Unk2;
+                public Param Unk3;
+                public int Unk4;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
-                    Unk1 = Param.ReadMany(br, env, 3);
-                    Unk2 = br.ReadInt32();
+                    Unk1 = Param.Read(br, env);
+                    Unk2 = Param.Read(br, env);
+                    Unk3 = Param.Read(br, env);
+                    Unk4 = br.ReadInt32();
                 }
 
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
-                    WriteParamArray(Unk1, 3);
-
-                    bw.WriteInt32(Unk2);
+                    WriteParam(Unk1);
+                    WriteParam(Unk2);
+                    WriteParam(Unk3);
+                    bw.WriteInt32(Unk4);
                 }
             }
 
@@ -371,19 +383,31 @@ namespace SoulsFormatsExtensions
             {
                 public override int Type => 29;
 
-                public Param[] Unk1;
-                public int Unk2;
+                public Param Unk1;
+                public Param Unk2;
+                public Param Unk3;
+                public Param Unk4;
+                public Param Unk5;
+                public int Unk6;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
-                    Unk1 = Param.ReadMany(br, env, 5);
-                    Unk2 = br.ReadInt32();
+                    Unk1 = Param.Read(br, env);
+                    Unk2 = Param.Read(br, env);
+                    Unk3 = Param.Read(br, env);
+                    Unk4 = Param.Read(br, env);
+                    Unk5 = Param.Read(br, env);
+                    Unk6 = br.ReadInt32();
                 }
 
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
-                    WriteParamArray(Unk1, 5);
-                    bw.WriteInt32(Unk2);
+                    WriteParam(Unk1);
+                    WriteParam(Unk2);
+                    WriteParam(Unk3);
+                    WriteParam(Unk4);
+                    WriteParam(Unk5);
+                    bw.WriteInt32(Unk6);
                 }
             }
 
@@ -391,14 +415,20 @@ namespace SoulsFormatsExtensions
             {
                 public override int Type => 30;
 
-                public Param[] Unk1;
+                public Param Unk1_1;
+                public Param Unk1_2;
+                public Param Unk1_3;
+                public Param Unk1_4;
                 public float Unk2;
                 public int Unk3;
                 public int Unk4;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
-                    Unk1 = Param.ReadMany(br, env, 4);
+                    Unk1_1 = Param.Read(br, env);
+                    Unk1_2 = Param.Read(br, env);
+                    Unk1_3 = Param.Read(br, env);
+                    Unk1_4 = Param.Read(br, env);
                     Unk2 = br.ReadSingle();
                     Unk3 = br.ReadInt32();
                     Unk4 = br.ReadFXR1Varint();
@@ -406,8 +436,10 @@ namespace SoulsFormatsExtensions
 
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
-                    WriteParamArray(Unk1, 4);
-
+                    WriteParam(Unk1_1);
+                    WriteParam(Unk1_2);
+                    WriteParam(Unk1_3);
+                    WriteParam(Unk1_4);
                     bw.WriteSingle(Unk2);
                     bw.WriteInt32(Unk3);
                     bw.WriteFXR1Varint(Unk4);
@@ -419,21 +451,29 @@ namespace SoulsFormatsExtensions
             {
                 public override int Type => 31;
 
-                public Param[] Unk1;
+                public Param Unk1_1;
+                public Param Unk1_2;
+                public Param Unk1_3;
+                public Param Unk1_4;
                 public int Unk2;
                 public int Unk3;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
-                    Unk1 = Param.ReadMany(br, env, 4);
+                    Unk1_1 = Param.Read(br, env);
+                    Unk1_2 = Param.Read(br, env);
+                    Unk1_3 = Param.Read(br, env);
+                    Unk1_4 = Param.Read(br, env);
                     Unk2 = br.ReadInt32();
                     Unk3 = br.ReadInt32();
                 }
 
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
-                    WriteParamArray(Unk1, 4);
-
+                    WriteParam(Unk1_1);
+                    WriteParam(Unk1_2);
+                    WriteParam(Unk1_3);
+                    WriteParam(Unk1_4);
                     bw.WriteInt32(Unk2);
                     bw.WriteInt32(Unk3);
                 }
@@ -446,7 +486,9 @@ namespace SoulsFormatsExtensions
                 public Param OffsetX;
                 public Param OffsetY;
                 public Param OffsetZ;
-                public Param[] Unk1;
+                public Param Unk1_1;
+                public Param Unk1_2;
+                public Param Unk1_3;
                 public int Unk2;
                 public int Unk3;
 
@@ -455,7 +497,9 @@ namespace SoulsFormatsExtensions
                     OffsetX = Param.Read(br, env);
                     OffsetY = Param.Read(br, env);
                     OffsetZ = Param.Read(br, env);
-                    Unk1 = Param.ReadMany(br, env, 3);
+                    Unk1_1 = Param.Read(br, env);
+                    Unk1_2 = Param.Read(br, env);
+                    Unk1_3 = Param.Read(br, env);
                     Unk2 = br.ReadInt32();
                     Unk3 = br.ReadInt32();
                 }
@@ -465,7 +509,9 @@ namespace SoulsFormatsExtensions
                     WriteParam(OffsetX);
                     WriteParam(OffsetY);
                     WriteParam(OffsetZ);
-                    WriteParamArray(Unk1, 3);
+                    WriteParam(Unk1_1);
+                    WriteParam(Unk1_2);
+                    WriteParam(Unk1_3);
                     bw.WriteInt32(Unk2);
                     bw.WriteInt32(Unk3);
                 }
@@ -480,27 +526,28 @@ namespace SoulsFormatsExtensions
                 public int Unk3;
                 public int Unk4;
                 public int Unk5;
-                public Param[] Unk6;
+                public Param Unk6_1;
+                public Param Unk6_2;
+                public Param Unk6_3;
+                public Param Unk6_4;
                 public float Unk7;
                 public float Unk8;
                 public int Unk9;
                 public int Unk10;
-                public Param[] Unk11;
+                public Param Unk11_1;
+                public Param Unk11_2;
+                public Param Unk11_3;
+                public Param Unk11_4;
                 public int Unk12;
                 public int Unk13;
                 public Param Unk14;
                 public int Unk15;
                 public float Unk16;
-                public Param[] Unk17;
+                public Param Unk17_1;
+                public Param Unk17_2;
                 public int Unk18;
 
-                public Param[] DS1R_Unk1;
-                public float DS1R_Unk2;
-                public int DS1R_Unk3;
-                public int DS1R_Unk4;
-                public int DS1R_Unk5;
-                public int DS1R_Unk6;
-                public int DS1R_Unk7;
+                public DS1RExtraParams DS1RData;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
@@ -514,7 +561,10 @@ namespace SoulsFormatsExtensions
                     Unk3 = br.ReadInt32();
                     Unk4 = br.ReadInt32();
                     Unk5 = br.ReadInt32();
-                    Unk6 = Param.ReadMany(br, env, 4);
+                    Unk6_1 = Param.Read(br, env);
+                    Unk6_2 = Param.Read(br, env);
+                    Unk6_3 = Param.Read(br, env);
+                    Unk6_4 = Param.Read(br, env);
                     Unk7 = br.ReadSingle();
                     Unk8 = br.ReadSingle();
                     Unk9 = br.ReadInt32();
@@ -522,7 +572,10 @@ namespace SoulsFormatsExtensions
 
                     br.AssertInt32(0);
 
-                    Unk11 = Param.ReadMany(br, env, 4);
+                    Unk11_1 = Param.Read(br, env);
+                    Unk11_2 = Param.Read(br, env);
+                    Unk11_3 = Param.Read(br, env);
+                    Unk11_4 = Param.Read(br, env);
                     Unk12 = br.ReadInt32();
                     Unk13 = br.ReadInt32();
 
@@ -531,19 +584,12 @@ namespace SoulsFormatsExtensions
                     Unk14 = Param.Read(br, env);
                     Unk15 = br.ReadInt32();
                     Unk16 = br.ReadSingle();
-                    Unk17 = Param.ReadMany(br, env, 2);
+                    Unk17_1 = Param.Read(br, env);
+                    Unk17_2 = Param.Read(br, env);
                     Unk18 = br.ReadInt32();
 
                     if (br.VarintLong)
-                    {
-                        DS1R_Unk1 = Param.ReadMany(br, env, 5);
-                        DS1R_Unk2 = br.ReadSingle();
-                        DS1R_Unk3 = br.ReadInt32();
-                        DS1R_Unk4 = br.ReadInt32();
-                        DS1R_Unk5 = br.ReadInt32();
-                        DS1R_Unk6 = br.ReadInt32();
-                        DS1R_Unk7 = br.ReadInt32();
-                    }
+                        DS1RData = DS1RExtraParams.Read(br, env);
                 }
 
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
@@ -558,7 +604,10 @@ namespace SoulsFormatsExtensions
                     bw.WriteInt32(Unk3);
                     bw.WriteInt32(Unk4);
                     bw.WriteInt32(Unk5);
-                    WriteParamArray(Unk6, 4);
+                    WriteParam(Unk6_1);
+                    WriteParam(Unk6_2);
+                    WriteParam(Unk6_3);
+                    WriteParam(Unk6_4);
                     bw.WriteSingle(Unk7);
                     bw.WriteSingle(Unk8);
                     bw.WriteInt32(Unk9);
@@ -566,7 +615,10 @@ namespace SoulsFormatsExtensions
 
                     bw.WriteInt32(0);
 
-                    WriteParamArray(Unk11, 4);
+                    WriteParam(Unk11_1);
+                    WriteParam(Unk11_2);
+                    WriteParam(Unk11_3);
+                    WriteParam(Unk11_4);
                     bw.WriteInt32(Unk12);
                     bw.WriteInt32(Unk13);
 
@@ -575,20 +627,12 @@ namespace SoulsFormatsExtensions
                     WriteParam(Unk14);
                     bw.WriteInt32(Unk15);
                     bw.WriteSingle(Unk16);
-                    WriteParamArray(Unk17, 2);
+                    WriteParam(Unk17_1);
+                    WriteParam(Unk17_2);
                     bw.WriteInt32(Unk18);
 
                     if (bw.VarintLong)
-                    {
-                        WriteParamArray(DS1R_Unk1, 5);
-
-                        bw.WriteSingle(DS1R_Unk2);
-                        bw.WriteInt32(DS1R_Unk3);
-                        bw.WriteInt32(DS1R_Unk4);
-                        bw.WriteInt32(DS1R_Unk5);
-                        bw.WriteInt32(DS1R_Unk6);
-                        bw.WriteInt32(DS1R_Unk7);
-                    }
+                        DS1RData.Write(bw, this);
                 }
             }
 
@@ -603,7 +647,19 @@ namespace SoulsFormatsExtensions
                 public int Unk4;
                 public int Unk5;
                 public int Unk6;
-                public Param[] Unk7;
+                public Param Unk7_1;
+                public Param Unk7_2;
+                public Param Unk7_3;
+                public Param Unk7_4;
+                public Param Unk7_5;
+                public Param Unk7_6;
+                public Param Unk7_7;
+                public Param Unk7_8;
+                public Param Unk7_9;
+                public Param Unk7_10;
+                public Param Unk7_11;
+                public Param Unk7_12;
+                public Param Unk7_13;
                 public int Unk8;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
@@ -617,7 +673,19 @@ namespace SoulsFormatsExtensions
                     Unk4 = br.ReadInt32();
                     Unk5 = br.ReadInt32();
                     Unk6 = br.ReadInt32();
-                    Unk7 = Param.ReadMany(br, env, 13);
+                    Unk7_1 = Param.Read(br, env);
+                    Unk7_2 = Param.Read(br, env);
+                    Unk7_3 = Param.Read(br, env);
+                    Unk7_4 = Param.Read(br, env);
+                    Unk7_5 = Param.Read(br, env);
+                    Unk7_6 = Param.Read(br, env);
+                    Unk7_7 = Param.Read(br, env);
+                    Unk7_8 = Param.Read(br, env);
+                    Unk7_9 = Param.Read(br, env);
+                    Unk7_10 = Param.Read(br, env);
+                    Unk7_11 = Param.Read(br, env);
+                    Unk7_12 = Param.Read(br, env);
+                    Unk7_13 = Param.Read(br, env);
                     Unk8 = br.ReadInt32();
                 }
 
@@ -632,7 +700,19 @@ namespace SoulsFormatsExtensions
                     bw.WriteInt32(Unk4);
                     bw.WriteInt32(Unk5);
                     bw.WriteInt32(Unk6);
-                    WriteParamArray(Unk7, 13);
+                    WriteParam(Unk7_1);
+                    WriteParam(Unk7_2);
+                    WriteParam(Unk7_3);
+                    WriteParam(Unk7_4);
+                    WriteParam(Unk7_5);
+                    WriteParam(Unk7_6);
+                    WriteParam(Unk7_7);
+                    WriteParam(Unk7_8);
+                    WriteParam(Unk7_9);
+                    WriteParam(Unk7_10);
+                    WriteParam(Unk7_11);
+                    WriteParam(Unk7_12);
+                    WriteParam(Unk7_13);
                     bw.WriteInt32(Unk8);
                 }
             }
@@ -641,22 +721,31 @@ namespace SoulsFormatsExtensions
             {
                 public override int Type => 55;
 
-                public Param[] Unk1;
-                public float Unk2;
+                public Param Unk1;
+                public Param Unk2;
+                public Param Unk3;
+                public float Unk4;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
-                    Unk1 = Param.ReadMany(br, env, 3);
+                    Unk1 = Param.Read(br, env);
+                    Unk2 = Param.Read(br, env);
+                    Unk3 = Param.Read(br, env);
+
                     br.AssertInt32(0);
-                    Unk2 = br.ReadSingle();
+
+                    Unk4 = br.ReadSingle();
                 }
 
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
-                    WriteParamArray(Unk1, 3);
+                    WriteParam(Unk1);
+                    WriteParam(Unk2);
+                    WriteParam(Unk3);
 
                     bw.WriteInt32(0);
-                    bw.WriteSingle(Unk2);
+
+                    bw.WriteSingle(Unk4);
                 }
             }
 
@@ -668,22 +757,27 @@ namespace SoulsFormatsExtensions
                 public int TextureID;
                 public int Unk2;
                 public int Unk3;
-                public Param[] Unk4;
+                public Param Unk4_1;
+                public Param Unk4_2;
+                public Param Unk4_3;
+                public Param Unk4_4;
+                public Param Unk4_5;
                 public int Unk5;
                 public int Unk6;
-                public Param[] Unk7;
+                public Param Unk7_1;
+                public Param Unk7_2;
+                public Param Unk7_3;
+                public Param Unk7_4;
+                public Param Unk7_5;
+                public Param Unk7_6;
+                public Param Unk7_7;
+                public Param Unk7_8;
                 public int Unk8;
                 public int Unk9;
                 public int Unk10;
                 public float Unk11;
 
-                public Param[] DS1R_Unk1;
-                public float DS1R_Unk2;
-                public int DS1R_Unk3;
-                public int DS1R_Unk4;
-                public int DS1R_Unk5;
-                public int DS1R_Unk6;
-                public int DS1R_Unk7;
+                public DS1RExtraParams DS1RData;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
@@ -697,10 +791,21 @@ namespace SoulsFormatsExtensions
 
                     Unk2 = br.ReadInt32();
                     Unk3 = br.ReadInt32();
-                    Unk4 = Param.ReadMany(br, env, 5);
+                    Unk4_1 = Param.Read(br, env);
+                    Unk4_2 = Param.Read(br, env);
+                    Unk4_3 = Param.Read(br, env);
+                    Unk4_4 = Param.Read(br, env);
+                    Unk4_5 = Param.Read(br, env);
                     Unk5 = br.ReadInt32();
                     Unk6 = br.ReadInt32();
-                    Unk7 = Param.ReadMany(br, env, 8);
+                    Unk7_1 = Param.Read(br, env);
+                    Unk7_2 = Param.Read(br, env);
+                    Unk7_3 = Param.Read(br, env);
+                    Unk7_4 = Param.Read(br, env);
+                    Unk7_5 = Param.Read(br, env);
+                    Unk7_6 = Param.Read(br, env);
+                    Unk7_7 = Param.Read(br, env);
+                    Unk7_8 = Param.Read(br, env);
                     Unk8 = br.ReadInt32();
                     Unk9 = br.ReadInt32();
 
@@ -712,15 +817,7 @@ namespace SoulsFormatsExtensions
                     br.AssertInt32(0);
 
                     if (br.VarintLong)
-                    {
-                        DS1R_Unk1 = Param.ReadMany(br, env, 5);
-                        DS1R_Unk2 = br.ReadSingle();
-                        DS1R_Unk3 = br.ReadInt32();
-                        DS1R_Unk4 = br.ReadInt32();
-                        DS1R_Unk5 = br.ReadInt32();
-                        DS1R_Unk6 = br.ReadInt32();
-                        DS1R_Unk7 = br.ReadInt32();
-                    }
+                        DS1RData = DS1RExtraParams.Read(br, env);
                 }
 
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
@@ -735,10 +832,21 @@ namespace SoulsFormatsExtensions
 
                     bw.WriteInt32(Unk2);
                     bw.WriteInt32(Unk3);
-                    WriteParamArray(Unk4, 5);
+                    WriteParam(Unk4_1);
+                    WriteParam(Unk4_2);
+                    WriteParam(Unk4_3);
+                    WriteParam(Unk4_4);
+                    WriteParam(Unk4_5);
                     bw.WriteInt32(Unk5);
                     bw.WriteInt32(Unk6);
-                    WriteParamArray(Unk7, 8);
+                    WriteParam(Unk7_1);
+                    WriteParam(Unk7_2);
+                    WriteParam(Unk7_3);
+                    WriteParam(Unk7_4);
+                    WriteParam(Unk7_5);
+                    WriteParam(Unk7_6);
+                    WriteParam(Unk7_7);
+                    WriteParam(Unk7_8);
                     bw.WriteInt32(Unk8);
                     bw.WriteInt32(Unk9);
 
@@ -750,15 +858,7 @@ namespace SoulsFormatsExtensions
                     bw.WriteInt32(0);
 
                     if (bw.VarintLong)
-                    {
-                        WriteParamArray(DS1R_Unk1, 5);
-                        bw.WriteSingle(DS1R_Unk2);
-                        bw.WriteInt32(DS1R_Unk3);
-                        bw.WriteInt32(DS1R_Unk4);
-                        bw.WriteInt32(DS1R_Unk5);
-                        bw.WriteInt32(DS1R_Unk6);
-                        bw.WriteInt32(DS1R_Unk7);
-                    }
+                        DS1RData.Write(bw, this);
                 }
             }
 
@@ -769,24 +869,30 @@ namespace SoulsFormatsExtensions
                 public int TextureID;
                 public int Unk1;
                 public int Unk2;
-                public int Unk3;
-                public Param[] Unk4;
+                public int Unk3_1;
+                public int Unk3_2;
+                public Param Unk4_1;
+                public Param Unk4_2;
+                public Param Unk4_3;
                 public int Unk5;
                 public float Unk6;
                 public Param Unk7;
                 public int Unk8;
                 public int Unk9;
-                public Param[] Unk10;
+                public Param Unk10_1;
+                public Param Unk10_2;
+                public Param Unk10_3;
+                public Param Unk10_4;
+                public Param Unk10_5;
+                public Param Unk10_6;
+                public Param Unk10_7;
+                public Param Unk10_8;
+                public Param Unk10_9;
+                public Param Unk10_10;
                 public int Unk11;
                 public int Unk12;
 
-                public Param[] DS1R_Unk1;
-                public float DS1R_Unk2;
-                public int DS1R_Unk3;
-                public int DS1R_Unk4;
-                public int DS1R_Unk5;
-                public int DS1R_Unk6;
-                public int DS1R_Unk7;
+                public DS1RExtraParams DS1RData;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
@@ -796,11 +902,11 @@ namespace SoulsFormatsExtensions
                     TextureID = br.ReadInt32();
                     Unk1 = br.ReadInt32();
                     Unk2 = br.ReadInt32();
-                    Unk3 = br.ReadInt32();
-
-                    br.AssertInt32(0);
-
-                    Unk4 = Param.ReadMany(br, env, 3);
+                    Unk3_1 = br.ReadInt32();
+                    Unk3_2 = br.ReadInt32();
+                    Unk4_1 = Param.Read(br, env);
+                    Unk4_2 = Param.Read(br, env);
+                    Unk4_3 = Param.Read(br, env);
 
                     br.AssertInt32(0);
                     br.AssertInt32(0);
@@ -813,7 +919,16 @@ namespace SoulsFormatsExtensions
                     Unk7 = Param.Read(br, env);
                     Unk8 = br.ReadInt32();
                     Unk9 = br.ReadInt32();
-                    Unk10 = Param.ReadMany(br, env, 10);
+                    Unk10_1 = Param.Read(br, env);
+                    Unk10_2 = Param.Read(br, env);
+                    Unk10_3 = Param.Read(br, env);
+                    Unk10_4 = Param.Read(br, env);
+                    Unk10_5 = Param.Read(br, env);
+                    Unk10_6 = Param.Read(br, env);
+                    Unk10_7 = Param.Read(br, env);
+                    Unk10_8 = Param.Read(br, env);
+                    Unk10_9 = Param.Read(br, env);
+                    Unk10_10 = Param.Read(br, env);
                     Unk11 = br.ReadInt32();
                     Unk12 = br.ReadInt32();
 
@@ -821,15 +936,7 @@ namespace SoulsFormatsExtensions
                     br.AssertInt32(0);
 
                     if (br.VarintLong)
-                    {
-                        DS1R_Unk1 = Param.ReadMany(br, env, 5);
-                        DS1R_Unk2 = br.ReadSingle();
-                        DS1R_Unk3 = br.ReadInt32();
-                        DS1R_Unk4 = br.ReadInt32();
-                        DS1R_Unk5 = br.ReadInt32();
-                        DS1R_Unk6 = br.ReadInt32();
-                        DS1R_Unk7 = br.ReadInt32();
-                    }
+                        DS1RData = DS1RExtraParams.Read(br, env);
                 }
 
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
@@ -840,11 +947,11 @@ namespace SoulsFormatsExtensions
                     bw.WriteInt32(TextureID);
                     bw.WriteInt32(Unk1);
                     bw.WriteInt32(Unk2);
-                    bw.WriteInt32(Unk3);
-
-                    bw.WriteInt32(0);
-
-                    WriteParamArray(Unk4, 3);
+                    bw.WriteInt32(Unk3_1);
+                    bw.WriteInt32(Unk3_2);
+                    WriteParam(Unk4_1);
+                    WriteParam(Unk4_2);
+                    WriteParam(Unk4_3);
 
                     bw.WriteInt32(0);
                     bw.WriteInt32(0);
@@ -857,7 +964,16 @@ namespace SoulsFormatsExtensions
                     WriteParam(Unk7);
                     bw.WriteInt32(Unk8);
                     bw.WriteInt32(Unk9);
-                    WriteParamArray(Unk10, 10);
+                    WriteParam(Unk10_1);
+                    WriteParam(Unk10_2);
+                    WriteParam(Unk10_3);
+                    WriteParam(Unk10_4);
+                    WriteParam(Unk10_5);
+                    WriteParam(Unk10_6);
+                    WriteParam(Unk10_7);
+                    WriteParam(Unk10_8);
+                    WriteParam(Unk10_9);
+                    WriteParam(Unk10_10);
                     bw.WriteInt32(Unk11);
                     bw.WriteInt32(Unk12);
 
@@ -865,15 +981,7 @@ namespace SoulsFormatsExtensions
                     bw.WriteInt32(0);
 
                     if (bw.VarintLong)
-                    {
-                        WriteParamArray(DS1R_Unk1, 5);
-                        bw.WriteSingle(DS1R_Unk2);
-                        bw.WriteInt32(DS1R_Unk3);
-                        bw.WriteInt32(DS1R_Unk4);
-                        bw.WriteInt32(DS1R_Unk5);
-                        bw.WriteInt32(DS1R_Unk6);
-                        bw.WriteInt32(DS1R_Unk7);
-                    }
+                        DS1RData.Write(bw, this);
                 }
             }
 
@@ -890,15 +998,34 @@ namespace SoulsFormatsExtensions
 
                 public int DS1R_Unk0;
 
-                public Param[] Unk6;
+                public Param Unk6_1;
+                public Param Unk6_2;
+                public Param Unk6_3;
+                public Param Unk6_4;
+                public Param Unk6_5;
+                public Param Unk6_6;
+                public Param Unk6_7;
+                public Param Unk6_8;
+                public Param Unk6_9;
+                public Param Unk6_10;
+                public Param Unk6_11;
+                public Param Unk6_12;
+                public Param Unk6_13;
+                public Param Unk6_14;
+                public Param Unk6_15;
+                public Param Unk6_16;
+                public Param Unk6_17;
+                public Param Unk6_18;
+                public Param Unk6_19;
+                public Param Unk6_20;
+                public Param Unk6_21;
+                public Param Unk6_22;
+                public Param Unk6_23;
+                public Param Unk6_24;
+                public Param Unk6_25;
+                public Param Unk6_26;
 
-                public Param[] DS1R_Unk1;
-                public float DS1R_Unk2;
-                public int DS1R_Unk3;
-                public int DS1R_Unk4;
-                public int DS1R_Unk5;
-                public int DS1R_Unk6;
-                public int DS1R_Unk7;
+                public DS1RExtraParams DS1RData;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
@@ -914,20 +1041,39 @@ namespace SoulsFormatsExtensions
                     if (br.VarintLong)
                         DS1R_Unk0 = br.ReadFXR1Varint();
 
-                    Unk6 = Param.ReadMany(br, env, 26);
+                    Unk6_1 = Param.Read(br, env);
+                    Unk6_2 = Param.Read(br, env);
+                    Unk6_3 = Param.Read(br, env);
+                    Unk6_4 = Param.Read(br, env);
+                    Unk6_5 = Param.Read(br, env);
+                    Unk6_6 = Param.Read(br, env);
+                    Unk6_7 = Param.Read(br, env);
+                    Unk6_8 = Param.Read(br, env);
+                    Unk6_9 = Param.Read(br, env);
+                    Unk6_10 = Param.Read(br, env);
+                    Unk6_11 = Param.Read(br, env);
+                    Unk6_12 = Param.Read(br, env);
+                    Unk6_13 = Param.Read(br, env);
+                    Unk6_14 = Param.Read(br, env);
+                    Unk6_15 = Param.Read(br, env);
+                    Unk6_16 = Param.Read(br, env);
+                    Unk6_17 = Param.Read(br, env);
+                    Unk6_18 = Param.Read(br, env);
+                    Unk6_19 = Param.Read(br, env);
+                    Unk6_20 = Param.Read(br, env);
+                    Unk6_21 = Param.Read(br, env);
+                    Unk6_22 = Param.Read(br, env);
+                    Unk6_23 = Param.Read(br, env);
+                    Unk6_24 = Param.Read(br, env);
+                    Unk6_25 = Param.Read(br, env);
+                    Unk6_26 = Param.Read(br, env);
 
                     br.AssertInt32(0);
 
                     if (br.VarintLong)
                     {
                         br.AssertInt32(0);
-                        DS1R_Unk1 = Param.ReadMany(br, env, 5);
-                        DS1R_Unk2 = br.ReadSingle();
-                        DS1R_Unk3 = br.ReadInt32();
-                        DS1R_Unk4 = br.ReadInt32();
-                        DS1R_Unk5 = br.ReadInt32();
-                        DS1R_Unk6 = br.ReadInt32();
-                        DS1R_Unk7 = br.ReadInt32();
+                        DS1RData = DS1RExtraParams.Read(br, env);
                     }
                 }
 
@@ -945,20 +1091,39 @@ namespace SoulsFormatsExtensions
                     if (bw.VarintLong)
                         bw.WriteFXR1Varint(DS1R_Unk0);
 
-                    WriteParamArray(Unk6, 26);
+                    WriteParam(Unk6_1);
+                    WriteParam(Unk6_2);
+                    WriteParam(Unk6_3);
+                    WriteParam(Unk6_4);
+                    WriteParam(Unk6_5);
+                    WriteParam(Unk6_6);
+                    WriteParam(Unk6_7);
+                    WriteParam(Unk6_8);
+                    WriteParam(Unk6_9);
+                    WriteParam(Unk6_10);
+                    WriteParam(Unk6_11);
+                    WriteParam(Unk6_12);
+                    WriteParam(Unk6_13);
+                    WriteParam(Unk6_14);
+                    WriteParam(Unk6_15);
+                    WriteParam(Unk6_16);
+                    WriteParam(Unk6_17);
+                    WriteParam(Unk6_18);
+                    WriteParam(Unk6_19);
+                    WriteParam(Unk6_20);
+                    WriteParam(Unk6_21);
+                    WriteParam(Unk6_22);
+                    WriteParam(Unk6_23);
+                    WriteParam(Unk6_24);
+                    WriteParam(Unk6_25);
+                    WriteParam(Unk6_26);
 
                     bw.WriteInt32(0);
 
                     if (bw.VarintLong)
                     {
                         bw.WriteInt32(0);
-                        WriteParamArray(DS1R_Unk1, 5);
-                        bw.WriteSingle(DS1R_Unk2);
-                        bw.WriteInt32(DS1R_Unk3);
-                        bw.WriteInt32(DS1R_Unk4);
-                        bw.WriteInt32(DS1R_Unk5);
-                        bw.WriteInt32(DS1R_Unk6);
-                        bw.WriteInt32(DS1R_Unk7);
+                        DS1RData.Write(bw, this);
                     }
                 }
             }
@@ -978,7 +1143,36 @@ namespace SoulsFormatsExtensions
                 public int Unk6;
                 public int Unk7;
                 public int Unk8;
-                public Param[] Unk9;
+                public Param Unk9_1;
+                public Param Unk9_2;
+                public Param Unk9_3;
+                public Param Unk9_4;
+                public Param Unk9_5;
+                public Param Unk9_6;
+                public Param Unk9_7;
+                public Param Unk9_8;
+                public Param Unk9_9;
+                public Param Unk9_10;
+                public Param Unk9_11;
+                public Param Unk9_12;
+                public Param Unk9_13;
+                public Param Unk9_14;
+                public Param Unk9_15;
+                public Param Unk9_16;
+                public Param Unk9_17;
+                public Param Unk9_18;
+                public Param Unk9_19;
+                public Param Unk9_20;
+                public Param Unk9_21;
+                public Param Unk9_22;
+                public Param Unk9_23;
+                public Param Unk9_24;
+                public Param Unk9_25;
+                public Param Unk9_26;
+                public Param Unk9_27;
+                public Param Unk9_28;
+                public Param Unk9_29;
+                public Param Unk9_30;
                 public int Unk10;
                 public int Unk11;
                 public int Unk12;
@@ -988,13 +1182,7 @@ namespace SoulsFormatsExtensions
                 public float Unk16;
                 public int Unk17;
 
-                public Param[] DS1R_Unk1;
-                public float DS1R_Unk2;
-                public int DS1R_Unk3;
-                public int DS1R_Unk4;
-                public int DS1R_Unk5;
-                public int DS1R_Unk6;
-                public int DS1R_Unk7;
+                public DS1RExtraParams DS1RData;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
@@ -1013,7 +1201,36 @@ namespace SoulsFormatsExtensions
                     Unk6 = br.ReadInt32();
                     Unk7 = br.ReadInt32();
                     Unk8 = br.ReadInt32();
-                    Unk9 = Param.ReadMany(br, env, 30);
+                    Unk9_1 = Param.Read(br, env);
+                    Unk9_2 = Param.Read(br, env);
+                    Unk9_3 = Param.Read(br, env);
+                    Unk9_4 = Param.Read(br, env);
+                    Unk9_5 = Param.Read(br, env);
+                    Unk9_6 = Param.Read(br, env);
+                    Unk9_7 = Param.Read(br, env);
+                    Unk9_8 = Param.Read(br, env);
+                    Unk9_9 = Param.Read(br, env);
+                    Unk9_10 = Param.Read(br, env);
+                    Unk9_11 = Param.Read(br, env);
+                    Unk9_12 = Param.Read(br, env);
+                    Unk9_13 = Param.Read(br, env);
+                    Unk9_14 = Param.Read(br, env);
+                    Unk9_15 = Param.Read(br, env);
+                    Unk9_16 = Param.Read(br, env);
+                    Unk9_17 = Param.Read(br, env);
+                    Unk9_18 = Param.Read(br, env);
+                    Unk9_19 = Param.Read(br, env);
+                    Unk9_20 = Param.Read(br, env);
+                    Unk9_21 = Param.Read(br, env);
+                    Unk9_22 = Param.Read(br, env);
+                    Unk9_23 = Param.Read(br, env);
+                    Unk9_24 = Param.Read(br, env);
+                    Unk9_25 = Param.Read(br, env);
+                    Unk9_26 = Param.Read(br, env);
+                    Unk9_27 = Param.Read(br, env);
+                    Unk9_28 = Param.Read(br, env);
+                    Unk9_29 = Param.Read(br, env);
+                    Unk9_30 = Param.Read(br, env);
                     Unk10 = br.ReadInt32();
 
                     br.AssertInt32(0);
@@ -1038,15 +1255,7 @@ namespace SoulsFormatsExtensions
                     Unk17 = br.ReadInt32();
 
                     if (br.VarintLong)
-                    {
-                        DS1R_Unk1 = Param.ReadMany(br, env, 5);
-                        DS1R_Unk2 = br.ReadSingle();
-                        DS1R_Unk3 = br.ReadInt32();
-                        DS1R_Unk4 = br.ReadInt32();
-                        DS1R_Unk5 = br.ReadInt32();
-                        DS1R_Unk6 = br.ReadInt32();
-                        DS1R_Unk7 = br.ReadInt32();
-                    }
+                        DS1RData = DS1RExtraParams.Read(br, env);
                 }
 
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
@@ -1066,7 +1275,36 @@ namespace SoulsFormatsExtensions
                     bw.WriteInt32(Unk6);
                     bw.WriteInt32(Unk7);
                     bw.WriteInt32(Unk8);
-                    WriteParamArray(Unk9, 30);
+                    WriteParam(Unk9_1);
+                    WriteParam(Unk9_2);
+                    WriteParam(Unk9_3);
+                    WriteParam(Unk9_4);
+                    WriteParam(Unk9_5);
+                    WriteParam(Unk9_6);
+                    WriteParam(Unk9_7);
+                    WriteParam(Unk9_8);
+                    WriteParam(Unk9_9);
+                    WriteParam(Unk9_10);
+                    WriteParam(Unk9_11);
+                    WriteParam(Unk9_12);
+                    WriteParam(Unk9_13);
+                    WriteParam(Unk9_14);
+                    WriteParam(Unk9_15);
+                    WriteParam(Unk9_16);
+                    WriteParam(Unk9_17);
+                    WriteParam(Unk9_18);
+                    WriteParam(Unk9_19);
+                    WriteParam(Unk9_20);
+                    WriteParam(Unk9_21);
+                    WriteParam(Unk9_22);
+                    WriteParam(Unk9_23);
+                    WriteParam(Unk9_24);
+                    WriteParam(Unk9_25);
+                    WriteParam(Unk9_26);
+                    WriteParam(Unk9_27);
+                    WriteParam(Unk9_28);
+                    WriteParam(Unk9_29);
+                    WriteParam(Unk9_30);
                     bw.WriteInt32(Unk10);
 
                     bw.WriteInt32(0);
@@ -1091,15 +1329,7 @@ namespace SoulsFormatsExtensions
                     bw.WriteInt32(Unk17);
 
                     if (bw.VarintLong)
-                    {
-                        WriteParamArray(DS1R_Unk1, 5);
-                        bw.WriteSingle(DS1R_Unk2);
-                        bw.WriteInt32(DS1R_Unk3);
-                        bw.WriteInt32(DS1R_Unk4);
-                        bw.WriteInt32(DS1R_Unk5);
-                        bw.WriteInt32(DS1R_Unk6);
-                        bw.WriteInt32(DS1R_Unk7);
-                    }
+                        DS1RData.Write(bw, this);
                 }
             }
 
@@ -1118,10 +1348,28 @@ namespace SoulsFormatsExtensions
                 public int Unk8;
                 public int Unk9;
                 public int Unk10;
-                public Param[] Unk11;
+                public Param Unk11_1;
+                public Param Unk11_2;
+                public Param Unk11_3;
+                public Param Unk11_4;
+                public Param Unk11_5;
+                public Param Unk11_6;
+                public Param Unk11_7;
+                public Param Unk11_8;
+                public Param Unk11_9;
+                public Param Unk11_10;
                 public int Unk12;
                 public int Unk13;
-                public Param[] Unk14;
+                public Param Unk14_1;
+                public Param Unk14_2;
+                public Param Unk14_3;
+                public Param Unk14_4;
+                public Param Unk14_5;
+                public Param Unk14_6;
+                public Param Unk14_7;
+                public Param Unk14_8;
+                public Param Unk14_9;
+                public Param Unk14_10;
 
                 public int DS1R_UnkA1;
                 public int DS1R_UnkA2;
@@ -1137,13 +1385,7 @@ namespace SoulsFormatsExtensions
                 public float Unk21;
                 public int Unk22;
 
-                public Param[] DS1R_Unk1;
-                public float DS1R_Unk2;
-                public int DS1R_Unk3;
-                public int DS1R_Unk4;
-                public int DS1R_Unk5;
-                public int DS1R_Unk6;
-                public int DS1R_Unk7;
+                public DS1RExtraParams DS1RData;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
@@ -1157,10 +1399,28 @@ namespace SoulsFormatsExtensions
                     Unk8 = br.ReadInt32();
                     Unk9 = br.ReadInt32();
                     Unk10 = br.ReadInt32();
-                    Unk11 = Param.ReadMany(br, env, 10);
+                    Unk11_1 = Param.Read(br, env);
+                    Unk11_2 = Param.Read(br, env);
+                    Unk11_3 = Param.Read(br, env);
+                    Unk11_4 = Param.Read(br, env);
+                    Unk11_5 = Param.Read(br, env);
+                    Unk11_6 = Param.Read(br, env);
+                    Unk11_7 = Param.Read(br, env);
+                    Unk11_8 = Param.Read(br, env);
+                    Unk11_9 = Param.Read(br, env);
+                    Unk11_10 = Param.Read(br, env);
                     Unk12 = br.ReadInt32();
                     Unk13 = br.ReadInt32();
-                    Unk14 = Param.ReadMany(br, env, 10);
+                    Unk14_1 = Param.Read(br, env);
+                    Unk14_2 = Param.Read(br, env);
+                    Unk14_3 = Param.Read(br, env);
+                    Unk14_4 = Param.Read(br, env);
+                    Unk14_5 = Param.Read(br, env);
+                    Unk14_6 = Param.Read(br, env);
+                    Unk14_7 = Param.Read(br, env);
+                    Unk14_8 = Param.Read(br, env);
+                    Unk14_9 = Param.Read(br, env);
+                    Unk14_10 = Param.Read(br, env);
 
                     if (br.VarintLong)
                     {
@@ -1186,15 +1446,7 @@ namespace SoulsFormatsExtensions
                     Unk22 = br.ReadInt32();
 
                     if (br.VarintLong)
-                    {
-                        DS1R_Unk1 = Param.ReadMany(br, env, 5);
-                        DS1R_Unk2 = br.ReadSingle();
-                        DS1R_Unk3 = br.ReadInt32();
-                        DS1R_Unk4 = br.ReadInt32();
-                        DS1R_Unk5 = br.ReadInt32();
-                        DS1R_Unk6 = br.ReadInt32();
-                        DS1R_Unk7 = br.ReadInt32();
-                    }
+                        DS1RData = DS1RExtraParams.Read(br, env);
                 }
 
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
@@ -1209,10 +1461,28 @@ namespace SoulsFormatsExtensions
                     bw.WriteInt32(Unk8);
                     bw.WriteInt32(Unk9);
                     bw.WriteInt32(Unk10);
-                    WriteParamArray(Unk11, 10);
+                    WriteParam(Unk11_1);
+                    WriteParam(Unk11_2);
+                    WriteParam(Unk11_3);
+                    WriteParam(Unk11_4);
+                    WriteParam(Unk11_5);
+                    WriteParam(Unk11_6);
+                    WriteParam(Unk11_7);
+                    WriteParam(Unk11_8);
+                    WriteParam(Unk11_9);
+                    WriteParam(Unk11_10);
                     bw.WriteInt32(Unk12);
                     bw.WriteInt32(Unk13);
-                    WriteParamArray(Unk14, 10);
+                    WriteParam(Unk14_1);
+                    WriteParam(Unk14_2);
+                    WriteParam(Unk14_3);
+                    WriteParam(Unk14_4);
+                    WriteParam(Unk14_5);
+                    WriteParam(Unk14_6);
+                    WriteParam(Unk14_7);
+                    WriteParam(Unk14_8);
+                    WriteParam(Unk14_9);
+                    WriteParam(Unk14_10);
 
                     if (bw.VarintLong)
                     {
@@ -1238,15 +1508,7 @@ namespace SoulsFormatsExtensions
                     bw.WriteInt32(Unk22);
 
                     if (bw.VarintLong)
-                    {
-                        WriteParamArray(DS1R_Unk1, 5);
-                        bw.WriteSingle(DS1R_Unk2);
-                        bw.WriteInt32(DS1R_Unk3);
-                        bw.WriteInt32(DS1R_Unk4);
-                        bw.WriteInt32(DS1R_Unk5);
-                        bw.WriteInt32(DS1R_Unk6);
-                        bw.WriteInt32(DS1R_Unk7);
-                    }
+                        DS1RData.Write(bw, this);
                 }
             }
 
@@ -1254,14 +1516,18 @@ namespace SoulsFormatsExtensions
             {
                 public override int Type => 84;
 
-                public Param[] Unk1;
+                public Param Unk1_1;
+                public Param Unk1_2;
+                public Param Unk1_3;
                 public float Unk2;
                 public Param Unk3;
                 public int Unk4;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
-                    Unk1 = Param.ReadMany(br, env, 3);
+                    Unk1_1 = Param.Read(br, env);
+                    Unk1_2 = Param.Read(br, env);
+                    Unk1_3 = Param.Read(br, env);
                     br.AssertInt32(0);
                     Unk2 = br.ReadSingle();
                     Unk3 = Param.Read(br, env);
@@ -1270,7 +1536,9 @@ namespace SoulsFormatsExtensions
 
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
-                    WriteParamArray(Unk1, 3);
+                    WriteParam(Unk1_1);
+                    WriteParam(Unk1_2);
+                    WriteParam(Unk1_3);
                     bw.WriteInt32(0);
                     bw.WriteSingle(Unk2);
                     WriteParam(Unk3);
@@ -1282,7 +1550,9 @@ namespace SoulsFormatsExtensions
             {
                 public override int Type => 105;
 
-                public Param[] Unk1;
+                public Param Unk1_1;
+                public Param Unk1_2;
+                public Param Unk1_3;
                 public float Unk2;
                 public Param Unk3;
                 public int Unk4;
@@ -1290,7 +1560,9 @@ namespace SoulsFormatsExtensions
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
-                    Unk1 = Param.ReadMany(br, env, 3);
+                    Unk1_1 = Param.Read(br, env);
+                    Unk1_2 = Param.Read(br, env);
+                    Unk1_3 = Param.Read(br, env);
                     br.AssertInt32(0);
                     Unk2 = br.ReadSingle();
                     Unk3 = Param.Read(br, env);
@@ -1300,7 +1572,9 @@ namespace SoulsFormatsExtensions
 
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
-                    WriteParamArray(Unk1, 3);
+                    WriteParam(Unk1_1);
+                    WriteParam(Unk1_2);
+                    WriteParam(Unk1_3);
                     bw.WriteInt32(0);
                     bw.WriteSingle(Unk2);
                     WriteParam(Unk3);
@@ -1316,7 +1590,13 @@ namespace SoulsFormatsExtensions
                 public float Unk1;
                 public int TextureID;
                 public int Unk2;
-                public Param[] Unk3;
+                public Param Unk3;
+                public Param Unk4;
+                public Param Unk5;
+                public Param Unk6;
+                public Param Unk7;
+                public Param Unk8;
+                public Param Unk9;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
@@ -1324,7 +1604,13 @@ namespace SoulsFormatsExtensions
                     br.AssertInt32(0);
                     TextureID = br.ReadInt32();
                     Unk2 = br.ReadInt32();
-                    Unk3 = Param.ReadMany(br, env, 7);
+                    Unk3 = Param.Read(br, env);
+                    Unk4 = Param.Read(br, env);
+                    Unk5 = Param.Read(br, env);
+                    Unk6 = Param.Read(br, env);
+                    Unk7 = Param.Read(br, env);
+                    Unk8 = Param.Read(br, env);
+                    Unk9 = Param.Read(br, env);
                 }
 
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
@@ -1333,7 +1619,13 @@ namespace SoulsFormatsExtensions
                     bw.WriteInt32(0);
                     bw.WriteInt32(TextureID);
                     bw.WriteInt32(Unk2);
-                    WriteParamArray(Unk3, 7);
+                    WriteParam(Unk3);
+                    WriteParam(Unk4);
+                    WriteParam(Unk5);
+                    WriteParam(Unk6);
+                    WriteParam(Unk7);
+                    WriteParam(Unk8);
+                    WriteParam(Unk9);
                 }
             }
 
@@ -1364,7 +1656,12 @@ namespace SoulsFormatsExtensions
                 public Param RotVal2Z;
                 public int Unk9;
                 public int Unk10;
-                public Param[] Unk11;
+                public Param Unk11_1;
+                public Param Unk11_2;
+                public Param Unk11_3;
+                public Param Unk11_4;
+                public Param Unk11_5;
+                public Param Unk11_6;
                 public Param Color1R;
                 public Param Color1G;
                 public Param Color1B;
@@ -1379,13 +1676,7 @@ namespace SoulsFormatsExtensions
                 public float Unk15;
                 public int Unk16;
 
-                public Param[] DS1R_Unk1;
-                public float DS1R_Unk2;
-                public int DS1R_Unk3;
-                public int DS1R_Unk4;
-                public int DS1R_Unk5;
-                public int DS1R_Unk6;
-                public int DS1R_Unk7;
+                public DS1RExtraParams DS1RData;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
@@ -1419,7 +1710,12 @@ namespace SoulsFormatsExtensions
                     RotVal2Z = Param.Read(br, env);
                     Unk9 = br.ReadInt32();
                     Unk10 = br.ReadInt32();
-                    Unk11 = Param.ReadMany(br, env, 6);
+                    Unk11_1 = Param.Read(br, env);
+                    Unk11_2 = Param.Read(br, env);
+                    Unk11_3 = Param.Read(br, env);
+                    Unk11_4 = Param.Read(br, env);
+                    Unk11_5 = Param.Read(br, env);
+                    Unk11_6 = Param.Read(br, env);
                     Color1R = Param.Read(br, env);
                     Color1G = Param.Read(br, env);
                     Color1B = Param.Read(br, env);
@@ -1435,15 +1731,7 @@ namespace SoulsFormatsExtensions
                     Unk16 = br.ReadInt32();
 
                     if (br.VarintLong)
-                    {
-                        DS1R_Unk1 = Param.ReadMany(br, env, 5);
-                        DS1R_Unk2 = br.ReadSingle();
-                        DS1R_Unk3 = br.ReadInt32();
-                        DS1R_Unk4 = br.ReadInt32();
-                        DS1R_Unk5 = br.ReadInt32();
-                        DS1R_Unk6 = br.ReadInt32();
-                        DS1R_Unk7 = br.ReadInt32();
-                    }
+                        DS1RData = DS1RExtraParams.Read(br, env);
                 }
 
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
@@ -1478,7 +1766,12 @@ namespace SoulsFormatsExtensions
                     WriteParam(RotVal2Z);
                     bw.WriteInt32(Unk9);
                     bw.WriteInt32(Unk10);
-                    WriteParamArray(Unk11, 6);
+                    WriteParam(Unk11_1);
+                    WriteParam(Unk11_2);
+                    WriteParam(Unk11_3);
+                    WriteParam(Unk11_4);
+                    WriteParam(Unk11_5);
+                    WriteParam(Unk11_6);
                     WriteParam(Color1R);
                     WriteParam(Color1G);
                     WriteParam(Color1B);
@@ -1487,7 +1780,6 @@ namespace SoulsFormatsExtensions
                     WriteParam(Color2G);
                     WriteParam(Color2B);
                     WriteParam(Color2A);
-
                     bw.WriteInt32(Unk12);
                     bw.WriteInt32(Unk13);
                     bw.WriteInt32(Unk14);
@@ -1495,15 +1787,7 @@ namespace SoulsFormatsExtensions
                     bw.WriteInt32(Unk16);
 
                     if (bw.VarintLong)
-                    {
-                        WriteParamArray(DS1R_Unk1, 5);
-                        bw.WriteSingle(DS1R_Unk2);
-                        bw.WriteInt32(DS1R_Unk3);
-                        bw.WriteInt32(DS1R_Unk4);
-                        bw.WriteInt32(DS1R_Unk5);
-                        bw.WriteInt32(DS1R_Unk6);
-                        bw.WriteInt32(DS1R_Unk7);
-                    }
+                        DS1RData.Write(bw, this);
                 }
             }
 
@@ -1511,14 +1795,24 @@ namespace SoulsFormatsExtensions
             {
                 public override int Type => 117;
 
-                public Param[] Unk1;
+                public Param Unk1_1;
+                public Param Unk1_2;
+                public Param Unk1_3;
+                public Param Unk1_4;
+                public Param Unk1_5;
+                public Param Unk1_6;
                 public int Unk2;
                 public int Unk3;
                 public Param Unk4;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
-                    Unk1 = Param.ReadMany(br, env, 6);
+                    Unk1_1 = Param.Read(br, env);
+                    Unk1_2 = Param.Read(br, env);
+                    Unk1_3 = Param.Read(br, env);
+                    Unk1_4 = Param.Read(br, env);
+                    Unk1_5 = Param.Read(br, env);
+                    Unk1_6 = Param.Read(br, env);
                     Unk2 = br.ReadInt32();
                     Unk3 = br.ReadInt32();
                     Unk4 = Param.Read(br, env);
@@ -1526,7 +1820,15 @@ namespace SoulsFormatsExtensions
 
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
-                    throw new NotImplementedException();
+                    WriteParam(Unk1_1);
+                    WriteParam(Unk1_2);
+                    WriteParam(Unk1_3);
+                    WriteParam(Unk1_4);
+                    WriteParam(Unk1_5);
+                    WriteParam(Unk1_6);
+                    bw.WriteInt32(Unk2);
+                    bw.WriteInt32(Unk3);
+                    WriteParam(Unk4);
                 }
             }
         }

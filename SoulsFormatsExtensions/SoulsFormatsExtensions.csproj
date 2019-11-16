@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="FXR1\DS1RExtraParams.cs" />
     <Compile Include="FXR1\Effect.cs" />
     <Compile Include="FXR1\FunctionPointer.cs" />
     <Compile Include="FXR1\FlowAction.cs" />

@@ -94,13 +94,13 @@ namespace SoulsFormatsExtensions
                 return v;
             }
 
-            public static Param[] ReadMany(BinaryReaderEx br, FxrEnvironment env, int count)
-            {
-                Param[] list = new Param[count];
-                for (int i = 0; i < count; i++)
-                    list[i] = Read(br, env);
-                return list;
-            }
+            //public static Param[] ReadMany(BinaryReaderEx br, FxrEnvironment env, int count)
+            //{
+            //    Param[] list = new Param[count];
+            //    for (int i = 0; i < count; i++)
+            //        list[i] = Read(br, env);
+            //    return list;
+            //}
 
 
             public class ConstFloatSequence : Param
