@@ -15,7 +15,7 @@ namespace SoulsFormatsExtensions
             [XmlAttribute]
             public int Unk;
 
-            public Param Data;
+            public FXField Data;
         }
     }
 }

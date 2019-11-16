@@ -10,52 +10,52 @@ namespace SoulsFormatsExtensions
 {
     public partial class FXR1
     {
-        [XmlInclude(typeof(FunctionPointerRef))]
-        public class FunctionPointer : XIDable
+        [XmlInclude(typeof(FXParamPointerRef))]
+        public class FXParamPointer : XIDable
         {
-            public override bool ShouldSerializeXID() => FXR1.FlattenFunctionPointers;
+            public override bool ShouldSerializeXID() => FXR1.FlattenFXParamPointers;
 
             public static int GetSize(bool isLong)
                 => isLong ? 8 : 4;
 
-            public Function Func;
+            public FXParam Param;
 
             internal override void ToXIDs(FXR1 fxr)
             {
-                Func = fxr.ReferenceFunction(Func);
+                Param = fxr.ReferenceFXParam(Param);
             }
 
             internal override void FromXIDs(FXR1 fxr)
             {
-                Func = fxr.DereferenceFunction(Func);
+                Param = fxr.DereferenceFXParam(Param);
             }
 
-            public virtual bool ShouldSerializeFunc() => true;
+            public virtual bool ShouldSerializeParam() => true;
 
             public void Read(BinaryReaderEx br, FxrEnvironment env)
             {
                 long funcOffset = br.ReadFXR1Varint();
-                Func = env.GetFunction(br, funcOffset);
+                Param = env.GetFXParam(br, funcOffset);
             }
 
             public void Write(BinaryWriterEx bw, FxrEnvironment env)
             {
-                env.RegisterPointer(Func);
+                env.RegisterPointer(Param);
             }
         }
 
-        public class FunctionPointerRef : FunctionPointer
+        public class FXParamPointerRef : FXParamPointer
         {
             [XmlAttribute]
             public string ReferenceXID;
 
-            public override bool ShouldSerializeFunc() => false;
+            public override bool ShouldSerializeParam() => false;
 
-            public FunctionPointerRef(FunctionPointer refVal)
+            public FXParamPointerRef(FXParamPointer refVal)
             {
                 ReferenceXID = refVal.XID;
             }
-            public FunctionPointerRef()
+            public FXParamPointerRef()
             {
 
             }

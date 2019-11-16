@@ -11,11 +11,11 @@ namespace SoulsFormatsExtensions
     {
         public class DS1RExtraParams
         {
-            public Param Unk1;
-            public Param Unk2;
-            public Param Unk3;
-            public Param Unk4;
-            public Param Unk5;
+            public FXField Unk1;
+            public FXField Unk2;
+            public FXField Unk3;
+            public FXField Unk4;
+            public FXField Unk5;
             public float Unk6;
             public int Unk7;
             public int Unk8;
@@ -25,11 +25,11 @@ namespace SoulsFormatsExtensions
 
             private void ReadInner(BinaryReaderEx br, FxrEnvironment env)
             {
-                Unk1 = Param.Read(br, env);
-                Unk2 = Param.Read(br, env);
-                Unk3 = Param.Read(br, env);
-                Unk4 = Param.Read(br, env);
-                Unk5 = Param.Read(br, env);
+                Unk1 = FXField.Read(br, env);
+                Unk2 = FXField.Read(br, env);
+                Unk3 = FXField.Read(br, env);
+                Unk4 = FXField.Read(br, env);
+                Unk5 = FXField.Read(br, env);
                 Unk6 = br.ReadSingle();
                 Unk7 = br.ReadInt32();
                 Unk8 = br.ReadInt32();
@@ -38,7 +38,7 @@ namespace SoulsFormatsExtensions
                 Unk11 = br.ReadInt32();
             }
 
-            public void Write(BinaryWriterEx bw, Behavior beh)
+            public void Write(BinaryWriterEx bw, FXBehavior beh)
             {
                 beh.WriteParam(Unk1);
                 beh.WriteParam(Unk2);

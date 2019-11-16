@@ -10,59 +10,59 @@ namespace SoulsFormatsExtensions
 {
     public partial class FXR1
     {
-        [XmlInclude(typeof(FlowActionRef))]
-        public class FlowAction : XIDable
+        [XmlInclude(typeof(FXActionRef))]
+        public class FXAction : XIDable
         {
-            public override bool ShouldSerializeXID() => FXR1.FlattenFlowActions;
+            public override bool ShouldSerializeXID() => FXR1.FlattenFXActions;
 
             [XmlAttribute]
             public int ActionType;
-            public Effect ActionEffect;
+            public FXParamList ParamList;
 
             public virtual bool ShouldSerializeActionType() => true;
-            public virtual bool ShouldSerializeActionEffect() => true;
+            public virtual bool ShouldSerializeParamList() => true;
 
             public static int GetSize(bool isLong)
-                => (isLong ? 8 : 4) + Effect.GetSize(isLong);
+                => (isLong ? 8 : 4) + FXParamList.GetSize(isLong);
 
             internal override void ToXIDs(FXR1 fxr)
             {
-                ActionEffect = fxr.ReferenceEffect(ActionEffect);
+                ParamList = fxr.ReferenceFXParamList(ParamList);
             }
 
             internal override void FromXIDs(FXR1 fxr)
             {
-                ActionEffect = fxr.DereferenceEffect(ActionEffect);
+                ParamList = fxr.DereferenceFXParamList(ParamList);
             }
 
             public void Read(BinaryReaderEx br, FxrEnvironment env)
             {
                 ActionType = br.ReadFXR1Varint();
-                ActionEffect = env.GetEffect(br, br.Position);
-                br.Position += Effect.GetSize(br.VarintLong);
+                ParamList = env.GetEffect(br, br.Position);
+                br.Position += FXParamList.GetSize(br.VarintLong);
             }
 
             public void Write(BinaryWriterEx bw, FxrEnvironment env)
             {
                 bw.WriteFXR1Varint(ActionType);
-                ActionEffect.Write(bw, env);
+                ParamList.Write(bw, env);
             }
         }
 
         
-        public class FlowActionRef : FlowAction
+        public class FXActionRef : FXAction
         {
             [XmlAttribute]
             public string ReferenceXID;
 
             public override bool ShouldSerializeActionType() => false;
-            public override bool ShouldSerializeActionEffect() => false;
+            public override bool ShouldSerializeParamList() => false;
 
-            public FlowActionRef(FlowAction refVal)
+            public FXActionRef(FXAction refVal)
             {
                 ReferenceXID = refVal?.XID;
             }
-            public FlowActionRef()
+            public FXActionRef()
             {
 
             }

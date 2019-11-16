@@ -16,21 +16,21 @@ namespace SoulsFormatsExtensions
             public override bool ShouldSerializeXID() => FXR1.FlattenFlowEdges;
 
             public FlowNode EndNode;
-            public Function Func;
+            public FXParam Param;
 
             public virtual bool ShouldSerializeEndNode() => true;
-            public virtual bool ShouldSerializeFunc() => true;
+            public virtual bool ShouldSerializeParam() => true;
 
             internal override void ToXIDs(FXR1 fxr)
             {
                 EndNode = fxr.ReferenceFlowNode(EndNode);
-                Func = fxr.ReferenceFunction(Func);
+                Param = fxr.ReferenceFXParam(Param);
             }
 
             internal override void FromXIDs(FXR1 fxr)
             {
                 EndNode = fxr.DereferenceFlowNode(EndNode);
-                Func = fxr.DereferenceFunction(Func);
+                Param = fxr.DereferenceFXParam(Param);
             }
 
             public static int GetSize(bool isLong)
@@ -43,13 +43,13 @@ namespace SoulsFormatsExtensions
 
                 //TESTING
                 EndNode = env.GetFlowNode(br, endNodeOffset);
-                Func = env.GetFunction(br, functionOffset);
+                Param = env.GetFXParam(br, functionOffset);
             }
 
             public void Write(BinaryWriterEx bw, FxrEnvironment env)
             {
                 env.RegisterPointer(EndNode);
-                env.RegisterPointer(Func);
+                env.RegisterPointer(Param);
             }
         }
 
@@ -59,7 +59,7 @@ namespace SoulsFormatsExtensions
             public string ReferenceXID;
 
             public override bool ShouldSerializeEndNode() => false;
-            public override bool ShouldSerializeFunc() => false;
+            public override bool ShouldSerializeParam() => false;
 
             public FlowEdgeRef(FlowEdge refVal)
             {

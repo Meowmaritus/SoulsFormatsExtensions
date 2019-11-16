@@ -10,42 +10,41 @@ namespace SoulsFormatsExtensions
 {
     public partial class FXR1
     {
-        [XmlInclude(typeof(BehaviorType27))]
-        [XmlInclude(typeof(BehaviorType28))]
-        [XmlInclude(typeof(BehaviorType29))]
-        [XmlInclude(typeof(BehaviorType30))]
-        [XmlInclude(typeof(BehaviorType31))]
-        [XmlInclude(typeof(BehaviorType32))]
-        [XmlInclude(typeof(BehaviorType40))]
-        [XmlInclude(typeof(BehaviorType43))]
-        [XmlInclude(typeof(BehaviorType55))]
-        [XmlInclude(typeof(BehaviorType59))]
-        [XmlInclude(typeof(BehaviorType61))]
-        [XmlInclude(typeof(BehaviorType66))]
-        [XmlInclude(typeof(BehaviorType70))]
-        [XmlInclude(typeof(BehaviorType71))]
-        [XmlInclude(typeof(BehaviorType84))]
-        [XmlInclude(typeof(BehaviorType105))]
-        [XmlInclude(typeof(BehaviorType107))]
-        [XmlInclude(typeof(BehaviorType108))]
-        [XmlInclude(typeof(BehaviorType117))]
+        [XmlInclude(typeof(FXBehaviorType27))]
+        [XmlInclude(typeof(FXBehaviorType28))]
+        [XmlInclude(typeof(FXBehaviorType29))]
+        [XmlInclude(typeof(FXBehaviorType30))]
+        [XmlInclude(typeof(FXBehaviorType31))]
+        [XmlInclude(typeof(FXBehaviorType32))]
+        [XmlInclude(typeof(FXBehaviorType40))]
+        [XmlInclude(typeof(FXBehaviorType43))]
+        [XmlInclude(typeof(FXBehaviorType55))]
+        [XmlInclude(typeof(FXBehaviorType59))]
+        [XmlInclude(typeof(FXBehaviorType61))]
+        [XmlInclude(typeof(FXBehaviorType66))]
+        [XmlInclude(typeof(FXBehaviorType70))]
+        [XmlInclude(typeof(FXBehaviorType71))]
+        [XmlInclude(typeof(FXBehaviorType84))]
+        [XmlInclude(typeof(FXBehaviorType105))]
+        [XmlInclude(typeof(FXBehaviorType107))]
+        [XmlInclude(typeof(FXBehaviorType108))]
+        [XmlInclude(typeof(FXBehaviorType117))]
         [XmlInclude(typeof(BehaviorRef))]
-        public abstract class Behavior : XIDable
+        public abstract class FXBehavior : XIDable
         {
-            public override bool ShouldSerializeXID() => FXR1.FlattenBehaviors;
+            public override bool ShouldSerializeXID() => FXR1.FlattenFXBehaviors;
 
             [XmlIgnore]
             public abstract int Type { get; }
 
             [XmlIgnore] // Set automatically during parent Effect's Write()
-            public Effect ParentEffect;
+            public FXParamList ContainingParamList;
 
             public List<PreDataEntry> PreDatas;
 
             [XmlIgnore]
             internal int DEBUG_SizeOnRead = -1;
 
-            public virtual bool ShouldSerializeParentEffect() => true;
             public virtual bool ShouldSerializePreDatas() => true;
 
             public abstract void InnerRead(BinaryReaderEx br, FxrEnvironment env);
@@ -53,13 +52,13 @@ namespace SoulsFormatsExtensions
 
             internal override void ToXIDs(FXR1 fxr)
             {
-                ParentEffect = fxr.ReferenceEffect(ParentEffect);
+                ContainingParamList = fxr.ReferenceFXParamList(ContainingParamList);
                 InnerToXIDs(fxr);
             }
 
             internal override void FromXIDs(FXR1 fxr)
             {
-                ParentEffect = fxr.DereferenceEffect(ParentEffect);
+                ContainingParamList = fxr.DereferenceFXParamList(ContainingParamList);
                 InnerFromXIDs(fxr);
             }
 
@@ -76,7 +75,7 @@ namespace SoulsFormatsExtensions
             //public byte[] TEMP_DATA;
 
             private FxrEnvironment currentWriteEnvironment = null;
-            private Dictionary<Param, List<long>> paramWriteLocations = new Dictionary<Param, List<long>>();
+            private Dictionary<FXField, List<long>> paramWriteLocations = new Dictionary<FXField, List<long>>();
 
             //protected void WriteParamArray(Param[] p, int expectedLength)
             //{
@@ -87,7 +86,7 @@ namespace SoulsFormatsExtensions
             //        WriteParam(x);
             //}
 
-            internal void WriteParam(Param p)
+            internal void WriteParam(FXField p)
             {
                 currentWriteEnvironment.bw.WriteFXR1Varint(p.Type);
 
@@ -121,7 +120,7 @@ namespace SoulsFormatsExtensions
                 bw.WriteFXR1Varint(PreDatas.Count);
                 bw.ReserveInt32("Behavior.PreDatas.Numbers");
                 bw.ReserveInt32("Behavior.PreDatas.Params");
-                env.RegisterPointer(ParentEffect, useExistingPointerOnly: true);
+                env.RegisterPointer(ContainingParamList, useExistingPointerOnly: true);
 
                 paramWriteLocations.Clear();
                 currentWriteEnvironment = env;
@@ -169,7 +168,7 @@ namespace SoulsFormatsExtensions
                 currentWriteEnvironment = null;
             }
 
-            public static Behavior Read(BinaryReaderEx br, FxrEnvironment env)
+            public static FXBehavior Read(BinaryReaderEx br, FxrEnvironment env)
             {
                 long startOffset = br.Position;
 
@@ -182,29 +181,29 @@ namespace SoulsFormatsExtensions
                 int offsetToParentEffect = br.ReadFXR1Varint();
                 var parentEffect = env.GetEffect(br, offsetToParentEffect);
 
-                Behavior data;
+                FXBehavior data;
 
                 switch (subType)
                 {
-                    case 27: data = new BehaviorType27(); break;
-                    case 28: data = new BehaviorType28(); break;
-                    case 29: data = new BehaviorType29(); break;
-                    case 30: data = new BehaviorType30(); break;
-                    case 31: data = new BehaviorType31(); break;
-                    case 32: data = new BehaviorType32(); break;
-                    case 40: data = new BehaviorType40(); break;
-                    case 43: data = new BehaviorType43(); break;
-                    case 55: data = new BehaviorType55(); break;
-                    case 59: data = new BehaviorType59(); break;
-                    case 61: data = new BehaviorType61(); break;
-                    case 66: data = new BehaviorType66(); break;
-                    case 70: data = new BehaviorType70(); break;
-                    case 71: data = new BehaviorType71(); break;
-                    case 84: data = new BehaviorType84(); break;
-                    case 105: data = new BehaviorType105(); break;
-                    case 107: data = new BehaviorType107(); break;
-                    case 108: data = new BehaviorType108(); break;
-                    case 117: data = new BehaviorType117(); break;
+                    case 27: data = new FXBehaviorType27(); break;
+                    case 28: data = new FXBehaviorType28(); break;
+                    case 29: data = new FXBehaviorType29(); break;
+                    case 30: data = new FXBehaviorType30(); break;
+                    case 31: data = new FXBehaviorType31(); break;
+                    case 32: data = new FXBehaviorType32(); break;
+                    case 40: data = new FXBehaviorType40(); break;
+                    case 43: data = new FXBehaviorType43(); break;
+                    case 55: data = new FXBehaviorType55(); break;
+                    case 59: data = new FXBehaviorType59(); break;
+                    case 61: data = new FXBehaviorType61(); break;
+                    case 66: data = new FXBehaviorType66(); break;
+                    case 70: data = new FXBehaviorType70(); break;
+                    case 71: data = new FXBehaviorType71(); break;
+                    case 84: data = new FXBehaviorType84(); break;
+                    case 105: data = new FXBehaviorType105(); break;
+                    case 107: data = new FXBehaviorType107(); break;
+                    case 108: data = new FXBehaviorType108(); break;
+                    case 117: data = new FXBehaviorType117(); break;
                     default: throw new NotImplementedException();
                 }
 
@@ -217,7 +216,7 @@ namespace SoulsFormatsExtensions
 
                 //data.TEMP_DATA = br.GetBytes(startOffset, size);
 
-                data.ParentEffect = parentEffect;
+                data.ContainingParamList = parentEffect;
 
                 data.PreDatas = new List<PreDataEntry>(preDataCount);
 
@@ -236,7 +235,7 @@ namespace SoulsFormatsExtensions
                 br.StepIn(offsetToPreDataParams);
                 for (int i = 0; i < preDataCount; i++)
                 {
-                    data.PreDatas[i].Data = Param.Read(br, env);
+                    data.PreDatas[i].Data = FXField.Read(br, env);
                 }
                 br.StepOut();
 
@@ -247,7 +246,7 @@ namespace SoulsFormatsExtensions
                 return data;
             }
 
-            public class BehaviorType27 : Behavior
+            public class FXBehaviorType27 : FXBehavior
             {
                 public override int Type => 27;
 
@@ -257,16 +256,16 @@ namespace SoulsFormatsExtensions
                 public float Unk4;
                 public int TextureID;
                 public int Unk6;
-                public Param Unk7_1;
-                public Param Unk7_2;
-                public Param Unk7_3;
-                public Param Unk7_4;
-                public Param Unk7_5;
-                public Param Unk7_6;
-                public Param Unk7_7;
-                public Param Unk7_8;
-                public Param Unk7_9;
-                public Param Unk7_10;
+                public FXField Unk7_1;
+                public FXField Unk7_2;
+                public FXField Unk7_3;
+                public FXField Unk7_4;
+                public FXField Unk7_5;
+                public FXField Unk7_6;
+                public FXField Unk7_7;
+                public FXField Unk7_8;
+                public FXField Unk7_9;
+                public FXField Unk7_10;
                 public int Unk8;
                 public int Unk9;
                 public int Unk10;
@@ -291,16 +290,16 @@ namespace SoulsFormatsExtensions
 
                     br.AssertInt32(0);
 
-                    Unk7_1 = Param.Read(br, env);
-                    Unk7_2 = Param.Read(br, env);
-                    Unk7_3 = Param.Read(br, env);
-                    Unk7_4 = Param.Read(br, env);
-                    Unk7_5 = Param.Read(br, env);
-                    Unk7_6 = Param.Read(br, env);
-                    Unk7_7 = Param.Read(br, env);
-                    Unk7_8 = Param.Read(br, env);
-                    Unk7_9 = Param.Read(br, env);
-                    Unk7_10 = Param.Read(br, env);
+                    Unk7_1 = FXField.Read(br, env);
+                    Unk7_2 = FXField.Read(br, env);
+                    Unk7_3 = FXField.Read(br, env);
+                    Unk7_4 = FXField.Read(br, env);
+                    Unk7_5 = FXField.Read(br, env);
+                    Unk7_6 = FXField.Read(br, env);
+                    Unk7_7 = FXField.Read(br, env);
+                    Unk7_8 = FXField.Read(br, env);
+                    Unk7_9 = FXField.Read(br, env);
+                    Unk7_10 = FXField.Read(br, env);
 
                     Unk8 = br.ReadInt32();
                     Unk9 = br.ReadInt32();
@@ -352,20 +351,20 @@ namespace SoulsFormatsExtensions
 
 
 
-            public class BehaviorType28 : Behavior
+            public class FXBehaviorType28 : FXBehavior
             {
                 public override int Type => 28;
 
-                public Param Unk1;
-                public Param Unk2;
-                public Param Unk3;
+                public FXField Unk1;
+                public FXField Unk2;
+                public FXField Unk3;
                 public int Unk4;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
-                    Unk1 = Param.Read(br, env);
-                    Unk2 = Param.Read(br, env);
-                    Unk3 = Param.Read(br, env);
+                    Unk1 = FXField.Read(br, env);
+                    Unk2 = FXField.Read(br, env);
+                    Unk3 = FXField.Read(br, env);
                     Unk4 = br.ReadInt32();
                 }
 
@@ -379,24 +378,24 @@ namespace SoulsFormatsExtensions
             }
 
 
-            public class BehaviorType29 : Behavior
+            public class FXBehaviorType29 : FXBehavior
             {
                 public override int Type => 29;
 
-                public Param Unk1;
-                public Param Unk2;
-                public Param Unk3;
-                public Param Unk4;
-                public Param Unk5;
+                public FXField Unk1;
+                public FXField Unk2;
+                public FXField Unk3;
+                public FXField Unk4;
+                public FXField Unk5;
                 public int Unk6;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
-                    Unk1 = Param.Read(br, env);
-                    Unk2 = Param.Read(br, env);
-                    Unk3 = Param.Read(br, env);
-                    Unk4 = Param.Read(br, env);
-                    Unk5 = Param.Read(br, env);
+                    Unk1 = FXField.Read(br, env);
+                    Unk2 = FXField.Read(br, env);
+                    Unk3 = FXField.Read(br, env);
+                    Unk4 = FXField.Read(br, env);
+                    Unk5 = FXField.Read(br, env);
                     Unk6 = br.ReadInt32();
                 }
 
@@ -411,24 +410,24 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class BehaviorType30 : Behavior
+            public class FXBehaviorType30 : FXBehavior
             {
                 public override int Type => 30;
 
-                public Param Unk1_1;
-                public Param Unk1_2;
-                public Param Unk1_3;
-                public Param Unk1_4;
+                public FXField Unk1_1;
+                public FXField Unk1_2;
+                public FXField Unk1_3;
+                public FXField Unk1_4;
                 public float Unk2;
                 public int Unk3;
                 public int Unk4;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
-                    Unk1_1 = Param.Read(br, env);
-                    Unk1_2 = Param.Read(br, env);
-                    Unk1_3 = Param.Read(br, env);
-                    Unk1_4 = Param.Read(br, env);
+                    Unk1_1 = FXField.Read(br, env);
+                    Unk1_2 = FXField.Read(br, env);
+                    Unk1_3 = FXField.Read(br, env);
+                    Unk1_4 = FXField.Read(br, env);
                     Unk2 = br.ReadSingle();
                     Unk3 = br.ReadInt32();
                     Unk4 = br.ReadFXR1Varint();
@@ -447,23 +446,23 @@ namespace SoulsFormatsExtensions
             }
 
 
-            public class BehaviorType31 : Behavior
+            public class FXBehaviorType31 : FXBehavior
             {
                 public override int Type => 31;
 
-                public Param Unk1_1;
-                public Param Unk1_2;
-                public Param Unk1_3;
-                public Param Unk1_4;
+                public FXField Unk1_1;
+                public FXField Unk1_2;
+                public FXField Unk1_3;
+                public FXField Unk1_4;
                 public int Unk2;
                 public int Unk3;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
-                    Unk1_1 = Param.Read(br, env);
-                    Unk1_2 = Param.Read(br, env);
-                    Unk1_3 = Param.Read(br, env);
-                    Unk1_4 = Param.Read(br, env);
+                    Unk1_1 = FXField.Read(br, env);
+                    Unk1_2 = FXField.Read(br, env);
+                    Unk1_3 = FXField.Read(br, env);
+                    Unk1_4 = FXField.Read(br, env);
                     Unk2 = br.ReadInt32();
                     Unk3 = br.ReadInt32();
                 }
@@ -479,27 +478,27 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class BehaviorType32 : Behavior
+            public class FXBehaviorType32 : FXBehavior
             {
                 public override int Type => 32;
 
-                public Param OffsetX;
-                public Param OffsetY;
-                public Param OffsetZ;
-                public Param Unk1_1;
-                public Param Unk1_2;
-                public Param Unk1_3;
+                public FXField OffsetX;
+                public FXField OffsetY;
+                public FXField OffsetZ;
+                public FXField Unk1_1;
+                public FXField Unk1_2;
+                public FXField Unk1_3;
                 public int Unk2;
                 public int Unk3;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
-                    OffsetX = Param.Read(br, env);
-                    OffsetY = Param.Read(br, env);
-                    OffsetZ = Param.Read(br, env);
-                    Unk1_1 = Param.Read(br, env);
-                    Unk1_2 = Param.Read(br, env);
-                    Unk1_3 = Param.Read(br, env);
+                    OffsetX = FXField.Read(br, env);
+                    OffsetY = FXField.Read(br, env);
+                    OffsetZ = FXField.Read(br, env);
+                    Unk1_1 = FXField.Read(br, env);
+                    Unk1_2 = FXField.Read(br, env);
+                    Unk1_3 = FXField.Read(br, env);
                     Unk2 = br.ReadInt32();
                     Unk3 = br.ReadInt32();
                 }
@@ -517,7 +516,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class BehaviorType40 : Behavior
+            public class FXBehaviorType40 : FXBehavior
             {
                 public override int Type => 40;
 
@@ -526,25 +525,25 @@ namespace SoulsFormatsExtensions
                 public int Unk3;
                 public int Unk4;
                 public int Unk5;
-                public Param Unk6_1;
-                public Param Unk6_2;
-                public Param Unk6_3;
-                public Param Unk6_4;
+                public FXField Unk6_1;
+                public FXField Unk6_2;
+                public FXField Unk6_3;
+                public FXField Unk6_4;
                 public float Unk7;
                 public float Unk8;
                 public int Unk9;
                 public int Unk10;
-                public Param Unk11_1;
-                public Param Unk11_2;
-                public Param Unk11_3;
-                public Param Unk11_4;
+                public FXField Unk11_1;
+                public FXField Unk11_2;
+                public FXField Unk11_3;
+                public FXField Unk11_4;
                 public int Unk12;
                 public int Unk13;
-                public Param Unk14;
+                public FXField Unk14;
                 public int Unk15;
                 public float Unk16;
-                public Param Unk17_1;
-                public Param Unk17_2;
+                public FXField Unk17_1;
+                public FXField Unk17_2;
                 public int Unk18;
 
                 public DS1RExtraParams DS1RData;
@@ -561,10 +560,10 @@ namespace SoulsFormatsExtensions
                     Unk3 = br.ReadInt32();
                     Unk4 = br.ReadInt32();
                     Unk5 = br.ReadInt32();
-                    Unk6_1 = Param.Read(br, env);
-                    Unk6_2 = Param.Read(br, env);
-                    Unk6_3 = Param.Read(br, env);
-                    Unk6_4 = Param.Read(br, env);
+                    Unk6_1 = FXField.Read(br, env);
+                    Unk6_2 = FXField.Read(br, env);
+                    Unk6_3 = FXField.Read(br, env);
+                    Unk6_4 = FXField.Read(br, env);
                     Unk7 = br.ReadSingle();
                     Unk8 = br.ReadSingle();
                     Unk9 = br.ReadInt32();
@@ -572,20 +571,20 @@ namespace SoulsFormatsExtensions
 
                     br.AssertInt32(0);
 
-                    Unk11_1 = Param.Read(br, env);
-                    Unk11_2 = Param.Read(br, env);
-                    Unk11_3 = Param.Read(br, env);
-                    Unk11_4 = Param.Read(br, env);
+                    Unk11_1 = FXField.Read(br, env);
+                    Unk11_2 = FXField.Read(br, env);
+                    Unk11_3 = FXField.Read(br, env);
+                    Unk11_4 = FXField.Read(br, env);
                     Unk12 = br.ReadInt32();
                     Unk13 = br.ReadInt32();
 
                     br.AssertInt32(0);
 
-                    Unk14 = Param.Read(br, env);
+                    Unk14 = FXField.Read(br, env);
                     Unk15 = br.ReadInt32();
                     Unk16 = br.ReadSingle();
-                    Unk17_1 = Param.Read(br, env);
-                    Unk17_2 = Param.Read(br, env);
+                    Unk17_1 = FXField.Read(br, env);
+                    Unk17_2 = FXField.Read(br, env);
                     Unk18 = br.ReadInt32();
 
                     if (br.VarintLong)
@@ -636,7 +635,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class BehaviorType43 : Behavior
+            public class FXBehaviorType43 : FXBehavior
             {
                 public override int Type => 43;
 
@@ -647,19 +646,19 @@ namespace SoulsFormatsExtensions
                 public int Unk4;
                 public int Unk5;
                 public int Unk6;
-                public Param Unk7_1;
-                public Param Unk7_2;
-                public Param Unk7_3;
-                public Param Unk7_4;
-                public Param Unk7_5;
-                public Param Unk7_6;
-                public Param Unk7_7;
-                public Param Unk7_8;
-                public Param Unk7_9;
-                public Param Unk7_10;
-                public Param Unk7_11;
-                public Param Unk7_12;
-                public Param Unk7_13;
+                public FXField Unk7_1;
+                public FXField Unk7_2;
+                public FXField Unk7_3;
+                public FXField Unk7_4;
+                public FXField Unk7_5;
+                public FXField Unk7_6;
+                public FXField Unk7_7;
+                public FXField Unk7_8;
+                public FXField Unk7_9;
+                public FXField Unk7_10;
+                public FXField Unk7_11;
+                public FXField Unk7_12;
+                public FXField Unk7_13;
                 public int Unk8;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
@@ -673,19 +672,19 @@ namespace SoulsFormatsExtensions
                     Unk4 = br.ReadInt32();
                     Unk5 = br.ReadInt32();
                     Unk6 = br.ReadInt32();
-                    Unk7_1 = Param.Read(br, env);
-                    Unk7_2 = Param.Read(br, env);
-                    Unk7_3 = Param.Read(br, env);
-                    Unk7_4 = Param.Read(br, env);
-                    Unk7_5 = Param.Read(br, env);
-                    Unk7_6 = Param.Read(br, env);
-                    Unk7_7 = Param.Read(br, env);
-                    Unk7_8 = Param.Read(br, env);
-                    Unk7_9 = Param.Read(br, env);
-                    Unk7_10 = Param.Read(br, env);
-                    Unk7_11 = Param.Read(br, env);
-                    Unk7_12 = Param.Read(br, env);
-                    Unk7_13 = Param.Read(br, env);
+                    Unk7_1 = FXField.Read(br, env);
+                    Unk7_2 = FXField.Read(br, env);
+                    Unk7_3 = FXField.Read(br, env);
+                    Unk7_4 = FXField.Read(br, env);
+                    Unk7_5 = FXField.Read(br, env);
+                    Unk7_6 = FXField.Read(br, env);
+                    Unk7_7 = FXField.Read(br, env);
+                    Unk7_8 = FXField.Read(br, env);
+                    Unk7_9 = FXField.Read(br, env);
+                    Unk7_10 = FXField.Read(br, env);
+                    Unk7_11 = FXField.Read(br, env);
+                    Unk7_12 = FXField.Read(br, env);
+                    Unk7_13 = FXField.Read(br, env);
                     Unk8 = br.ReadInt32();
                 }
 
@@ -717,20 +716,20 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class BehaviorType55 : Behavior
+            public class FXBehaviorType55 : FXBehavior
             {
                 public override int Type => 55;
 
-                public Param Unk1;
-                public Param Unk2;
-                public Param Unk3;
+                public FXField Unk1;
+                public FXField Unk2;
+                public FXField Unk3;
                 public float Unk4;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
-                    Unk1 = Param.Read(br, env);
-                    Unk2 = Param.Read(br, env);
-                    Unk3 = Param.Read(br, env);
+                    Unk1 = FXField.Read(br, env);
+                    Unk2 = FXField.Read(br, env);
+                    Unk3 = FXField.Read(br, env);
 
                     br.AssertInt32(0);
 
@@ -749,7 +748,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class BehaviorType59 : Behavior
+            public class FXBehaviorType59 : FXBehavior
             {
                 public override int Type => 59;
 
@@ -757,21 +756,21 @@ namespace SoulsFormatsExtensions
                 public int TextureID;
                 public int Unk2;
                 public int Unk3;
-                public Param Unk4_1;
-                public Param Unk4_2;
-                public Param Unk4_3;
-                public Param Unk4_4;
-                public Param Unk4_5;
+                public FXField Unk4_1;
+                public FXField Unk4_2;
+                public FXField Unk4_3;
+                public FXField Unk4_4;
+                public FXField Unk4_5;
                 public int Unk5;
                 public int Unk6;
-                public Param Unk7_1;
-                public Param Unk7_2;
-                public Param Unk7_3;
-                public Param Unk7_4;
-                public Param Unk7_5;
-                public Param Unk7_6;
-                public Param Unk7_7;
-                public Param Unk7_8;
+                public FXField Unk7_1;
+                public FXField Unk7_2;
+                public FXField Unk7_3;
+                public FXField Unk7_4;
+                public FXField Unk7_5;
+                public FXField Unk7_6;
+                public FXField Unk7_7;
+                public FXField Unk7_8;
                 public int Unk8;
                 public int Unk9;
                 public int Unk10;
@@ -791,21 +790,21 @@ namespace SoulsFormatsExtensions
 
                     Unk2 = br.ReadInt32();
                     Unk3 = br.ReadInt32();
-                    Unk4_1 = Param.Read(br, env);
-                    Unk4_2 = Param.Read(br, env);
-                    Unk4_3 = Param.Read(br, env);
-                    Unk4_4 = Param.Read(br, env);
-                    Unk4_5 = Param.Read(br, env);
+                    Unk4_1 = FXField.Read(br, env);
+                    Unk4_2 = FXField.Read(br, env);
+                    Unk4_3 = FXField.Read(br, env);
+                    Unk4_4 = FXField.Read(br, env);
+                    Unk4_5 = FXField.Read(br, env);
                     Unk5 = br.ReadInt32();
                     Unk6 = br.ReadInt32();
-                    Unk7_1 = Param.Read(br, env);
-                    Unk7_2 = Param.Read(br, env);
-                    Unk7_3 = Param.Read(br, env);
-                    Unk7_4 = Param.Read(br, env);
-                    Unk7_5 = Param.Read(br, env);
-                    Unk7_6 = Param.Read(br, env);
-                    Unk7_7 = Param.Read(br, env);
-                    Unk7_8 = Param.Read(br, env);
+                    Unk7_1 = FXField.Read(br, env);
+                    Unk7_2 = FXField.Read(br, env);
+                    Unk7_3 = FXField.Read(br, env);
+                    Unk7_4 = FXField.Read(br, env);
+                    Unk7_5 = FXField.Read(br, env);
+                    Unk7_6 = FXField.Read(br, env);
+                    Unk7_7 = FXField.Read(br, env);
+                    Unk7_8 = FXField.Read(br, env);
                     Unk8 = br.ReadInt32();
                     Unk9 = br.ReadInt32();
 
@@ -862,7 +861,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class BehaviorType61 : Behavior
+            public class FXBehaviorType61 : FXBehavior
             {
                 public override int Type => 61;
 
@@ -871,24 +870,24 @@ namespace SoulsFormatsExtensions
                 public int Unk2;
                 public int Unk3_1;
                 public int Unk3_2;
-                public Param Unk4_1;
-                public Param Unk4_2;
-                public Param Unk4_3;
+                public FXField Unk4_1;
+                public FXField Unk4_2;
+                public FXField Unk4_3;
                 public int Unk5;
                 public float Unk6;
-                public Param Unk7;
+                public FXField Unk7;
                 public int Unk8;
                 public int Unk9;
-                public Param Unk10_1;
-                public Param Unk10_2;
-                public Param Unk10_3;
-                public Param Unk10_4;
-                public Param Unk10_5;
-                public Param Unk10_6;
-                public Param Unk10_7;
-                public Param Unk10_8;
-                public Param Unk10_9;
-                public Param Unk10_10;
+                public FXField Unk10_1;
+                public FXField Unk10_2;
+                public FXField Unk10_3;
+                public FXField Unk10_4;
+                public FXField Unk10_5;
+                public FXField Unk10_6;
+                public FXField Unk10_7;
+                public FXField Unk10_8;
+                public FXField Unk10_9;
+                public FXField Unk10_10;
                 public int Unk11;
                 public int Unk12;
 
@@ -904,9 +903,9 @@ namespace SoulsFormatsExtensions
                     Unk2 = br.ReadInt32();
                     Unk3_1 = br.ReadInt32();
                     Unk3_2 = br.ReadInt32();
-                    Unk4_1 = Param.Read(br, env);
-                    Unk4_2 = Param.Read(br, env);
-                    Unk4_3 = Param.Read(br, env);
+                    Unk4_1 = FXField.Read(br, env);
+                    Unk4_2 = FXField.Read(br, env);
+                    Unk4_3 = FXField.Read(br, env);
 
                     br.AssertInt32(0);
                     br.AssertInt32(0);
@@ -916,19 +915,19 @@ namespace SoulsFormatsExtensions
 
                     br.AssertInt32(0);
 
-                    Unk7 = Param.Read(br, env);
+                    Unk7 = FXField.Read(br, env);
                     Unk8 = br.ReadInt32();
                     Unk9 = br.ReadInt32();
-                    Unk10_1 = Param.Read(br, env);
-                    Unk10_2 = Param.Read(br, env);
-                    Unk10_3 = Param.Read(br, env);
-                    Unk10_4 = Param.Read(br, env);
-                    Unk10_5 = Param.Read(br, env);
-                    Unk10_6 = Param.Read(br, env);
-                    Unk10_7 = Param.Read(br, env);
-                    Unk10_8 = Param.Read(br, env);
-                    Unk10_9 = Param.Read(br, env);
-                    Unk10_10 = Param.Read(br, env);
+                    Unk10_1 = FXField.Read(br, env);
+                    Unk10_2 = FXField.Read(br, env);
+                    Unk10_3 = FXField.Read(br, env);
+                    Unk10_4 = FXField.Read(br, env);
+                    Unk10_5 = FXField.Read(br, env);
+                    Unk10_6 = FXField.Read(br, env);
+                    Unk10_7 = FXField.Read(br, env);
+                    Unk10_8 = FXField.Read(br, env);
+                    Unk10_9 = FXField.Read(br, env);
+                    Unk10_10 = FXField.Read(br, env);
                     Unk11 = br.ReadInt32();
                     Unk12 = br.ReadInt32();
 
@@ -986,7 +985,7 @@ namespace SoulsFormatsExtensions
             }
 
 
-            public class BehaviorType66 : Behavior
+            public class FXBehaviorType66 : FXBehavior
             {
                 public override int Type => 66;
 
@@ -998,32 +997,32 @@ namespace SoulsFormatsExtensions
 
                 public int DS1R_Unk0;
 
-                public Param Unk6_1;
-                public Param Unk6_2;
-                public Param Unk6_3;
-                public Param Unk6_4;
-                public Param Unk6_5;
-                public Param Unk6_6;
-                public Param Unk6_7;
-                public Param Unk6_8;
-                public Param Unk6_9;
-                public Param Unk6_10;
-                public Param Unk6_11;
-                public Param Unk6_12;
-                public Param Unk6_13;
-                public Param Unk6_14;
-                public Param Unk6_15;
-                public Param Unk6_16;
-                public Param Unk6_17;
-                public Param Unk6_18;
-                public Param Unk6_19;
-                public Param Unk6_20;
-                public Param Unk6_21;
-                public Param Unk6_22;
-                public Param Unk6_23;
-                public Param Unk6_24;
-                public Param Unk6_25;
-                public Param Unk6_26;
+                public FXField Unk6_1;
+                public FXField Unk6_2;
+                public FXField Unk6_3;
+                public FXField Unk6_4;
+                public FXField Unk6_5;
+                public FXField Unk6_6;
+                public FXField Unk6_7;
+                public FXField Unk6_8;
+                public FXField Unk6_9;
+                public FXField Unk6_10;
+                public FXField Unk6_11;
+                public FXField Unk6_12;
+                public FXField Unk6_13;
+                public FXField Unk6_14;
+                public FXField Unk6_15;
+                public FXField Unk6_16;
+                public FXField Unk6_17;
+                public FXField Unk6_18;
+                public FXField Unk6_19;
+                public FXField Unk6_20;
+                public FXField Unk6_21;
+                public FXField Unk6_22;
+                public FXField Unk6_23;
+                public FXField Unk6_24;
+                public FXField Unk6_25;
+                public FXField Unk6_26;
 
                 public DS1RExtraParams DS1RData;
 
@@ -1041,32 +1040,32 @@ namespace SoulsFormatsExtensions
                     if (br.VarintLong)
                         DS1R_Unk0 = br.ReadFXR1Varint();
 
-                    Unk6_1 = Param.Read(br, env);
-                    Unk6_2 = Param.Read(br, env);
-                    Unk6_3 = Param.Read(br, env);
-                    Unk6_4 = Param.Read(br, env);
-                    Unk6_5 = Param.Read(br, env);
-                    Unk6_6 = Param.Read(br, env);
-                    Unk6_7 = Param.Read(br, env);
-                    Unk6_8 = Param.Read(br, env);
-                    Unk6_9 = Param.Read(br, env);
-                    Unk6_10 = Param.Read(br, env);
-                    Unk6_11 = Param.Read(br, env);
-                    Unk6_12 = Param.Read(br, env);
-                    Unk6_13 = Param.Read(br, env);
-                    Unk6_14 = Param.Read(br, env);
-                    Unk6_15 = Param.Read(br, env);
-                    Unk6_16 = Param.Read(br, env);
-                    Unk6_17 = Param.Read(br, env);
-                    Unk6_18 = Param.Read(br, env);
-                    Unk6_19 = Param.Read(br, env);
-                    Unk6_20 = Param.Read(br, env);
-                    Unk6_21 = Param.Read(br, env);
-                    Unk6_22 = Param.Read(br, env);
-                    Unk6_23 = Param.Read(br, env);
-                    Unk6_24 = Param.Read(br, env);
-                    Unk6_25 = Param.Read(br, env);
-                    Unk6_26 = Param.Read(br, env);
+                    Unk6_1 = FXField.Read(br, env);
+                    Unk6_2 = FXField.Read(br, env);
+                    Unk6_3 = FXField.Read(br, env);
+                    Unk6_4 = FXField.Read(br, env);
+                    Unk6_5 = FXField.Read(br, env);
+                    Unk6_6 = FXField.Read(br, env);
+                    Unk6_7 = FXField.Read(br, env);
+                    Unk6_8 = FXField.Read(br, env);
+                    Unk6_9 = FXField.Read(br, env);
+                    Unk6_10 = FXField.Read(br, env);
+                    Unk6_11 = FXField.Read(br, env);
+                    Unk6_12 = FXField.Read(br, env);
+                    Unk6_13 = FXField.Read(br, env);
+                    Unk6_14 = FXField.Read(br, env);
+                    Unk6_15 = FXField.Read(br, env);
+                    Unk6_16 = FXField.Read(br, env);
+                    Unk6_17 = FXField.Read(br, env);
+                    Unk6_18 = FXField.Read(br, env);
+                    Unk6_19 = FXField.Read(br, env);
+                    Unk6_20 = FXField.Read(br, env);
+                    Unk6_21 = FXField.Read(br, env);
+                    Unk6_22 = FXField.Read(br, env);
+                    Unk6_23 = FXField.Read(br, env);
+                    Unk6_24 = FXField.Read(br, env);
+                    Unk6_25 = FXField.Read(br, env);
+                    Unk6_26 = FXField.Read(br, env);
 
                     br.AssertInt32(0);
 
@@ -1128,7 +1127,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class BehaviorType70 : Behavior
+            public class FXBehaviorType70 : FXBehavior
             {
                 public override int Type => 70;
 
@@ -1143,36 +1142,36 @@ namespace SoulsFormatsExtensions
                 public int Unk6;
                 public int Unk7;
                 public int Unk8;
-                public Param Unk9_1;
-                public Param Unk9_2;
-                public Param Unk9_3;
-                public Param Unk9_4;
-                public Param Unk9_5;
-                public Param Unk9_6;
-                public Param Unk9_7;
-                public Param Unk9_8;
-                public Param Unk9_9;
-                public Param Unk9_10;
-                public Param Unk9_11;
-                public Param Unk9_12;
-                public Param Unk9_13;
-                public Param Unk9_14;
-                public Param Unk9_15;
-                public Param Unk9_16;
-                public Param Unk9_17;
-                public Param Unk9_18;
-                public Param Unk9_19;
-                public Param Unk9_20;
-                public Param Unk9_21;
-                public Param Unk9_22;
-                public Param Unk9_23;
-                public Param Unk9_24;
-                public Param Unk9_25;
-                public Param Unk9_26;
-                public Param Unk9_27;
-                public Param Unk9_28;
-                public Param Unk9_29;
-                public Param Unk9_30;
+                public FXField Unk9_1;
+                public FXField Unk9_2;
+                public FXField Unk9_3;
+                public FXField Unk9_4;
+                public FXField Unk9_5;
+                public FXField Unk9_6;
+                public FXField Unk9_7;
+                public FXField Unk9_8;
+                public FXField Unk9_9;
+                public FXField Unk9_10;
+                public FXField Unk9_11;
+                public FXField Unk9_12;
+                public FXField Unk9_13;
+                public FXField Unk9_14;
+                public FXField Unk9_15;
+                public FXField Unk9_16;
+                public FXField Unk9_17;
+                public FXField Unk9_18;
+                public FXField Unk9_19;
+                public FXField Unk9_20;
+                public FXField Unk9_21;
+                public FXField Unk9_22;
+                public FXField Unk9_23;
+                public FXField Unk9_24;
+                public FXField Unk9_25;
+                public FXField Unk9_26;
+                public FXField Unk9_27;
+                public FXField Unk9_28;
+                public FXField Unk9_29;
+                public FXField Unk9_30;
                 public int Unk10;
                 public int Unk11;
                 public int Unk12;
@@ -1201,36 +1200,36 @@ namespace SoulsFormatsExtensions
                     Unk6 = br.ReadInt32();
                     Unk7 = br.ReadInt32();
                     Unk8 = br.ReadInt32();
-                    Unk9_1 = Param.Read(br, env);
-                    Unk9_2 = Param.Read(br, env);
-                    Unk9_3 = Param.Read(br, env);
-                    Unk9_4 = Param.Read(br, env);
-                    Unk9_5 = Param.Read(br, env);
-                    Unk9_6 = Param.Read(br, env);
-                    Unk9_7 = Param.Read(br, env);
-                    Unk9_8 = Param.Read(br, env);
-                    Unk9_9 = Param.Read(br, env);
-                    Unk9_10 = Param.Read(br, env);
-                    Unk9_11 = Param.Read(br, env);
-                    Unk9_12 = Param.Read(br, env);
-                    Unk9_13 = Param.Read(br, env);
-                    Unk9_14 = Param.Read(br, env);
-                    Unk9_15 = Param.Read(br, env);
-                    Unk9_16 = Param.Read(br, env);
-                    Unk9_17 = Param.Read(br, env);
-                    Unk9_18 = Param.Read(br, env);
-                    Unk9_19 = Param.Read(br, env);
-                    Unk9_20 = Param.Read(br, env);
-                    Unk9_21 = Param.Read(br, env);
-                    Unk9_22 = Param.Read(br, env);
-                    Unk9_23 = Param.Read(br, env);
-                    Unk9_24 = Param.Read(br, env);
-                    Unk9_25 = Param.Read(br, env);
-                    Unk9_26 = Param.Read(br, env);
-                    Unk9_27 = Param.Read(br, env);
-                    Unk9_28 = Param.Read(br, env);
-                    Unk9_29 = Param.Read(br, env);
-                    Unk9_30 = Param.Read(br, env);
+                    Unk9_1 = FXField.Read(br, env);
+                    Unk9_2 = FXField.Read(br, env);
+                    Unk9_3 = FXField.Read(br, env);
+                    Unk9_4 = FXField.Read(br, env);
+                    Unk9_5 = FXField.Read(br, env);
+                    Unk9_6 = FXField.Read(br, env);
+                    Unk9_7 = FXField.Read(br, env);
+                    Unk9_8 = FXField.Read(br, env);
+                    Unk9_9 = FXField.Read(br, env);
+                    Unk9_10 = FXField.Read(br, env);
+                    Unk9_11 = FXField.Read(br, env);
+                    Unk9_12 = FXField.Read(br, env);
+                    Unk9_13 = FXField.Read(br, env);
+                    Unk9_14 = FXField.Read(br, env);
+                    Unk9_15 = FXField.Read(br, env);
+                    Unk9_16 = FXField.Read(br, env);
+                    Unk9_17 = FXField.Read(br, env);
+                    Unk9_18 = FXField.Read(br, env);
+                    Unk9_19 = FXField.Read(br, env);
+                    Unk9_20 = FXField.Read(br, env);
+                    Unk9_21 = FXField.Read(br, env);
+                    Unk9_22 = FXField.Read(br, env);
+                    Unk9_23 = FXField.Read(br, env);
+                    Unk9_24 = FXField.Read(br, env);
+                    Unk9_25 = FXField.Read(br, env);
+                    Unk9_26 = FXField.Read(br, env);
+                    Unk9_27 = FXField.Read(br, env);
+                    Unk9_28 = FXField.Read(br, env);
+                    Unk9_29 = FXField.Read(br, env);
+                    Unk9_30 = FXField.Read(br, env);
                     Unk10 = br.ReadInt32();
 
                     br.AssertInt32(0);
@@ -1333,7 +1332,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class BehaviorType71 : Behavior
+            public class FXBehaviorType71 : FXBehavior
             {
                 public override int Type => 71;
 
@@ -1348,28 +1347,28 @@ namespace SoulsFormatsExtensions
                 public int Unk8;
                 public int Unk9;
                 public int Unk10;
-                public Param Unk11_1;
-                public Param Unk11_2;
-                public Param Unk11_3;
-                public Param Unk11_4;
-                public Param Unk11_5;
-                public Param Unk11_6;
-                public Param Unk11_7;
-                public Param Unk11_8;
-                public Param Unk11_9;
-                public Param Unk11_10;
+                public FXField Unk11_1;
+                public FXField Unk11_2;
+                public FXField Unk11_3;
+                public FXField Unk11_4;
+                public FXField Unk11_5;
+                public FXField Unk11_6;
+                public FXField Unk11_7;
+                public FXField Unk11_8;
+                public FXField Unk11_9;
+                public FXField Unk11_10;
                 public int Unk12;
                 public int Unk13;
-                public Param Unk14_1;
-                public Param Unk14_2;
-                public Param Unk14_3;
-                public Param Unk14_4;
-                public Param Unk14_5;
-                public Param Unk14_6;
-                public Param Unk14_7;
-                public Param Unk14_8;
-                public Param Unk14_9;
-                public Param Unk14_10;
+                public FXField Unk14_1;
+                public FXField Unk14_2;
+                public FXField Unk14_3;
+                public FXField Unk14_4;
+                public FXField Unk14_5;
+                public FXField Unk14_6;
+                public FXField Unk14_7;
+                public FXField Unk14_8;
+                public FXField Unk14_9;
+                public FXField Unk14_10;
 
                 public int DS1R_UnkA1;
                 public int DS1R_UnkA2;
@@ -1399,28 +1398,28 @@ namespace SoulsFormatsExtensions
                     Unk8 = br.ReadInt32();
                     Unk9 = br.ReadInt32();
                     Unk10 = br.ReadInt32();
-                    Unk11_1 = Param.Read(br, env);
-                    Unk11_2 = Param.Read(br, env);
-                    Unk11_3 = Param.Read(br, env);
-                    Unk11_4 = Param.Read(br, env);
-                    Unk11_5 = Param.Read(br, env);
-                    Unk11_6 = Param.Read(br, env);
-                    Unk11_7 = Param.Read(br, env);
-                    Unk11_8 = Param.Read(br, env);
-                    Unk11_9 = Param.Read(br, env);
-                    Unk11_10 = Param.Read(br, env);
+                    Unk11_1 = FXField.Read(br, env);
+                    Unk11_2 = FXField.Read(br, env);
+                    Unk11_3 = FXField.Read(br, env);
+                    Unk11_4 = FXField.Read(br, env);
+                    Unk11_5 = FXField.Read(br, env);
+                    Unk11_6 = FXField.Read(br, env);
+                    Unk11_7 = FXField.Read(br, env);
+                    Unk11_8 = FXField.Read(br, env);
+                    Unk11_9 = FXField.Read(br, env);
+                    Unk11_10 = FXField.Read(br, env);
                     Unk12 = br.ReadInt32();
                     Unk13 = br.ReadInt32();
-                    Unk14_1 = Param.Read(br, env);
-                    Unk14_2 = Param.Read(br, env);
-                    Unk14_3 = Param.Read(br, env);
-                    Unk14_4 = Param.Read(br, env);
-                    Unk14_5 = Param.Read(br, env);
-                    Unk14_6 = Param.Read(br, env);
-                    Unk14_7 = Param.Read(br, env);
-                    Unk14_8 = Param.Read(br, env);
-                    Unk14_9 = Param.Read(br, env);
-                    Unk14_10 = Param.Read(br, env);
+                    Unk14_1 = FXField.Read(br, env);
+                    Unk14_2 = FXField.Read(br, env);
+                    Unk14_3 = FXField.Read(br, env);
+                    Unk14_4 = FXField.Read(br, env);
+                    Unk14_5 = FXField.Read(br, env);
+                    Unk14_6 = FXField.Read(br, env);
+                    Unk14_7 = FXField.Read(br, env);
+                    Unk14_8 = FXField.Read(br, env);
+                    Unk14_9 = FXField.Read(br, env);
+                    Unk14_10 = FXField.Read(br, env);
 
                     if (br.VarintLong)
                     {
@@ -1512,25 +1511,25 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class BehaviorType84 : Behavior
+            public class FXBehaviorType84 : FXBehavior
             {
                 public override int Type => 84;
 
-                public Param Unk1_1;
-                public Param Unk1_2;
-                public Param Unk1_3;
+                public FXField Unk1_1;
+                public FXField Unk1_2;
+                public FXField Unk1_3;
                 public float Unk2;
-                public Param Unk3;
+                public FXField Unk3;
                 public int Unk4;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
-                    Unk1_1 = Param.Read(br, env);
-                    Unk1_2 = Param.Read(br, env);
-                    Unk1_3 = Param.Read(br, env);
+                    Unk1_1 = FXField.Read(br, env);
+                    Unk1_2 = FXField.Read(br, env);
+                    Unk1_3 = FXField.Read(br, env);
                     br.AssertInt32(0);
                     Unk2 = br.ReadSingle();
-                    Unk3 = Param.Read(br, env);
+                    Unk3 = FXField.Read(br, env);
                     Unk4 = br.ReadInt32();
                 }
 
@@ -1546,28 +1545,28 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class BehaviorType105 : Behavior
+            public class FXBehaviorType105 : FXBehavior
             {
                 public override int Type => 105;
 
-                public Param Unk1_1;
-                public Param Unk1_2;
-                public Param Unk1_3;
+                public FXField Unk1_1;
+                public FXField Unk1_2;
+                public FXField Unk1_3;
                 public float Unk2;
-                public Param Unk3;
+                public FXField Unk3;
                 public int Unk4;
-                public Param Unk5;
+                public FXField Unk5;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
-                    Unk1_1 = Param.Read(br, env);
-                    Unk1_2 = Param.Read(br, env);
-                    Unk1_3 = Param.Read(br, env);
+                    Unk1_1 = FXField.Read(br, env);
+                    Unk1_2 = FXField.Read(br, env);
+                    Unk1_3 = FXField.Read(br, env);
                     br.AssertInt32(0);
                     Unk2 = br.ReadSingle();
-                    Unk3 = Param.Read(br, env);
+                    Unk3 = FXField.Read(br, env);
                     Unk4 = br.ReadFXR1Varint();
-                    Unk5 = Param.Read(br, env);
+                    Unk5 = FXField.Read(br, env);
                 }
 
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
@@ -1583,20 +1582,20 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class BehaviorType107 : Behavior
+            public class FXBehaviorType107 : FXBehavior
             {
                 public override int Type => 107;
 
                 public float Unk1;
                 public int TextureID;
                 public int Unk2;
-                public Param Unk3;
-                public Param Unk4;
-                public Param Unk5;
-                public Param Unk6;
-                public Param Unk7;
-                public Param Unk8;
-                public Param Unk9;
+                public FXField Unk3;
+                public FXField Unk4;
+                public FXField Unk5;
+                public FXField Unk6;
+                public FXField Unk7;
+                public FXField Unk8;
+                public FXField Unk9;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
@@ -1604,13 +1603,13 @@ namespace SoulsFormatsExtensions
                     br.AssertInt32(0);
                     TextureID = br.ReadInt32();
                     Unk2 = br.ReadInt32();
-                    Unk3 = Param.Read(br, env);
-                    Unk4 = Param.Read(br, env);
-                    Unk5 = Param.Read(br, env);
-                    Unk6 = Param.Read(br, env);
-                    Unk7 = Param.Read(br, env);
-                    Unk8 = Param.Read(br, env);
-                    Unk9 = Param.Read(br, env);
+                    Unk3 = FXField.Read(br, env);
+                    Unk4 = FXField.Read(br, env);
+                    Unk5 = FXField.Read(br, env);
+                    Unk6 = FXField.Read(br, env);
+                    Unk7 = FXField.Read(br, env);
+                    Unk8 = FXField.Read(br, env);
+                    Unk9 = FXField.Read(br, env);
                 }
 
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
@@ -1629,7 +1628,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class BehaviorType108 : Behavior
+            public class FXBehaviorType108 : FXBehavior
             {
                 public override int Type => 108;
 
@@ -1642,34 +1641,34 @@ namespace SoulsFormatsExtensions
                 public int Unk6;
                 public int Unk7;
                 public int Unk8;
-                public Param Scale1X;
-                public Param Scale1Y;
-                public Param Scale1Z;
-                public Param Scale2X;
-                public Param Scale2Y;
-                public Param Scale2Z;
-                public Param RotSpeedX;
-                public Param RotSpeedY;
-                public Param RotSpeedZ;
-                public Param RotVal2X;
-                public Param RotVal2Y;
-                public Param RotVal2Z;
+                public FXField Scale1X;
+                public FXField Scale1Y;
+                public FXField Scale1Z;
+                public FXField Scale2X;
+                public FXField Scale2Y;
+                public FXField Scale2Z;
+                public FXField RotSpeedX;
+                public FXField RotSpeedY;
+                public FXField RotSpeedZ;
+                public FXField RotVal2X;
+                public FXField RotVal2Y;
+                public FXField RotVal2Z;
                 public int Unk9;
                 public int Unk10;
-                public Param Unk11_1;
-                public Param Unk11_2;
-                public Param Unk11_3;
-                public Param Unk11_4;
-                public Param Unk11_5;
-                public Param Unk11_6;
-                public Param Color1R;
-                public Param Color1G;
-                public Param Color1B;
-                public Param Color1A;
-                public Param Color2R;
-                public Param Color2G;
-                public Param Color2B;
-                public Param Color2A;
+                public FXField Unk11_1;
+                public FXField Unk11_2;
+                public FXField Unk11_3;
+                public FXField Unk11_4;
+                public FXField Unk11_5;
+                public FXField Unk11_6;
+                public FXField Color1R;
+                public FXField Color1G;
+                public FXField Color1B;
+                public FXField Color1A;
+                public FXField Color2R;
+                public FXField Color2G;
+                public FXField Color2B;
+                public FXField Color2A;
                 public int Unk12;
                 public int Unk13;
                 public int Unk14;
@@ -1696,34 +1695,34 @@ namespace SoulsFormatsExtensions
 
                     br.AssertInt32(0);
 
-                    Scale1X = Param.Read(br, env);
-                    Scale1Y = Param.Read(br, env);
-                    Scale1Z = Param.Read(br, env);
-                    Scale2X = Param.Read(br, env);
-                    Scale2Y = Param.Read(br, env);
-                    Scale2Z = Param.Read(br, env);
-                    RotSpeedX = Param.Read(br, env);
-                    RotSpeedY = Param.Read(br, env);
-                    RotSpeedZ = Param.Read(br, env);
-                    RotVal2X = Param.Read(br, env);
-                    RotVal2Y = Param.Read(br, env);
-                    RotVal2Z = Param.Read(br, env);
+                    Scale1X = FXField.Read(br, env);
+                    Scale1Y = FXField.Read(br, env);
+                    Scale1Z = FXField.Read(br, env);
+                    Scale2X = FXField.Read(br, env);
+                    Scale2Y = FXField.Read(br, env);
+                    Scale2Z = FXField.Read(br, env);
+                    RotSpeedX = FXField.Read(br, env);
+                    RotSpeedY = FXField.Read(br, env);
+                    RotSpeedZ = FXField.Read(br, env);
+                    RotVal2X = FXField.Read(br, env);
+                    RotVal2Y = FXField.Read(br, env);
+                    RotVal2Z = FXField.Read(br, env);
                     Unk9 = br.ReadInt32();
                     Unk10 = br.ReadInt32();
-                    Unk11_1 = Param.Read(br, env);
-                    Unk11_2 = Param.Read(br, env);
-                    Unk11_3 = Param.Read(br, env);
-                    Unk11_4 = Param.Read(br, env);
-                    Unk11_5 = Param.Read(br, env);
-                    Unk11_6 = Param.Read(br, env);
-                    Color1R = Param.Read(br, env);
-                    Color1G = Param.Read(br, env);
-                    Color1B = Param.Read(br, env);
-                    Color1A = Param.Read(br, env);
-                    Color2R = Param.Read(br, env);
-                    Color2G = Param.Read(br, env);
-                    Color2B = Param.Read(br, env);
-                    Color2A = Param.Read(br, env);
+                    Unk11_1 = FXField.Read(br, env);
+                    Unk11_2 = FXField.Read(br, env);
+                    Unk11_3 = FXField.Read(br, env);
+                    Unk11_4 = FXField.Read(br, env);
+                    Unk11_5 = FXField.Read(br, env);
+                    Unk11_6 = FXField.Read(br, env);
+                    Color1R = FXField.Read(br, env);
+                    Color1G = FXField.Read(br, env);
+                    Color1B = FXField.Read(br, env);
+                    Color1A = FXField.Read(br, env);
+                    Color2R = FXField.Read(br, env);
+                    Color2G = FXField.Read(br, env);
+                    Color2B = FXField.Read(br, env);
+                    Color2A = FXField.Read(br, env);
                     Unk12 = br.ReadInt32();
                     Unk13 = br.ReadInt32();
                     Unk14 = br.ReadInt32();
@@ -1791,31 +1790,31 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class BehaviorType117 : Behavior
+            public class FXBehaviorType117 : FXBehavior
             {
                 public override int Type => 117;
 
-                public Param Unk1_1;
-                public Param Unk1_2;
-                public Param Unk1_3;
-                public Param Unk1_4;
-                public Param Unk1_5;
-                public Param Unk1_6;
+                public FXField Unk1_1;
+                public FXField Unk1_2;
+                public FXField Unk1_3;
+                public FXField Unk1_4;
+                public FXField Unk1_5;
+                public FXField Unk1_6;
                 public int Unk2;
                 public int Unk3;
-                public Param Unk4;
+                public FXField Unk4;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
-                    Unk1_1 = Param.Read(br, env);
-                    Unk1_2 = Param.Read(br, env);
-                    Unk1_3 = Param.Read(br, env);
-                    Unk1_4 = Param.Read(br, env);
-                    Unk1_5 = Param.Read(br, env);
-                    Unk1_6 = Param.Read(br, env);
+                    Unk1_1 = FXField.Read(br, env);
+                    Unk1_2 = FXField.Read(br, env);
+                    Unk1_3 = FXField.Read(br, env);
+                    Unk1_4 = FXField.Read(br, env);
+                    Unk1_5 = FXField.Read(br, env);
+                    Unk1_6 = FXField.Read(br, env);
                     Unk2 = br.ReadInt32();
                     Unk3 = br.ReadInt32();
-                    Unk4 = Param.Read(br, env);
+                    Unk4 = FXField.Read(br, env);
                 }
 
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
@@ -1834,17 +1833,16 @@ namespace SoulsFormatsExtensions
         }
 
 
-        public class BehaviorRef : Behavior
+        public class BehaviorRef : FXBehavior
         {
             public override int Type => -1;
 
             [XmlAttribute]
             public string ReferenceXID;
 
-            public override bool ShouldSerializeParentEffect() => false;
             public override bool ShouldSerializePreDatas() => false;
 
-            public BehaviorRef(Behavior refVal)
+            public BehaviorRef(FXBehavior refVal)
             {
                 ReferenceXID = refVal?.XID;
             }

@@ -15,37 +15,47 @@ namespace SoulsFormatsExtensions
         public int Unk1 { get; set; }
         public int Unk2 { get; set; }
 
-        public Function RootFunction { get; set; }
+        public FXParam RootFXParam { get; set; }
 
 
         [XmlIgnore]
         public static bool FlattenFlowNodes = true;
         [XmlIgnore]
-        public static bool FlattenFunctionPointers = false;
+        public static bool FlattenFXParamPointers = false;
         [XmlIgnore]
         public static bool FlattenFlowEdges = true;
         [XmlIgnore]
-        public static bool FlattenFlowActions = true;
+        public static bool FlattenFXActions = false;
         [XmlIgnore]
-        public static bool FlattenFunctions = false;
+        public static bool FlattenFXParams = false;
         [XmlIgnore]
-        public static bool FlattenEffects = false;
+        public static bool FlattenFXParamLists = false;
         [XmlIgnore]
-        public static bool FlattenBehaviors = false;
+        public static bool FlattenFXBehaviors = false;
         [XmlIgnore]
         public static bool FlattenTemplates = false;
 
+        public List<FlowNode> AllFlowNodes { get; set; } = new List<FlowNode>();
+        public List<FXParamPointer> AllFXParamPointers { get; set; } = new List<FXParamPointer>();
+        public List<FlowEdge> AllFlowEdges { get; set; } = new List<FlowEdge>();
+        public List<FXAction> AllFXActions { get; set; } = new List<FXAction>();
+        public List<FXParam> AllFXParams { get; set; } = new List<FXParam>();
+        public List<FXParamList> AllFXParamLists { get; set; } = new List<FXParamList>();
+        public List<FXBehavior> AllFXBehaviors { get; set; } = new List<FXBehavior>();
+        public List<Template> AllTemplates { get; set; } = new List<Template>();
+
+
 
         public bool ShouldSerializeAllFlowNodes() => FlattenFlowNodes;
-        public bool ShouldSerializeAllFunctionPointers() => FlattenFunctionPointers;
+        public bool ShouldSerializeAllFXParamPointers() => FlattenFXParamPointers;
         public bool ShouldSerializeAllFlowEdges() => FlattenFlowEdges;
-        public bool ShouldSerializeAllFlowActions() => FlattenFlowActions;
-        public bool ShouldSerializeAllFunctions() => FlattenFunctions;
-        public bool ShouldSerializeAllEffects() => FlattenEffects;
-        public bool ShouldSerializeAllBehaviors() => FlattenBehaviors;
-        public bool ShouldSerializeAllTemplates() => FlattenBehaviors;
+        public bool ShouldSerializeAllFXActions() => FlattenFXActions;
+        public bool ShouldSerializeAllFXParams() => FlattenFXParams;
+        public bool ShouldSerializeAllFXParamLists() => FlattenFXParamLists;
+        public bool ShouldSerializeAllFXBehaviors() => FlattenFXBehaviors;
+        public bool ShouldSerializeAllTemplates() => FlattenTemplates;
 
-        public List<FlowNode> AllFlowNodes { get; set; } = new List<FlowNode>();
+        
         public FlowNode GetFlowNode(string xid) => AllFlowNodes.FirstOrDefault(x => x.XID == xid);
         public FlowNode DereferenceFlowNode(FlowNode v)
         {
@@ -68,30 +78,30 @@ namespace SoulsFormatsExtensions
                 return new FlowNodeRef(v);
         }
 
-        public List<FunctionPointer> AllFunctionPointers { get; set; } = new List<FunctionPointer>();
-        public FunctionPointer GetFunctionPointer(string xid) => AllFunctionPointers.FirstOrDefault(x => x.XID == xid);
-        public FunctionPointer DereferenceFunctionPointer(FunctionPointer v)
+        
+        public FXParamPointer GetFXParamPointer(string xid) => AllFXParamPointers.FirstOrDefault(x => x.XID == xid);
+        public FXParamPointer DereferenceFXParamPointer(FXParamPointer v)
         {
-            if (!FlattenFunctionPointers)
+            if (!FlattenFXParamPointers)
                 return v;
 
-            if (v is FunctionPointerRef asRef)
-                return GetFunctionPointer(asRef.ReferenceXID);
+            if (v is FXParamPointerRef asRef)
+                return GetFXParamPointer(asRef.ReferenceXID);
             else
                 return v;
         }
-        public FunctionPointer ReferenceFunctionPointer(FunctionPointer v)
+        public FXParamPointer ReferenceFXParamPointer(FXParamPointer v)
         {
-            if (!FlattenFunctionPointers)
+            if (!FlattenFXParamPointers)
                 return v;
 
-            if (v is FunctionPointerRef asRef)
+            if (v is FXParamPointerRef asRef)
                 return v;
             else
-                return new FunctionPointerRef(v);
+                return new FXParamPointerRef(v);
         }
 
-        public List<FlowEdge> AllFlowEdges { get; set; } = new List<FlowEdge>();
+        
         public FlowEdge GetFlowEdge(string xid) => AllFlowEdges.FirstOrDefault(x => x.XID == xid);
         public FlowEdge DereferenceFlowEdge(FlowEdge v)
         {
@@ -115,80 +125,80 @@ namespace SoulsFormatsExtensions
                 return new FlowEdgeRef(v);
         }
 
-        public List<FlowAction> AllFlowActions { get; set; } = new List<FlowAction>();
-        public FlowAction GetFlowAction(string xid) => AllFlowActions.FirstOrDefault(x => x.XID == xid);
-        public FlowAction DereferenceFlowAction(FlowAction v)
+        
+        public FXAction GetFXAction(string xid) => AllFXActions.FirstOrDefault(x => x.XID == xid);
+        public FXAction DereferenceFXAction(FXAction v)
         {
-            if (!FlattenFlowActions)
+            if (!FlattenFXActions)
                 return v;
 
-            if (v is FlowActionRef asRef)
-                return GetFlowAction(asRef.ReferenceXID);
+            if (v is FXActionRef asRef)
+                return GetFXAction(asRef.ReferenceXID);
             else
                 return v;
         }
-        public FlowAction ReferenceFlowAction(FlowAction v)
+        public FXAction ReferenceFXAction(FXAction v)
         {
-            if (!FlattenFlowActions)
+            if (!FlattenFXActions)
                 return v;
 
-            if (v is FlowActionRef asRef)
+            if (v is FXActionRef asRef)
                 return v;
             else
-                return new FlowActionRef(v);
+                return new FXActionRef(v);
         }
 
-        public List<Function> AllFunctions { get; set; } = new List<Function>();
-        public Function GetFunction(string xid) => AllFunctions.FirstOrDefault(x => x.XID == xid);
-        public Function DereferenceFunction(Function v)
+        
+        public FXParam GetFXParam(string xid) => AllFXParams.FirstOrDefault(x => x.XID == xid);
+        public FXParam DereferenceFXParam(FXParam v)
         {
-            if (!FlattenFunctions)
+            if (!FlattenFXParams)
                 return v;
 
-            if (v is Function.FunctionRef asRef)
-                return GetFunction(asRef.ReferenceXID);
-            else
-                return v;
-        }
-        public Function ReferenceFunction(Function v)
-        {
-            if (!FlattenFunctions)
-                return v;
-
-            if (v is Function.FunctionRef asRef)
-                return v;
-            else
-                return new Function.FunctionRef(v);
-        }
-
-        public List<Effect> AllEffects { get; set; } = new List<Effect>();
-        public Effect GetEffect(string xid) => AllEffects.FirstOrDefault(x => x.XID == xid);
-        public Effect DereferenceEffect(Effect v)
-        {
-            if (!FlattenEffects)
-                return v;
-
-            if (v is EffectRef asRef)
-                return GetEffect(asRef.ReferenceXID);
+            if (v is FXParam.FXParamRef asRef)
+                return GetFXParam(asRef.ReferenceXID);
             else
                 return v;
         }
-        public Effect ReferenceEffect(Effect v)
+        public FXParam ReferenceFXParam(FXParam v)
         {
-            if (!FlattenEffects)
+            if (!FlattenFXParams)
                 return v;
 
-            if (v is EffectRef asRef)
+            if (v is FXParam.FXParamRef asRef)
                 return v;
             else
-                return new EffectRef(v);
+                return new FXParam.FXParamRef(v);
         }
 
-        public List<Behavior> AllBehaviors { get; set; } = new List<Behavior>();
-        public Behavior GetBehavior(string xid) => AllBehaviors.FirstOrDefault(x => x.XID == xid);
-        public Behavior DereferenceBehavior(Behavior v)
+        
+        public FXParamList GetFXParamList(string xid) => AllFXParamLists.FirstOrDefault(x => x.XID == xid);
+        public FXParamList DereferenceFXParamList(FXParamList v)
         {
-            if (!FlattenBehaviors)
+            if (!FlattenFXParamLists)
+                return v;
+
+            if (v is FXParamListRef asRef)
+                return GetFXParamList(asRef.ReferenceXID);
+            else
+                return v;
+        }
+        public FXParamList ReferenceFXParamList(FXParamList v)
+        {
+            if (!FlattenFXParamLists)
+                return v;
+
+            if (v is FXParamListRef asRef)
+                return v;
+            else
+                return new FXParamListRef(v);
+        }
+
+        
+        public FXBehavior GetBehavior(string xid) => AllFXBehaviors.FirstOrDefault(x => x.XID == xid);
+        public FXBehavior DereferenceFXBehavior(FXBehavior v)
+        {
+            if (!FlattenFXBehaviors)
                 return v;
 
             if (v is BehaviorRef asRef)
@@ -196,9 +206,9 @@ namespace SoulsFormatsExtensions
             else
                 return v;
         }
-        public Behavior ReferenceBehavior(Behavior v)
+        public FXBehavior ReferenceFXBehavior(FXBehavior v)
         {
-            if (!FlattenBehaviors)
+            if (!FlattenFXBehaviors)
                 return v;
 
             if (v is BehaviorRef asRef)
@@ -207,7 +217,7 @@ namespace SoulsFormatsExtensions
                 return new BehaviorRef(v);
         }
 
-        public List<Template> AllTemplates { get; set; } = new List<Template>();
+        
         public Template GetTemplate(string xid) => AllTemplates.FirstOrDefault(x => x.XID == xid);
         public Template DereferenceTemplate(Template v)
         {
@@ -232,7 +242,7 @@ namespace SoulsFormatsExtensions
 
 
         [XmlIgnore]
-        public List<Param> Debug_AllLoadedParams;
+        public List<FXField> Debug_AllLoadedParams;
 
         protected override void Read(BinaryReaderEx br)
         {
@@ -253,14 +263,14 @@ namespace SoulsFormatsExtensions
 
             var env = new FxrEnvironment();
 
-            AllBehaviors.Clear();
+            AllFXBehaviors.Clear();
             AllTemplates.Clear();
-            AllEffects.Clear();
-            AllFlowActions.Clear();
+            AllFXParamLists.Clear();
+            AllFXActions.Clear();
             AllFlowEdges.Clear();
             AllFlowNodes.Clear();
-            AllFunctions.Clear();
-            AllFunctionPointers.Clear();
+            AllFXParams.Clear();
+            AllFXParamPointers.Clear();
 
             env.fxr = this;
 
@@ -270,7 +280,7 @@ namespace SoulsFormatsExtensions
 
             br.Pad(16);
 
-            RootFunction = env.GetFunction(br, br.Position);
+            RootFXParam = env.GetFXParam(br, br.Position);
 
             void Register<T>(string type, long offset, List<T> list, T thing)
                 where T : XIDable
@@ -283,21 +293,21 @@ namespace SoulsFormatsExtensions
 
             foreach (var kvp in env.ObjectsByOffset)
             {
-                if (kvp.Value is Behavior asBehavior)
+                if (kvp.Value is FXBehavior asBehavior)
                 {
-                    Register("Behavior", kvp.Key, AllBehaviors, asBehavior);
+                    Register("Behavior", kvp.Key, AllFXBehaviors, asBehavior);
                 }
                 else if (kvp.Value is Template asTemplate)
                 {
                     Register("Template", kvp.Key, AllTemplates, asTemplate);
                 }
-                else if (kvp.Value is Effect asEffect)
+                else if (kvp.Value is FXParamList asFXParamList)
                 {
-                    Register("Effect", kvp.Key, AllEffects, asEffect);
+                    Register("FXParamList", kvp.Key, AllFXParamLists, asFXParamList);
                 }
-                else if (kvp.Value is FlowAction asFlowAction)
+                else if (kvp.Value is FXAction asFXAction)
                 {
-                    Register("FlowAction", kvp.Key, AllFlowActions, asFlowAction);
+                    Register("FXAction", kvp.Key, AllFXActions, asFXAction);
                 }
                 else if (kvp.Value is FlowEdge asFlowEdge)
                 {
@@ -307,13 +317,13 @@ namespace SoulsFormatsExtensions
                 {
                     Register("FlowNode", kvp.Key, AllFlowNodes, asFlowNode);
                 }
-                else if (kvp.Value is Function asFunction)
+                else if (kvp.Value is FXParam asFXParam)
                 {
-                    Register("Function", kvp.Key, AllFunctions, asFunction);
+                    Register("FXParam", kvp.Key, AllFXParams, asFXParam);
                 }
-                else if (kvp.Value is FunctionPointer asFunctionPointer)
+                else if (kvp.Value is FXParamPointer asFXParamPointer)
                 {
-                    Register("FunctionPointer", kvp.Key, AllFunctionPointers, asFunctionPointer);
+                    Register("FXParamPointer", kvp.Key, AllFXParamPointers, asFXParamPointer);
                 }
                 else
                 {
@@ -326,48 +336,48 @@ namespace SoulsFormatsExtensions
 
         public void Flatten()
         {
-            foreach (var x in AllBehaviors)
+            foreach (var x in AllFXBehaviors)
                 x.ToXIDs(this);
             foreach (var x in AllTemplates)
                 x.ToXIDs(this);
-            foreach (var x in AllEffects)
+            foreach (var x in AllFXParamLists)
                 x.ToXIDs(this);
-            foreach (var x in AllFlowActions)
+            foreach (var x in AllFXActions)
                 x.ToXIDs(this);
             foreach (var x in AllFlowEdges)
                 x.ToXIDs(this);
             foreach (var x in AllFlowNodes)
                 x.ToXIDs(this);
-            foreach (var x in AllFunctions)
+            foreach (var x in AllFXParams)
                 x.ToXIDs(this);
-            foreach (var x in AllFunctionPointers)
+            foreach (var x in AllFXParamPointers)
                 x.ToXIDs(this);
 
-            RootFunction.ToXIDs(this);
-            //RootFunction = ReferenceFunction(RootFunction);
+            RootFXParam.ToXIDs(this);
+            //RootFXParam = ReferenceFXParam(RootFXParam);
         }
 
         public void Unflatten()
         {
-            foreach (var x in AllBehaviors)
+            foreach (var x in AllFXBehaviors)
                 x.FromXIDs(this);
             foreach (var x in AllTemplates)
                 x.FromXIDs(this);
-            foreach (var x in AllEffects)
+            foreach (var x in AllFXParamLists)
                 x.FromXIDs(this);
-            foreach (var x in AllFlowActions)
+            foreach (var x in AllFXActions)
                 x.FromXIDs(this);
             foreach (var x in AllFlowEdges)
                 x.FromXIDs(this);
             foreach (var x in AllFlowNodes)
                 x.FromXIDs(this);
-            foreach (var x in AllFunctions)
+            foreach (var x in AllFXParams)
                 x.FromXIDs(this);
-            foreach (var x in AllFunctionPointers)
+            foreach (var x in AllFXParamPointers)
                 x.FromXIDs(this);
 
-            RootFunction.FromXIDs(this);
-            //RootFunction = DereferenceFunction(RootFunction);
+            RootFXParam.FromXIDs(this);
+            //RootFXParam = DereferenceFXParam(RootFXParam);
         }
 
         protected override void Write(BinaryWriterEx bw)
@@ -380,24 +390,24 @@ namespace SoulsFormatsExtensions
             env.bw = bw;
             env.fxr = this;
 
-            env.RegisterPointer(RootFunction);
+            env.RegisterPointer(RootFXParam);
 
             bw.ReserveFXR1Varint("OffsetToTable");
 
             bw.ReserveInt32("TablePointerCount");
-            bw.ReserveInt32("TableFunctionCount");
+            bw.ReserveInt32("TableFXParamCount");
 
             bw.WriteInt32(Unk1);
             bw.WriteInt32(Unk2);
 
             bw.Pad(16);
             
-            // Write RootFunction and everything else :fatcat:
+            // Write RootFXParam and everything else :fatcat:
             env.FinishRecursiveWrite();
 
             bw.FillFXR1Varint("OffsetToTable", (int)bw.Position);
             env.WritePointerTable("TablePointerCount");
-            env.WriteFunctionTable("TableFunctionCount");
+            env.WriteFXParamTable("TableFXParamCount");
 
         }
 

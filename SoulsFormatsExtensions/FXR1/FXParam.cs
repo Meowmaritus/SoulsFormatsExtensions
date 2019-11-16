@@ -10,76 +10,76 @@ namespace SoulsFormatsExtensions
 {
     public partial class FXR1
     {
-        [XmlInclude(typeof(Function1))]
-        [XmlInclude(typeof(Function2))]
-        [XmlInclude(typeof(Function3))]
-        [XmlInclude(typeof(Function5))]
-        [XmlInclude(typeof(Function6))]
-        [XmlInclude(typeof(Function7))]
-        [XmlInclude(typeof(Function9))]
-        [XmlInclude(typeof(Function11))]
-        [XmlInclude(typeof(Function12))]
-        [XmlInclude(typeof(Function13))]
-        [XmlInclude(typeof(Function14))]
-        [XmlInclude(typeof(Function19))]
-        [XmlInclude(typeof(Function20))]
-        [XmlInclude(typeof(Function21))]
-        [XmlInclude(typeof(Function22))]
-        [XmlInclude(typeof(Function27))]
-        [XmlInclude(typeof(Function28))]
-        [XmlInclude(typeof(Function29))]
-        [XmlInclude(typeof(ImportFXREffect))]
-        [XmlInclude(typeof(FXREffect))]
-        [XmlInclude(typeof(Function41))]
-        [XmlInclude(typeof(Function44))]
-        [XmlInclude(typeof(Function45))]
-        [XmlInclude(typeof(Function46))]
-        [XmlInclude(typeof(Function47))]
-        [XmlInclude(typeof(Function59))]
-        [XmlInclude(typeof(Function60))]
-        [XmlInclude(typeof(Function66))]
+        [XmlInclude(typeof(FXParam1))]
+        [XmlInclude(typeof(FXParam2))]
+        [XmlInclude(typeof(FXParam3))]
+        [XmlInclude(typeof(FXParam5))]
+        [XmlInclude(typeof(FXParam6))]
+        [XmlInclude(typeof(FXParam7))]
+        [XmlInclude(typeof(FXParam9))]
+        [XmlInclude(typeof(FXParam11))]
+        [XmlInclude(typeof(FXParam12))]
+        [XmlInclude(typeof(FXParam13))]
+        [XmlInclude(typeof(FXParam14))]
+        [XmlInclude(typeof(FXParam19))]
+        [XmlInclude(typeof(FXParam20))]
+        [XmlInclude(typeof(FXParam21))]
+        [XmlInclude(typeof(FXParam22))]
+        [XmlInclude(typeof(FXParam27))]
+        [XmlInclude(typeof(FXParam28))]
+        [XmlInclude(typeof(FXParam29))]
+        [XmlInclude(typeof(InstantiateEffect))]
+        [XmlInclude(typeof(CallAction))]
+        [XmlInclude(typeof(FXParam41))]
+        [XmlInclude(typeof(FXParam44))]
+        [XmlInclude(typeof(FXParam45))]
+        [XmlInclude(typeof(FXParam46))]
+        [XmlInclude(typeof(FXParam47))]
+        [XmlInclude(typeof(FXParam59))]
+        [XmlInclude(typeof(FXParam60))]
+        [XmlInclude(typeof(FXParam66))]
         [XmlInclude(typeof(PlaySound))]
         [XmlInclude(typeof(PlaySoundB))]
-        [XmlInclude(typeof(Function70))]
-        [XmlInclude(typeof(Function71))]
-        [XmlInclude(typeof(Function79))]
-        [XmlInclude(typeof(Function81))]
-        [XmlInclude(typeof(Function85))]
-        [XmlInclude(typeof(Function87))]
-        [XmlInclude(typeof(Function89))]
-        [XmlInclude(typeof(Function91))]
-        [XmlInclude(typeof(Function95))]
-        [XmlInclude(typeof(Function111))]
-        [XmlInclude(typeof(Function112))]
-        [XmlInclude(typeof(Function113))]
-        [XmlInclude(typeof(Function114))]
-        [XmlInclude(typeof(Function115))]
-        [XmlInclude(typeof(Function120))]
-        [XmlInclude(typeof(Function121))]
-        [XmlInclude(typeof(Function122))]
-        [XmlInclude(typeof(Function123))]
-        [XmlInclude(typeof(Function124))]
-        [XmlInclude(typeof(Function126))]
-        [XmlInclude(typeof(Function127))]
-        [XmlInclude(typeof(Function128))]
-        [XmlInclude(typeof(Function129))]
-        [XmlInclude(typeof(Function130))]
-        [XmlInclude(typeof(Function131))]
-        [XmlInclude(typeof(Function132))]
-        [XmlInclude(typeof(FXRInit))]
-        [XmlInclude(typeof(FXRInitLite))]
-        [XmlInclude(typeof(Function136))]
-        [XmlInclude(typeof(Function137))]
-        [XmlInclude(typeof(Function138))]
-        [XmlInclude(typeof(Function139))]
-        [XmlInclude(typeof(Function140))]
-        [XmlInclude(typeof(FunctionRef))]
-        public abstract class Function : XIDable
+        [XmlInclude(typeof(FXParam70))]
+        [XmlInclude(typeof(FXParam71))]
+        [XmlInclude(typeof(FXParam79))]
+        [XmlInclude(typeof(FXParam81))]
+        [XmlInclude(typeof(FXParam85))]
+        [XmlInclude(typeof(FXParam87))]
+        [XmlInclude(typeof(FXParam89))]
+        [XmlInclude(typeof(FXParam91))]
+        [XmlInclude(typeof(FXParam95))]
+        [XmlInclude(typeof(FXParam111))]
+        [XmlInclude(typeof(FXParam112))]
+        [XmlInclude(typeof(FXParam113))]
+        [XmlInclude(typeof(FXParam114))]
+        [XmlInclude(typeof(FXParam115))]
+        [XmlInclude(typeof(FXParam120))]
+        [XmlInclude(typeof(FXParam121))]
+        [XmlInclude(typeof(FXParam122))]
+        [XmlInclude(typeof(FXParam123))]
+        [XmlInclude(typeof(FXParam124))]
+        [XmlInclude(typeof(FXParam126))]
+        [XmlInclude(typeof(FXParam127))]
+        [XmlInclude(typeof(FXParam128))]
+        [XmlInclude(typeof(FXParam129))]
+        [XmlInclude(typeof(FXParam130))]
+        [XmlInclude(typeof(FXParam131))]
+        [XmlInclude(typeof(FXParam132))]
+        [XmlInclude(typeof(CreateEffect))]
+        [XmlInclude(typeof(CreateEffectLite))]
+        [XmlInclude(typeof(FXParam136))]
+        [XmlInclude(typeof(FXParam137))]
+        [XmlInclude(typeof(FXParam138))]
+        [XmlInclude(typeof(FXParam139))]
+        [XmlInclude(typeof(FXParam140))]
+        [XmlInclude(typeof(FXParamRef))]
+        public abstract class FXParam : XIDable
         {
-            public override bool ShouldSerializeXID() => FXR1.FlattenFunctions;
+            public override bool ShouldSerializeXID() => FXR1.FlattenFXParams;
 
             //public readonly long ID;
-            //internal Function(long id)
+            //internal FXParam(long id)
             //{
             //    ID = id;
             //}
@@ -108,79 +108,79 @@ namespace SoulsFormatsExtensions
 
             public void Write(BinaryWriterEx bw, FxrEnvironment env)
             {
-                env.RegisterFunctionOffsetHere();
+                env.RegisterFXParamOffsetHere();
                 WriteInner(bw, env);
             }
 
-            public static Function GetProperFunctionType(BinaryReaderEx br, FxrEnvironment env)
+            public static FXParam GetProperFXParamType(BinaryReaderEx br, FxrEnvironment env)
             {
                 long functionID = br.GetFXR1Varint(br.Position);
-                Function func = null;
+                FXParam func = null;
                 switch (functionID)
                 {
-                    case 1: func = new Function1(); break;
-                    case 2: func = new Function2(); break;
-                    case 3: func = new Function3(); break;
-                    case 5: func = new Function5(); break;
-                    case 6: func = new Function6(); break;
-                    case 7: func = new Function7(); break;
-                    case 9: func = new Function9(); break;
-                    case 11: func = new Function11(); break;
-                    case 12: func = new Function12(); break;
-                    case 13: func = new Function13(); break;
-                    case 14: func = new Function14(); break;
-                    case 19: func = new Function19(); break;
-                    case 20: func = new Function20(); break;
-                    case 21: func = new Function21(); break;
-                    case 22: func = new Function22(); break;
-                    case 27: func = new Function27(); break;
-                    case 28: func = new Function28(); break;
-                    case 29: func = new Function29(); break;
-                    case 37: func = new ImportFXREffect(); break;
-                    case 38: func = new FXREffect(); break;
-                    case 41: func = new Function41(); break;
-                    case 44: func = new Function44(); break;
-                    case 45: func = new Function45(); break;
-                    case 46: func = new Function46(); break;
-                    case 47: func = new Function47(); break;
-                    case 59: func = new Function59(); break;
-                    case 60: func = new Function60(); break;
-                    case 66: func = new Function66(); break;
+                    case 1: func = new FXParam1(); break;
+                    case 2: func = new FXParam2(); break;
+                    case 3: func = new FXParam3(); break;
+                    case 5: func = new FXParam5(); break;
+                    case 6: func = new FXParam6(); break;
+                    case 7: func = new FXParam7(); break;
+                    case 9: func = new FXParam9(); break;
+                    case 11: func = new FXParam11(); break;
+                    case 12: func = new FXParam12(); break;
+                    case 13: func = new FXParam13(); break;
+                    case 14: func = new FXParam14(); break;
+                    case 19: func = new FXParam19(); break;
+                    case 20: func = new FXParam20(); break;
+                    case 21: func = new FXParam21(); break;
+                    case 22: func = new FXParam22(); break;
+                    case 27: func = new FXParam27(); break;
+                    case 28: func = new FXParam28(); break;
+                    case 29: func = new FXParam29(); break;
+                    case 37: func = new InstantiateEffect(); break;
+                    case 38: func = new CallAction(); break;
+                    case 41: func = new FXParam41(); break;
+                    case 44: func = new FXParam44(); break;
+                    case 45: func = new FXParam45(); break;
+                    case 46: func = new FXParam46(); break;
+                    case 47: func = new FXParam47(); break;
+                    case 59: func = new FXParam59(); break;
+                    case 60: func = new FXParam60(); break;
+                    case 66: func = new FXParam66(); break;
                     case 68: func = new PlaySound(); break;
                     case 69: func = new PlaySoundB(); break;
-                    case 70: func = new Function70(); break;
-                    case 71: func = new Function71(); break;
-                    case 79: func = new Function79(); break;
-                    case 81: func = new Function81(); break;
-                    case 85: func = new Function85(); break;
-                    case 87: func = new Function87(); break;
-                    case 89: func = new Function89(); break;
-                    case 91: func = new Function91(); break;
-                    case 95: func = new Function95(); break;
-                    case 111: func = new Function111(); break;
-                    case 112: func = new Function112(); break;
-                    case 113: func = new Function113(); break;
-                    case 114: func = new Function114(); break;
-                    case 115: func = new Function115(); break;
-                    case 120: func = new Function120(); break;
-                    case 121: func = new Function121(); break;
-                    case 122: func = new Function122(); break;
-                    case 123: func = new Function123(); break;
-                    case 124: func = new Function124(); break;
-                    case 126: func = new Function126(); break;
-                    case 127: func = new Function127(); break;
-                    case 128: func = new Function128(); break;
-                    case 129: func = new Function129(); break;
-                    case 130: func = new Function130(); break;
-                    case 131: func = new Function131(); break;
-                    case 132: func = new Function132(); break;
-                    case 133: func = new FXRInit(); break;
-                    case 134: func = new FXRInitLite(); break;
-                    case 136: func = new Function136(); break;
-                    case 137: func = new Function137(); break;
-                    case 138: func = new Function138(); break;
-                    case 139: func = new Function139(); break;
-                    case 140: func = new Function140(); break;
+                    case 70: func = new FXParam70(); break;
+                    case 71: func = new FXParam71(); break;
+                    case 79: func = new FXParam79(); break;
+                    case 81: func = new FXParam81(); break;
+                    case 85: func = new FXParam85(); break;
+                    case 87: func = new FXParam87(); break;
+                    case 89: func = new FXParam89(); break;
+                    case 91: func = new FXParam91(); break;
+                    case 95: func = new FXParam95(); break;
+                    case 111: func = new FXParam111(); break;
+                    case 112: func = new FXParam112(); break;
+                    case 113: func = new FXParam113(); break;
+                    case 114: func = new FXParam114(); break;
+                    case 115: func = new FXParam115(); break;
+                    case 120: func = new FXParam120(); break;
+                    case 121: func = new FXParam121(); break;
+                    case 122: func = new FXParam122(); break;
+                    case 123: func = new FXParam123(); break;
+                    case 124: func = new FXParam124(); break;
+                    case 126: func = new FXParam126(); break;
+                    case 127: func = new FXParam127(); break;
+                    case 128: func = new FXParam128(); break;
+                    case 129: func = new FXParam129(); break;
+                    case 130: func = new FXParam130(); break;
+                    case 131: func = new FXParam131(); break;
+                    case 132: func = new FXParam132(); break;
+                    case 133: func = new CreateEffect(); break;
+                    case 134: func = new CreateEffectLite(); break;
+                    case 136: func = new FXParam136(); break;
+                    case 137: func = new FXParam137(); break;
+                    case 138: func = new FXParam138(); break;
+                    case 139: func = new FXParam139(); break;
+                    case 140: func = new FXParam140(); break;
                     default:
                         throw new NotImplementedException();
                 }
@@ -193,151 +193,144 @@ namespace SoulsFormatsExtensions
                 ReadInner(br, env);
             }
 
-            public class FunctionRef : Function
+            public class FXParamRef : FXParam
             {
-                [XmlAttribute]
                 public string ReferenceXID;
 
-                public FunctionRef(Function refVal)
+                public FXParamRef(FXParam refVal)
                 {
                     ReferenceXID = refVal?.XID;
                 }
 
-                public FunctionRef()
+                public FXParamRef()
                 {
 
                 }
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
-                    throw new InvalidOperationException("Cannot actually deserialize a FunctionRef.");
+                    throw new InvalidOperationException("Cannot actually deserialize a FXParamRef.");
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
-                    throw new InvalidOperationException("Cannot actually serialize a FunctionRef.");
+                    throw new InvalidOperationException("Cannot actually serialize a FXParamRef.");
                 }
             }
 
-            public class ImportFXREffect : Function
+            public class InstantiateEffect : FXParam
             {
-                [XmlAttribute]
-                public int TemplateFXRID;
-                public Effect Effect;
-                [XmlAttribute]
+                public int EffectID;
+                public FXParamList ParamList;
                 public int Unk;
 
                 internal override void InnerToXIDs(FXR1 fxr)
                 {
-                    Effect = fxr.ReferenceEffect(Effect);
+                    ParamList = fxr.ReferenceFXParamList(ParamList);
                 }
 
                 internal override void InnerFromXIDs(FXR1 fxr)
                 {
-                    Effect = fxr.DereferenceEffect(Effect);
+                    ParamList = fxr.DereferenceFXParamList(ParamList);
                 }
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(37);
 
-                    TemplateFXRID = br.ReadFXR1Varint();
+                    EffectID = br.ReadFXR1Varint();
                     int astOffset = br.ReadFXR1Varint();
                     Unk = br.ReadInt32();
 
-                    Effect = env.GetEffect(br, astOffset);
+                    ParamList = env.GetEffect(br, astOffset);
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(37);
 
-                    bw.WriteFXR1Varint(TemplateFXRID);
-                    env.RegisterPointer(Effect);
+                    bw.WriteFXR1Varint(EffectID);
+                    env.RegisterPointer(ParamList);
                     bw.WriteInt32(Unk);
                 }
             }
 
-            public class FXREffect : Function
+            public class CallAction : FXParam
             {
-                [XmlAttribute]
-                public int SubType;
-                public Effect Effect;
-                [XmlAttribute]
+                public int ActionType;
+                public FXParamList ParamList;
                 public int Unk;
 
                 internal override void InnerToXIDs(FXR1 fxr)
                 {
-                    Effect = fxr.ReferenceEffect(Effect);
+                    ParamList = fxr.ReferenceFXParamList(ParamList);
                 }
 
                 internal override void InnerFromXIDs(FXR1 fxr)
                 {
-                    Effect = fxr.DereferenceEffect(Effect);
+                    ParamList = fxr.DereferenceFXParamList(ParamList);
                 }
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(38);
 
-                    SubType = br.ReadFXR1Varint();
+                    ActionType = br.ReadFXR1Varint();
                     int astOffset = br.ReadFXR1Varint();
                     Unk = br.ReadInt32();
 
-                    Effect = env.GetEffect(br, astOffset);
+                    ParamList = env.GetEffect(br, astOffset);
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(38);
 
-                    bw.WriteFXR1Varint(SubType);
-                    env.RegisterPointer(Effect);
+                    bw.WriteFXR1Varint(ActionType);
+                    env.RegisterPointer(ParamList);
                     bw.WriteInt32(Unk);
                 }
             }
 
-            public class FXRInit : Function
+            public class CreateEffect : FXParam
             {
-                [XmlAttribute]
-                public int FXRID;
-                [XmlAttribute]
+                public int EffectID;
                 public int Unk;
-                public Effect Effect1;
-                public Effect Effect2;
+                public FXParamList ParamList1;
+                public FXParamList ParamList2;
                 public List<FlowNode> Nodes;
 
                 internal override void InnerToXIDs(FXR1 fxr)
                 {
                     for (int i = 0; i < Nodes.Count; i++)
                         Nodes[i] = fxr.ReferenceFlowNode(Nodes[i]);
-                    Effect1 = fxr.ReferenceEffect(Effect1);
-                    Effect2 = fxr.ReferenceEffect(Effect2);
+                    ParamList1 = fxr.ReferenceFXParamList(ParamList1);
+                    ParamList2 = fxr.ReferenceFXParamList(ParamList2);
                 }
 
                 internal override void InnerFromXIDs(FXR1 fxr)
                 {
                     for (int i = 0; i < Nodes.Count; i++)
                         Nodes[i] = fxr.DereferenceFlowNode(Nodes[i]);
-                    Effect1 = fxr.DereferenceEffect(Effect1);
-                    Effect2 = fxr.DereferenceEffect(Effect2);
+                    ParamList1 = fxr.DereferenceFXParamList(ParamList1);
+                    ParamList2 = fxr.DereferenceFXParamList(ParamList2);
                 }
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(133);
 
-                    FXRID = br.ReadFXR1Varint();
+                    EffectID = br.ReadFXR1Varint();
                     for (int i = 0; i < 7; i++)
                         br.AssertFXR1Varint(0);
                     Unk = br.ReadFXR1Varint();
                     //throw new NotImplementedException();
 
-                    Effect1 = env.GetEffect(br, br.Position);
-                    br.Position += Effect.GetSize(br.VarintLong);
+                    ParamList1 = env.GetEffect(br, br.Position);
+                    br.Position += FXParamList.GetSize(br.VarintLong);
 
-                    Effect2 = env.GetEffect(br, br.Position);
-                    br.Position += Effect.GetSize(br.VarintLong);
+                    ParamList2 = env.GetEffect(br, br.Position);
+                    br.Position += FXParamList.GetSize(br.VarintLong);
 
                     int offsetToNodeList = br.ReadFXR1Varint();
                     int nodeCount = br.ReadFXR1Varint();
@@ -355,52 +348,50 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(133);
 
-                    bw.WriteFXR1Varint(FXRID);
+                    bw.WriteFXR1Varint(EffectID);
                     for (int i = 0; i < 7; i++)
                         bw.WriteFXR1Varint(0);
                     bw.WriteFXR1Varint(Unk);
-                    Effect1.Write(bw, env);
-                    Effect2.Write(bw, env);
+                    ParamList1.Write(bw, env);
+                    ParamList2.Write(bw, env);
                     env.RegisterPointer(Nodes);
                     bw.WriteFXR1Varint(Nodes.Count);
                 }
             }
 
-            public class FXRInitLite : Function
+            public class CreateEffectLite : FXParam
             {
-                [XmlAttribute]
-                public int FXRID;
-                [XmlAttribute]
+                public int EffectID;
                 public int Unk;
-                public List<Function> Funcs;
+                public List<FXParam> Params;
 
                 internal override void InnerToXIDs(FXR1 fxr)
                 {
-                    for (int i = 0; i < Funcs.Count; i++)
-                        Funcs[i] = fxr.ReferenceFunction(Funcs[i]);
+                    for (int i = 0; i < Params.Count; i++)
+                        Params[i] = fxr.ReferenceFXParam(Params[i]);
                 }
 
                 internal override void InnerFromXIDs(FXR1 fxr)
                 {
-                    for (int i = 0; i < Funcs.Count; i++)
-                        Funcs[i] = fxr.DereferenceFunction(Funcs[i]);
+                    for (int i = 0; i < Params.Count; i++)
+                        Params[i] = fxr.DereferenceFXParam(Params[i]);
                 }
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(134);
 
-                    FXRID = br.ReadFXR1Varint();
+                    EffectID = br.ReadFXR1Varint();
                     Unk = br.ReadFXR1Varint();
-                    int offsetToFuncOffsetList = br.ReadFXR1Varint();
+                    int offsetToParamOffsetList = br.ReadFXR1Varint();
                     int funcCount = br.ReadFXR1Varint();
-                    Funcs = new List<Function>(funcCount);
-                    br.StepIn(offsetToFuncOffsetList);
+                    Params = new List<FXParam>(funcCount);
+                    br.StepIn(offsetToParamOffsetList);
                     for (int i = 0; i < funcCount; i++)
                     {
-                        int nextFuncOffset = br.ReadInt32();
-                        var func = env.GetFunction(br, nextFuncOffset);
-                        Funcs.Add(func);
+                        int nextParamOffset = br.ReadInt32();
+                        var func = env.GetFXParam(br, nextParamOffset);
+                        Params.Add(func);
                     }
                     br.StepOut();
                 }
@@ -409,14 +400,14 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(134);
 
-                    bw.WriteFXR1Varint(FXRID);
+                    bw.WriteFXR1Varint(EffectID);
                     bw.WriteFXR1Varint(Unk);
-                    env.RegisterPointer(Funcs);
-                    bw.WriteFXR1Varint(Funcs.Count);
+                    env.RegisterPointer(Params);
+                    bw.WriteFXR1Varint(Params.Count);
                 }
             }
 
-            public class Function1 : Function
+            public class FXParam1 : FXParam
             {
                 [XmlAttribute]
                 public int Unk;
@@ -435,7 +426,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function2 : Function
+            public class FXParam2 : FXParam
             {
                 public List<int> IntList;
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
@@ -464,7 +455,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function3 : Function
+            public class FXParam3 : FXParam
             {
                 public List<int> IntList;
                 public List<float> FloatList;
@@ -501,7 +492,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function5 : Function
+            public class FXParam5 : FXParam
             {
                 public List<int> IntList;
                 public List<float> FloatList;
@@ -541,7 +532,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function6 : Function
+            public class FXParam6 : FXParam
             {
                 public List<int> IntList;
                 public List<float> FloatList;
@@ -581,7 +572,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function7 : Function
+            public class FXParam7 : FXParam
             {
                 [XmlAttribute]
                 public float Unk;
@@ -600,7 +591,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function9 : Function
+            public class FXParam9 : FXParam
             {
                 public List<int> IntList;
                 public List<float> FloatList;
@@ -640,7 +631,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function11 : Function
+            public class FXParam11 : FXParam
             {
                 public List<float> FloatList1;
                 public List<float> FloatList2;
@@ -680,7 +671,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function12 : Function
+            public class FXParam12 : FXParam
             {
                 public List<float> FloatList1;
                 public List<float> FloatList2;
@@ -720,7 +711,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function13 : Function
+            public class FXParam13 : FXParam
             {
                 public List<float> FloatList1;
                 public List<float> FloatList2;
@@ -762,7 +753,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function14 : Function
+            public class FXParam14 : FXParam
             {
                 public List<float> FloatList1;
                 public List<float> FloatList2;
@@ -804,7 +795,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function19 : Function
+            public class FXParam19 : FXParam
             {
                 public List<float> FloatList1;
                 public List<float> FloatList2;
@@ -846,7 +837,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function20 : Function
+            public class FXParam20 : FXParam
             {
                 public List<float> FloatList1;
                 public List<float> FloatList2;
@@ -888,7 +879,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function21 : Function
+            public class FXParam21 : FXParam
             {
                 public List<float> FloatList1;
                 public List<float> FloatList2;
@@ -930,7 +921,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function22 : Function
+            public class FXParam22 : FXParam
             {
                 public List<float> FloatList1;
                 public List<float> FloatList2;
@@ -972,7 +963,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function27 : Function
+            public class FXParam27 : FXParam
             {
                 public List<float> FloatList1;
                 public List<float> FloatList2;
@@ -1014,7 +1005,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function28 : Function
+            public class FXParam28 : FXParam
             {
                 public List<float> FloatList1;
                 public List<float> FloatList2;
@@ -1056,7 +1047,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function29 : Function
+            public class FXParam29 : FXParam
             {
                 public List<float> FloatList1;
                 public List<float> FloatList2;
@@ -1098,7 +1089,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function41 : Function
+            public class FXParam41 : FXParam
             {
                 [XmlAttribute]
                 public int Unk;
@@ -1117,7 +1108,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function44 : Function
+            public class FXParam44 : FXParam
             {
                 [XmlAttribute]
                 public short Unk1;
@@ -1145,7 +1136,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function45 : Function
+            public class FXParam45 : FXParam
             {
                 public short Unk1;
                 public short Unk2;
@@ -1171,7 +1162,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function46 : Function
+            public class FXParam46 : FXParam
             {
                 [XmlAttribute]
                 public short Unk1;
@@ -1199,7 +1190,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function47 : Function
+            public class FXParam47 : FXParam
             {
                 [XmlAttribute]
                 public short Unk1;
@@ -1227,7 +1218,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function59 : Function
+            public class FXParam59 : FXParam
             {
                 [XmlAttribute]
                 public int Unk;
@@ -1247,7 +1238,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function60 : Function
+            public class FXParam60 : FXParam
             {
                 [XmlAttribute]
                 public short Unk1;
@@ -1276,7 +1267,7 @@ namespace SoulsFormatsExtensions
             }
 
 
-            public class Function66 : Function
+            public class FXParam66 : FXParam
             {
                 [XmlAttribute]
                 public int Unk;
@@ -1296,7 +1287,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class PlaySound : Function
+            public class PlaySound : FXParam
             {
                 [XmlAttribute]
                 public int SoundID;
@@ -1316,7 +1307,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class PlaySoundB : Function
+            public class PlaySoundB : FXParam
             {
                 [XmlAttribute]
                 public int SoundID;
@@ -1336,7 +1327,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function70 : Function
+            public class FXParam70 : FXParam
             {
                 [XmlAttribute]
                 public float Unk;
@@ -1357,7 +1348,7 @@ namespace SoulsFormatsExtensions
             }
 
 
-            public class Function71 : Function
+            public class FXParam71 : FXParam
             {
                 [XmlAttribute]
                 public short Unk1;
@@ -1385,7 +1376,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function79 : Function
+            public class FXParam79 : FXParam
             {
                 [XmlAttribute]
                 public int Unk1;
@@ -1409,7 +1400,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function81 : Function
+            public class FXParam81 : FXParam
             {
                 [XmlAttribute]
                 public float Unk1;
@@ -1433,7 +1424,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function85 : Function
+            public class FXParam85 : FXParam
             {
                 [XmlAttribute]
                 public float Unk1;
@@ -1457,7 +1448,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function87 : Function
+            public class FXParam87 : FXParam
             {
                 [XmlAttribute]
                 public short Unk1;
@@ -1485,7 +1476,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function89 : Function
+            public class FXParam89 : FXParam
             {
                 public List<int> IntList;
                 public List<float> FloatList;
@@ -1528,11 +1519,11 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function91 : Function
+            public class FXParam91 : FXParam
             {
                 public List<float> FloatList1;
                 public List<float> FloatList2;
-                public Function Func;
+                public FXParam Param;
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(91);
@@ -1561,7 +1552,7 @@ namespace SoulsFormatsExtensions
                     }
                     br.StepOut();
 
-                    Func = env.GetFunction(br, functionOffset);
+                    Param = env.GetFXParam(br, functionOffset);
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
@@ -1572,24 +1563,24 @@ namespace SoulsFormatsExtensions
                     env.RegisterPointer(FloatList2);
                     bw.WriteFXR1Varint(FloatList1.Count);
                     bw.WriteFXR1Varint(1);
-                    env.RegisterPointer(Func);
+                    env.RegisterPointer(Param);
                 }
             }
 
-            public class Function95 : Function
+            public class FXParam95 : FXParam
             {
                 public List<float> FloatList1;
                 public List<float> FloatList2;
-                public Function Func;
+                public FXParam Param;
 
                 internal override void InnerToXIDs(FXR1 fxr)
                 {
-                    Func = fxr.ReferenceFunction(Func);
+                    Param = fxr.ReferenceFXParam(Param);
                 }
 
                 internal override void InnerFromXIDs(FXR1 fxr)
                 {
-                    Func = fxr.DereferenceFunction(Func);
+                    Param = fxr.DereferenceFXParam(Param);
                 }
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
@@ -1620,7 +1611,7 @@ namespace SoulsFormatsExtensions
                     }
                     br.StepOut();
 
-                    Func = env.GetFunction(br, functionOffset);
+                    Param = env.GetFXParam(br, functionOffset);
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
@@ -1631,11 +1622,11 @@ namespace SoulsFormatsExtensions
                     env.RegisterPointer(FloatList2);
                     bw.WriteFXR1Varint(FloatList1.Count);
                     bw.WriteFXR1Varint(1);
-                    env.RegisterPointer(Func);
+                    env.RegisterPointer(Param);
                 }
             }
 
-            public class Function111 : Function
+            public class FXParam111 : FXParam
             {
                 [XmlAttribute]
                 public int Unk;
@@ -1655,7 +1646,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function112 : Function
+            public class FXParam112 : FXParam
             {
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
@@ -1668,7 +1659,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function113 : Function
+            public class FXParam113 : FXParam
             {
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
@@ -1681,7 +1672,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function114 : Function
+            public class FXParam114 : FXParam
             {
                 [XmlAttribute]
                 public short Unk1;
@@ -1709,7 +1700,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function115 : Function
+            public class FXParam115 : FXParam
             {
                 [XmlAttribute]
                 public short Unk1;
@@ -1737,21 +1728,21 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function120 : Function
+            public class FXParam120 : FXParam
             {
-                public Function Func1;
-                public Function Func2;
+                public FXParam Param1;
+                public FXParam Param2;
 
                 internal override void InnerToXIDs(FXR1 fxr)
                 {
-                    Func1 = fxr.ReferenceFunction(Func1);
-                    Func2 = fxr.ReferenceFunction(Func2);
+                    Param1 = fxr.ReferenceFXParam(Param1);
+                    Param2 = fxr.ReferenceFXParam(Param2);
                 }
 
                 internal override void InnerFromXIDs(FXR1 fxr)
                 {
-                    Func1 = fxr.DereferenceFunction(Func1);
-                    Func2 = fxr.DereferenceFunction(Func2);
+                    Param1 = fxr.DereferenceFXParam(Param1);
+                    Param2 = fxr.DereferenceFXParam(Param2);
                 }
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
@@ -1761,34 +1752,34 @@ namespace SoulsFormatsExtensions
                     int funcOffset1 = br.ReadFXR1Varint();
                     int funcOffset2 = br.ReadFXR1Varint();
 
-                    Func1 = env.GetFunction(br, funcOffset1);
-                    Func2 = env.GetFunction(br, funcOffset2);
+                    Param1 = env.GetFXParam(br, funcOffset1);
+                    Param2 = env.GetFXParam(br, funcOffset2);
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(120);
 
-                    env.RegisterPointer(Func1);
-                    env.RegisterPointer(Func2);
+                    env.RegisterPointer(Param1);
+                    env.RegisterPointer(Param2);
                 }
             }
 
-            public class Function121 : Function
+            public class FXParam121 : FXParam
             {
-                public Function Func1;
-                public Function Func2;
+                public FXParam Param1;
+                public FXParam Param2;
 
                 internal override void InnerToXIDs(FXR1 fxr)
                 {
-                    Func1 = fxr.ReferenceFunction(Func1);
-                    Func2 = fxr.ReferenceFunction(Func2);
+                    Param1 = fxr.ReferenceFXParam(Param1);
+                    Param2 = fxr.ReferenceFXParam(Param2);
                 }
 
                 internal override void InnerFromXIDs(FXR1 fxr)
                 {
-                    Func1 = fxr.DereferenceFunction(Func1);
-                    Func2 = fxr.DereferenceFunction(Func2);
+                    Param1 = fxr.DereferenceFXParam(Param1);
+                    Param2 = fxr.DereferenceFXParam(Param2);
                 }
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
@@ -1798,34 +1789,34 @@ namespace SoulsFormatsExtensions
                     int funcOffset1 = br.ReadFXR1Varint();
                     int funcOffset2 = br.ReadFXR1Varint();
 
-                    Func1 = env.GetFunction(br, funcOffset1);
-                    Func2 = env.GetFunction(br, funcOffset2);
+                    Param1 = env.GetFXParam(br, funcOffset1);
+                    Param2 = env.GetFXParam(br, funcOffset2);
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(121);
 
-                    env.RegisterPointer(Func1);
-                    env.RegisterPointer(Func2);
+                    env.RegisterPointer(Param1);
+                    env.RegisterPointer(Param2);
                 }
             }
 
-            public class Function122 : Function
+            public class FXParam122 : FXParam
             {
-                public Function Func1;
-                public Function Func2;
+                public FXParam Param1;
+                public FXParam Param2;
 
                 internal override void InnerToXIDs(FXR1 fxr)
                 {
-                    Func1 = fxr.ReferenceFunction(Func1);
-                    Func2 = fxr.ReferenceFunction(Func2);
+                    Param1 = fxr.ReferenceFXParam(Param1);
+                    Param2 = fxr.ReferenceFXParam(Param2);
                 }
 
                 internal override void InnerFromXIDs(FXR1 fxr)
                 {
-                    Func1 = fxr.DereferenceFunction(Func1);
-                    Func2 = fxr.DereferenceFunction(Func2);
+                    Param1 = fxr.DereferenceFXParam(Param1);
+                    Param2 = fxr.DereferenceFXParam(Param2);
                 }
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
@@ -1835,34 +1826,34 @@ namespace SoulsFormatsExtensions
                     int funcOffset1 = br.ReadFXR1Varint();
                     int funcOffset2 = br.ReadFXR1Varint();
 
-                    Func1 = env.GetFunction(br, funcOffset1);
-                    Func2 = env.GetFunction(br, funcOffset2);
+                    Param1 = env.GetFXParam(br, funcOffset1);
+                    Param2 = env.GetFXParam(br, funcOffset2);
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(122);
 
-                    env.RegisterPointer(Func1);
-                    env.RegisterPointer(Func2);
+                    env.RegisterPointer(Param1);
+                    env.RegisterPointer(Param2);
                 }
             }
 
-            public class Function123 : Function
+            public class FXParam123 : FXParam
             {
-                public Function Func1;
-                public Function Func2;
+                public FXParam Param1;
+                public FXParam Param2;
 
                 internal override void InnerToXIDs(FXR1 fxr)
                 {
-                    Func1 = fxr.ReferenceFunction(Func1);
-                    Func2 = fxr.ReferenceFunction(Func2);
+                    Param1 = fxr.ReferenceFXParam(Param1);
+                    Param2 = fxr.ReferenceFXParam(Param2);
                 }
 
                 internal override void InnerFromXIDs(FXR1 fxr)
                 {
-                    Func1 = fxr.DereferenceFunction(Func1);
-                    Func2 = fxr.DereferenceFunction(Func2);
+                    Param1 = fxr.DereferenceFXParam(Param1);
+                    Param2 = fxr.DereferenceFXParam(Param2);
                 }
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
@@ -1872,34 +1863,34 @@ namespace SoulsFormatsExtensions
                     int funcOffset1 = br.ReadFXR1Varint();
                     int funcOffset2 = br.ReadFXR1Varint();
 
-                    Func1 = env.GetFunction(br, funcOffset1);
-                    Func2 = env.GetFunction(br, funcOffset2);
+                    Param1 = env.GetFXParam(br, funcOffset1);
+                    Param2 = env.GetFXParam(br, funcOffset2);
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(123);
 
-                    env.RegisterPointer(Func1);
-                    env.RegisterPointer(Func2);
+                    env.RegisterPointer(Param1);
+                    env.RegisterPointer(Param2);
                 }
             }
 
-            public class Function124 : Function
+            public class FXParam124 : FXParam
             {
-                public Function Func1;
-                public Function Func2;
+                public FXParam Param1;
+                public FXParam Param2;
 
                 internal override void InnerToXIDs(FXR1 fxr)
                 {
-                    Func1 = fxr.ReferenceFunction(Func1);
-                    Func2 = fxr.ReferenceFunction(Func2);
+                    Param1 = fxr.ReferenceFXParam(Param1);
+                    Param2 = fxr.ReferenceFXParam(Param2);
                 }
 
                 internal override void InnerFromXIDs(FXR1 fxr)
                 {
-                    Func1 = fxr.DereferenceFunction(Func1);
-                    Func2 = fxr.DereferenceFunction(Func2);
+                    Param1 = fxr.DereferenceFXParam(Param1);
+                    Param2 = fxr.DereferenceFXParam(Param2);
                 }
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
@@ -1909,33 +1900,33 @@ namespace SoulsFormatsExtensions
                     int funcOffset1 = br.ReadFXR1Varint();
                     int funcOffset2 = br.ReadFXR1Varint();
 
-                    Func1 = env.GetFunction(br, funcOffset1);
-                    Func2 = env.GetFunction(br, funcOffset2);
+                    Param1 = env.GetFXParam(br, funcOffset1);
+                    Param2 = env.GetFXParam(br, funcOffset2);
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(124);
 
-                    env.RegisterPointer(Func1);
-                    env.RegisterPointer(Func2);
+                    env.RegisterPointer(Param1);
+                    env.RegisterPointer(Param2);
                 }
             }
-            public class Function126 : Function
+            public class FXParam126 : FXParam
             {
-                public Function Func1;
-                public Function Func2;
+                public FXParam Param1;
+                public FXParam Param2;
 
                 internal override void InnerToXIDs(FXR1 fxr)
                 {
-                    Func1 = fxr.ReferenceFunction(Func1);
-                    Func2 = fxr.ReferenceFunction(Func2);
+                    Param1 = fxr.ReferenceFXParam(Param1);
+                    Param2 = fxr.ReferenceFXParam(Param2);
                 }
 
                 internal override void InnerFromXIDs(FXR1 fxr)
                 {
-                    Func1 = fxr.DereferenceFunction(Func1);
-                    Func2 = fxr.DereferenceFunction(Func2);
+                    Param1 = fxr.DereferenceFXParam(Param1);
+                    Param2 = fxr.DereferenceFXParam(Param2);
                 }
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
@@ -1945,34 +1936,34 @@ namespace SoulsFormatsExtensions
                     int funcOffset1 = br.ReadFXR1Varint();
                     int funcOffset2 = br.ReadFXR1Varint();
 
-                    Func1 = env.GetFunction(br, funcOffset1);
-                    Func2 = env.GetFunction(br, funcOffset2);
+                    Param1 = env.GetFXParam(br, funcOffset1);
+                    Param2 = env.GetFXParam(br, funcOffset2);
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(126);
 
-                    env.RegisterPointer(Func1);
-                    env.RegisterPointer(Func2);
+                    env.RegisterPointer(Param1);
+                    env.RegisterPointer(Param2);
                 }
             }
 
-            public class Function127 : Function
+            public class FXParam127 : FXParam
             {
-                public Function Func1;
-                public Function Func2;
+                public FXParam Param1;
+                public FXParam Param2;
 
                 internal override void InnerToXIDs(FXR1 fxr)
                 {
-                    Func1 = fxr.ReferenceFunction(Func1);
-                    Func2 = fxr.ReferenceFunction(Func2);
+                    Param1 = fxr.ReferenceFXParam(Param1);
+                    Param2 = fxr.ReferenceFXParam(Param2);
                 }
 
                 internal override void InnerFromXIDs(FXR1 fxr)
                 {
-                    Func1 = fxr.DereferenceFunction(Func1);
-                    Func2 = fxr.DereferenceFunction(Func2);
+                    Param1 = fxr.DereferenceFXParam(Param1);
+                    Param2 = fxr.DereferenceFXParam(Param2);
                 }
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
@@ -1982,31 +1973,31 @@ namespace SoulsFormatsExtensions
                     int funcOffset1 = br.ReadFXR1Varint();
                     int funcOffset2 = br.ReadFXR1Varint();
 
-                    Func1 = env.GetFunction(br, funcOffset1);
-                    Func2 = env.GetFunction(br, funcOffset2);
+                    Param1 = env.GetFXParam(br, funcOffset1);
+                    Param2 = env.GetFXParam(br, funcOffset2);
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(127);
 
-                    env.RegisterPointer(Func1);
-                    env.RegisterPointer(Func2);
+                    env.RegisterPointer(Param1);
+                    env.RegisterPointer(Param2);
                 }
             }
 
-            public class Function128 : Function
+            public class FXParam128 : FXParam
             {
-                public Function Func;
+                public FXParam Param;
 
                 internal override void InnerToXIDs(FXR1 fxr)
                 {
-                    Func = fxr.ReferenceFunction(Func);
+                    Param = fxr.ReferenceFXParam(Param);
                 }
 
                 internal override void InnerFromXIDs(FXR1 fxr)
                 {
-                    Func = fxr.DereferenceFunction(Func);
+                    Param = fxr.DereferenceFXParam(Param);
                 }
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
@@ -2015,18 +2006,18 @@ namespace SoulsFormatsExtensions
 
                     int funcOffset = br.ReadFXR1Varint();
 
-                    Func = env.GetFunction(br, funcOffset);
+                    Param = env.GetFXParam(br, funcOffset);
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(128);
 
-                    env.RegisterPointer(Func);
+                    env.RegisterPointer(Param);
                 }
             }
 
-            public class Function129 : Function
+            public class FXParam129 : FXParam
             {
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
@@ -2039,7 +2030,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function130 : Function
+            public class FXParam130 : FXParam
             {
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
@@ -2052,7 +2043,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function131 : Function
+            public class FXParam131 : FXParam
             {
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
@@ -2065,7 +2056,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function132 : Function
+            public class FXParam132 : FXParam
             {
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
@@ -2078,7 +2069,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function136 : Function
+            public class FXParam136 : FXParam
             {
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
@@ -2091,7 +2082,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function137 : Function
+            public class FXParam137 : FXParam
             {
                 [XmlAttribute]
                 public int Unk1;
@@ -2119,7 +2110,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function138 : Function
+            public class FXParam138 : FXParam
             {
                 [XmlAttribute]
                 public int Unk1;
@@ -2139,7 +2130,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function139 : Function
+            public class FXParam139 : FXParam
             {
                 [XmlAttribute]
                 public int Unk1;
@@ -2159,7 +2150,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function140 : Function
+            public class FXParam140 : FXParam
             {
                 [XmlAttribute]
                 public int Unk1;

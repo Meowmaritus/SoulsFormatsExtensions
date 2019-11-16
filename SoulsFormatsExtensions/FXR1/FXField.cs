@@ -46,7 +46,7 @@ namespace SoulsFormatsExtensions
         [XmlInclude(typeof(ParamType26))]
         [XmlInclude(typeof(ParamType27))]
         [XmlInclude(typeof(Empty))]
-        public abstract class Param
+        public abstract class FXField
         {
             [XmlIgnore]
             public abstract int Type { get; }
@@ -56,12 +56,12 @@ namespace SoulsFormatsExtensions
 
             internal virtual bool IsEmptyPointer() => false;
 
-            public static Param Read(BinaryReaderEx br, FxrEnvironment env)
+            public static FXField Read(BinaryReaderEx br, FxrEnvironment env)
             {
                 int type = br.ReadFXR1Varint();
                 int offset = br.ReadFXR1Varint();
 
-                Param v = null;
+                FXField v = null;
 
                 
                 switch (type)
@@ -103,7 +103,7 @@ namespace SoulsFormatsExtensions
             //}
 
 
-            public class ConstFloatSequence : Param
+            public class ConstFloatSequence : FXField
             {
                 public override int Type => 0;
 
@@ -129,7 +129,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class FloatSequence : Param
+            public class FloatSequence : FXField
             {
                 public override int Type => 4;
 
@@ -155,7 +155,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class RangedFloatSequence : Param
+            public class RangedFloatSequence : FXField
             {
                 public override int Type => 5;
 
@@ -189,7 +189,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class FloatSequenceEx : Param
+            public class FloatSequenceEx : FXField
             {
                 public override int Type => 6;
 
@@ -219,7 +219,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class RangedFloatSequenceEx : Param
+            public class RangedFloatSequenceEx : FXField
             {
                 public override int Type => 7;
 
@@ -257,7 +257,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Vector3Sequence : Param
+            public class Vector3Sequence : FXField
             {
                 public override int Type => 8;
 
@@ -291,7 +291,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class RangedVector3Sequence : Param
+            public class RangedVector3Sequence : FXField
             {
                 public override int Type => 9;
 
@@ -333,7 +333,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class RepeatingConstFloatSequence : Param
+            public class RepeatingConstFloatSequence : FXField
             {
                 public override int Type => 12;
 
@@ -359,7 +359,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class RepeatingFloatSequence : Param
+            public class RepeatingFloatSequence : FXField
             {
                 public override int Type => 16;
 
@@ -385,7 +385,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class RangedFloatSequenceB : Param
+            public class RangedFloatSequenceB : FXField
             {
                 public override int Type => 17;
 
@@ -419,7 +419,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class NewVector3Sequence : Param
+            public class NewVector3Sequence : FXField
             {
                 public override int Type => 20;
 
@@ -453,7 +453,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class ConstInt : Param
+            public class ConstInt : FXField
             {
                 public override int Type => 24;
 
@@ -471,7 +471,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class ParamType25 : Param
+            public class ParamType25 : FXField
             {
                 public override int Type => 25;
 
@@ -496,7 +496,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class ParamType26 : Param
+            public class ParamType26 : FXField
             {
                 public override int Type => 26;
 
@@ -517,7 +517,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class ParamType27 : Param
+            public class ParamType27 : FXField
             {
                 public override int Type => 27;
 
@@ -546,7 +546,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Empty : Param
+            public class Empty : FXField
             {
                 public override int Type => 28;
                 

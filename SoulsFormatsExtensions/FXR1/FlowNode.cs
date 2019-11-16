@@ -16,7 +16,7 @@ namespace SoulsFormatsExtensions
             public override bool ShouldSerializeXID() => FXR1.FlattenFlowNodes;
 
             public List<FlowEdge> Edges;
-            public List<FlowAction> Actions;
+            public List<FXAction> Actions;
 
             public virtual bool ShouldSerializeEdges() => true;
             public virtual bool ShouldSerializeActions() => true;
@@ -26,7 +26,7 @@ namespace SoulsFormatsExtensions
                 for (int i = 0; i < Edges.Count; i++)
                     Edges[i] = fxr.ReferenceFlowEdge(Edges[i]);
                 for (int i = 0; i < Actions.Count; i++)
-                    Actions[i] = fxr.ReferenceFlowAction(Actions[i]);
+                    Actions[i] = fxr.ReferenceFXAction(Actions[i]);
             }
 
             internal override void FromXIDs(FXR1 fxr)
@@ -34,7 +34,7 @@ namespace SoulsFormatsExtensions
                 for (int i = 0; i < Edges.Count; i++)
                     Edges[i] = fxr.DereferenceFlowEdge(Edges[i]);
                 for (int i = 0; i < Actions.Count; i++)
-                    Actions[i] = fxr.DereferenceFlowAction(Actions[i]);
+                    Actions[i] = fxr.DereferenceFXAction(Actions[i]);
             }
 
             public static int GetSize(bool isLong)
@@ -48,7 +48,7 @@ namespace SoulsFormatsExtensions
                 int actionNum = br.ReadInt32();
 
                 Edges = new List<FlowEdge>(edgeNum);
-                Actions = new List<FlowAction>(actionNum);
+                Actions = new List<FXAction>(actionNum);
 
                 br.StepIn(edgesOffset);
                 for (int i = 0; i < edgeNum; i++)
@@ -61,8 +61,8 @@ namespace SoulsFormatsExtensions
                 br.StepIn(actionsOffset);
                 for (int i = 0; i < actionNum; i++)
                 {
-                    Actions.Add(env.GetFlowAction(br, br.Position));
-                    br.Position += FlowAction.GetSize(br.VarintLong);
+                    Actions.Add(env.GetFXAction(br, br.Position));
+                    br.Position += FXAction.GetSize(br.VarintLong);
                 }
                 br.StepOut();
             }

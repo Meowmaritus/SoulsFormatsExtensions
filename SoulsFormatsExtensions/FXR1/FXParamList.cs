@@ -10,10 +10,10 @@ namespace SoulsFormatsExtensions
 {
     public partial class FXR1
     {
-        [XmlInclude(typeof(EffectRef))]
-        public class Effect : XIDable
+        [XmlInclude(typeof(FXParamListRef))]
+        public class FXParamList : XIDable
         {
-            public override bool ShouldSerializeXID() => FXR1.FlattenEffects;
+            public override bool ShouldSerializeXID() => FXR1.FlattenFXParamLists;
 
             [XmlAttribute]
             public byte UnkFlag1;
@@ -23,10 +23,10 @@ namespace SoulsFormatsExtensions
             public byte UnkFlag3;
 
             [XmlElement(IsNullable = true)]
-            public List<FunctionPointer> Functions;
+            public List<FXParam> FXParams;
 
             [XmlElement(IsNullable = true)]
-            public Behavior Behavior;
+            public FXBehavior Behavior;
 
             [XmlElement(IsNullable = true)]
             public Template Template;
@@ -34,24 +34,24 @@ namespace SoulsFormatsExtensions
             public virtual bool ShouldSerializeUnkFlag1() => true;
             public virtual bool ShouldSerializeUnkFlag2() => true;
             public virtual bool ShouldSerializeUnkFlag3() => true;
-            public virtual bool ShouldSerializeFunctions() => true;
+            public virtual bool ShouldSerializeFXParams() => true;
             public virtual bool ShouldSerializeBehavior() => true;
             public virtual bool ShouldSerializeTemplate() => true;
 
             internal override void ToXIDs(FXR1 fxr)
             {
-                Behavior = fxr.ReferenceBehavior(Behavior);
+                Behavior = fxr.ReferenceFXBehavior(Behavior);
                 Template = fxr.ReferenceTemplate(Template);
-                for (int i = 0; i < Functions.Count; i++)
-                    Functions[i] = fxr.ReferenceFunctionPointer(Functions[i]);
+                for (int i = 0; i < FXParams.Count; i++)
+                    FXParams[i] = fxr.ReferenceFXParam(FXParams[i]);
             }
 
             internal override void FromXIDs(FXR1 fxr)
             {
-                Behavior = fxr.DereferenceBehavior(Behavior);
+                Behavior = fxr.DereferenceFXBehavior(Behavior);
                 Template = fxr.DereferenceTemplate(Template);
-                for (int i = 0; i < Functions.Count; i++)
-                    Functions[i] = fxr.DereferenceFunctionPointer(Functions[i]);
+                for (int i = 0; i < FXParams.Count; i++)
+                    FXParams[i] = fxr.DereferenceFXParam(FXParams[i]);
             }
 
             public static int GetSize(bool isLong)
@@ -73,13 +73,14 @@ namespace SoulsFormatsExtensions
                 int commandPool3Offset = br.ReadFXR1Varint();
 
                 br.StepIn(commandPool1TableOffset);
-                Functions = new List<FunctionPointer>(commandPool1TableCount);
+                FXParams = new List<FXParam>(commandPool1TableCount);
                 for (int i = 0; i < commandPool1TableCount; i++)
                 {
                     //int next = br.ReadInt32();
                     //ast.Pool1List.Add(env.GetEffectPool1(br, next));
-                    Functions.Add(env.GetEffectFunction(br, br.Position));
-                    br.Position += FunctionPointer.GetSize(br.VarintLong);
+                    var paramPointer = env.GetEffectFXParam(br, br.Position);
+                    FXParams.Add(paramPointer.Param);
+                    br.Position += FXParamPointer.GetSize(br.VarintLong);
                 }
                 br.StepOut();
 
@@ -89,12 +90,19 @@ namespace SoulsFormatsExtensions
 
             public void Write(BinaryWriterEx bw, FxrEnvironment env)
             {
-                if (Behavior != null)
-                    Behavior.ParentEffect = this;
+                var paramPointers = new List<FXParamPointer>();
 
-                env.RegisterPointer(Functions);
-                bw.WriteInt32(Functions.Count);
-                bw.WriteInt32(Functions.Count); //Not a typo
+                for (int i = 0; i < FXParams.Count; i++)
+                {
+                    paramPointers.Add(new FXParamPointer() { Param = FXParams[i] });
+                }
+
+                if (Behavior != null)
+                    Behavior.ContainingParamList = this;
+
+                env.RegisterPointer(paramPointers);
+                bw.WriteInt32(paramPointers.Count);
+                bw.WriteInt32(paramPointers.Count); //Not a typo
                 bw.WriteByte(UnkFlag1);
                 bw.WriteByte(UnkFlag2);
                 bw.WriteByte(UnkFlag3);
@@ -105,7 +113,7 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class EffectRef : Effect
+        public class FXParamListRef : FXParamList
         {
             [XmlAttribute]
             public string ReferenceXID;
@@ -113,15 +121,15 @@ namespace SoulsFormatsExtensions
             public override bool ShouldSerializeUnkFlag1() => false;
             public override bool ShouldSerializeUnkFlag2() => false;
             public override bool ShouldSerializeUnkFlag3() => false;
-            public override bool ShouldSerializeFunctions() => false;
+            public override bool ShouldSerializeFXParams() => false;
             public override bool ShouldSerializeBehavior() => false;
             public override bool ShouldSerializeTemplate() => false;
 
-            public EffectRef(Effect refVal)
+            public FXParamListRef(FXParamList refVal)
             {
                 ReferenceXID = refVal?.XID;
             }
-            public EffectRef() 
+            public FXParamListRef() 
             {
 
             }
