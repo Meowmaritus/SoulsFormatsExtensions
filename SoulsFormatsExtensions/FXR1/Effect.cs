@@ -10,10 +10,10 @@ namespace SoulsFormatsExtensions
 {
     public partial class FXR1
     {
-        [XmlInclude(typeof(ASTRef))]
-        public class AST : XIDable
+        [XmlInclude(typeof(EffectRef))]
+        public class Effect : XIDable
         {
-            public override bool ShouldSerializeXID() => FXR1.FlattenASTs;
+            public override bool ShouldSerializeXID() => FXR1.FlattenEffects;
 
             [XmlAttribute]
             public byte UnkFlag1;
@@ -23,35 +23,35 @@ namespace SoulsFormatsExtensions
             public byte UnkFlag3;
 
             [XmlElement(IsNullable = true)]
-            public List<FunctionPointer> AstFunctions;
+            public List<FunctionPointer> Functions;
 
             [XmlElement(IsNullable = true)]
-            public ASTPool2 AstPool2;
+            public Behavior Behavior;
 
             [XmlElement(IsNullable = true)]
-            public ASTPool3 AstPool3;
+            public Template Template;
 
             public virtual bool ShouldSerializeUnkFlag1() => true;
             public virtual bool ShouldSerializeUnkFlag2() => true;
             public virtual bool ShouldSerializeUnkFlag3() => true;
-            public virtual bool ShouldSerializeAstFunctions() => true;
-            public virtual bool ShouldSerializeAstPool2() => true;
-            public virtual bool ShouldSerializeAstPool3() => true;
+            public virtual bool ShouldSerializeFunctions() => true;
+            public virtual bool ShouldSerializeBehavior() => true;
+            public virtual bool ShouldSerializeTemplate() => true;
 
             internal override void ToXIDs(FXR1 fxr)
             {
-                AstPool2 = fxr.ReferenceASTPool2(AstPool2);
-                AstPool3 = fxr.ReferenceASTPool3(AstPool3);
-                for (int i = 0; i < AstFunctions.Count; i++)
-                    AstFunctions[i] = fxr.ReferenceFunctionPointer(AstFunctions[i]);
+                Behavior = fxr.ReferenceBehavior(Behavior);
+                Template = fxr.ReferenceTemplate(Template);
+                for (int i = 0; i < Functions.Count; i++)
+                    Functions[i] = fxr.ReferenceFunctionPointer(Functions[i]);
             }
 
             internal override void FromXIDs(FXR1 fxr)
             {
-                AstPool2 = fxr.DereferenceASTPool2(AstPool2);
-                AstPool3 = fxr.DereferenceASTPool3(AstPool3);
-                for (int i = 0; i < AstFunctions.Count; i++)
-                    AstFunctions[i] = fxr.DereferenceFunctionPointer(AstFunctions[i]);
+                Behavior = fxr.DereferenceBehavior(Behavior);
+                Template = fxr.DereferenceTemplate(Template);
+                for (int i = 0; i < Functions.Count; i++)
+                    Functions[i] = fxr.DereferenceFunctionPointer(Functions[i]);
             }
 
             public static int GetSize(bool isLong)
@@ -73,39 +73,39 @@ namespace SoulsFormatsExtensions
                 int commandPool3Offset = br.ReadFXR1Varint();
 
                 br.StepIn(commandPool1TableOffset);
-                AstFunctions = new List<FunctionPointer>(commandPool1TableCount);
+                Functions = new List<FunctionPointer>(commandPool1TableCount);
                 for (int i = 0; i < commandPool1TableCount; i++)
                 {
                     //int next = br.ReadInt32();
-                    //ast.Pool1List.Add(env.GetASTPool1(br, next));
-                    AstFunctions.Add(env.GetASTFunction(br, br.Position));
+                    //ast.Pool1List.Add(env.GetEffectPool1(br, next));
+                    Functions.Add(env.GetEffectFunction(br, br.Position));
                     br.Position += FunctionPointer.GetSize(br.VarintLong);
                 }
                 br.StepOut();
 
-                AstPool2 = env.GetASTPool2(br, commandPool2Offset);
-                AstPool3 = env.GetASTPool3(br, commandPool3Offset);
+                Behavior = env.GetBehavior(br, commandPool2Offset);
+                Template = env.GetTemplate(br, commandPool3Offset);
             }
 
             public void Write(BinaryWriterEx bw, FxrEnvironment env)
             {
-                if (AstPool2 != null)
-                    AstPool2.ParentAst = this;
+                if (Behavior != null)
+                    Behavior.ParentEffect = this;
 
-                env.RegisterPointer(AstFunctions);
-                bw.WriteInt32(AstFunctions.Count);
-                bw.WriteInt32(AstFunctions.Count); //Not a typo
+                env.RegisterPointer(Functions);
+                bw.WriteInt32(Functions.Count);
+                bw.WriteInt32(Functions.Count); //Not a typo
                 bw.WriteByte(UnkFlag1);
                 bw.WriteByte(UnkFlag2);
                 bw.WriteByte(UnkFlag3);
                 bw.WriteByte(0);
                 bw.WriteFXR1Garbage();
-                env.RegisterPointer(AstPool2);
-                env.RegisterPointer(AstPool3);
+                env.RegisterPointer(Behavior);
+                env.RegisterPointer(Template);
             }
         }
 
-        public class ASTRef : AST
+        public class EffectRef : Effect
         {
             [XmlAttribute]
             public string ReferenceXID;
@@ -113,15 +113,15 @@ namespace SoulsFormatsExtensions
             public override bool ShouldSerializeUnkFlag1() => false;
             public override bool ShouldSerializeUnkFlag2() => false;
             public override bool ShouldSerializeUnkFlag3() => false;
-            public override bool ShouldSerializeAstFunctions() => false;
-            public override bool ShouldSerializeAstPool2() => false;
-            public override bool ShouldSerializeAstPool3() => false;
+            public override bool ShouldSerializeFunctions() => false;
+            public override bool ShouldSerializeBehavior() => false;
+            public override bool ShouldSerializeTemplate() => false;
 
-            public ASTRef(AST refVal)
+            public EffectRef(Effect refVal)
             {
                 ReferenceXID = refVal?.XID;
             }
-            public ASTRef() 
+            public EffectRef() 
             {
 
             }

@@ -29,11 +29,11 @@ namespace SoulsFormatsExtensions
         [XmlIgnore]
         public static bool FlattenFunctions = false;
         [XmlIgnore]
-        public static bool FlattenASTs = false;
+        public static bool FlattenEffects = false;
         [XmlIgnore]
-        public static bool FlattenASTPool2s = false;
+        public static bool FlattenBehaviors = false;
         [XmlIgnore]
-        public static bool FlattenASTPool3s = false;
+        public static bool FlattenTemplates = false;
 
 
         public bool ShouldSerializeAllFlowNodes() => FlattenFlowNodes;
@@ -41,9 +41,9 @@ namespace SoulsFormatsExtensions
         public bool ShouldSerializeAllFlowEdges() => FlattenFlowEdges;
         public bool ShouldSerializeAllFlowActions() => FlattenFlowActions;
         public bool ShouldSerializeAllFunctions() => FlattenFunctions;
-        public bool ShouldSerializeAllASTs() => FlattenASTs;
-        public bool ShouldSerializeAllASTPool2s() => FlattenASTPool2s;
-        public bool ShouldSerializeAllASTPool3s() => FlattenASTPool2s;
+        public bool ShouldSerializeAllEffects() => FlattenEffects;
+        public bool ShouldSerializeAllBehaviors() => FlattenBehaviors;
+        public bool ShouldSerializeAllTemplates() => FlattenBehaviors;
 
         public List<FlowNode> AllFlowNodes { get; set; } = new List<FlowNode>();
         public FlowNode GetFlowNode(string xid) => AllFlowNodes.FirstOrDefault(x => x.XID == xid);
@@ -161,73 +161,73 @@ namespace SoulsFormatsExtensions
                 return new Function.FunctionRef(v);
         }
 
-        public List<AST> AllASTs { get; set; } = new List<AST>();
-        public AST GetAST(string xid) => AllASTs.FirstOrDefault(x => x.XID == xid);
-        public AST DereferenceAST(AST v)
+        public List<Effect> AllEffects { get; set; } = new List<Effect>();
+        public Effect GetEffect(string xid) => AllEffects.FirstOrDefault(x => x.XID == xid);
+        public Effect DereferenceEffect(Effect v)
         {
-            if (!FlattenASTs)
+            if (!FlattenEffects)
                 return v;
 
-            if (v is ASTRef asRef)
-                return GetAST(asRef.ReferenceXID);
+            if (v is EffectRef asRef)
+                return GetEffect(asRef.ReferenceXID);
             else
                 return v;
         }
-        public AST ReferenceAST(AST v)
+        public Effect ReferenceEffect(Effect v)
         {
-            if (!FlattenASTs)
+            if (!FlattenEffects)
                 return v;
 
-            if (v is ASTRef asRef)
+            if (v is EffectRef asRef)
                 return v;
             else
-                return new ASTRef(v);
+                return new EffectRef(v);
         }
 
-        public List<ASTPool2> AllASTPool2s { get; set; } = new List<ASTPool2>();
-        public ASTPool2 GetASTPool2(string xid) => AllASTPool2s.FirstOrDefault(x => x.XID == xid);
-        public ASTPool2 DereferenceASTPool2(ASTPool2 v)
+        public List<Behavior> AllBehaviors { get; set; } = new List<Behavior>();
+        public Behavior GetBehavior(string xid) => AllBehaviors.FirstOrDefault(x => x.XID == xid);
+        public Behavior DereferenceBehavior(Behavior v)
         {
-            if (!FlattenASTPool2s)
+            if (!FlattenBehaviors)
                 return v;
 
-            if (v is ASTPool2Ref asRef)
-                return GetASTPool2(asRef.ReferenceXID);
-            else
-                return v;
-        }
-        public ASTPool2 ReferenceASTPool2(ASTPool2 v)
-        {
-            if (!FlattenASTPool2s)
-                return v;
-
-            if (v is ASTPool2Ref asRef)
-                return v;
-            else
-                return new ASTPool2Ref(v);
-        }
-
-        public List<ASTPool3> AllASTPool3s { get; set; } = new List<ASTPool3>();
-        public ASTPool3 GetASTPool3(string xid) => AllASTPool3s.FirstOrDefault(x => x.XID == xid);
-        public ASTPool3 DereferenceASTPool3(ASTPool3 v)
-        {
-            if (!FlattenASTPool3s)
-                return v;
-
-            if (v is ASTPool3Ref asRef)
-                return GetASTPool3(asRef.ReferenceXID);
+            if (v is BehaviorRef asRef)
+                return GetBehavior(asRef.ReferenceXID);
             else
                 return v;
         }
-        public ASTPool3 ReferenceASTPool3(ASTPool3 v)
+        public Behavior ReferenceBehavior(Behavior v)
         {
-            if (!FlattenASTPool3s)
+            if (!FlattenBehaviors)
                 return v;
 
-            if (v is ASTPool3Ref asRef)
+            if (v is BehaviorRef asRef)
                 return v;
             else
-                return new ASTPool3Ref(v);
+                return new BehaviorRef(v);
+        }
+
+        public List<Template> AllTemplates { get; set; } = new List<Template>();
+        public Template GetTemplate(string xid) => AllTemplates.FirstOrDefault(x => x.XID == xid);
+        public Template DereferenceTemplate(Template v)
+        {
+            if (!FlattenTemplates)
+                return v;
+
+            if (v is TemplateRef asRef)
+                return GetTemplate(asRef.ReferenceXID);
+            else
+                return v;
+        }
+        public Template ReferenceTemplate(Template v)
+        {
+            if (!FlattenTemplates)
+                return v;
+
+            if (v is TemplateRef asRef)
+                return v;
+            else
+                return new TemplateRef(v);
         }
 
 
@@ -253,9 +253,9 @@ namespace SoulsFormatsExtensions
 
             var env = new FxrEnvironment();
 
-            AllASTPool2s.Clear();
-            AllASTPool3s.Clear();
-            AllASTs.Clear();
+            AllBehaviors.Clear();
+            AllTemplates.Clear();
+            AllEffects.Clear();
             AllFlowActions.Clear();
             AllFlowEdges.Clear();
             AllFlowNodes.Clear();
@@ -283,17 +283,17 @@ namespace SoulsFormatsExtensions
 
             foreach (var kvp in env.ObjectsByOffset)
             {
-                if (kvp.Value is ASTPool2 asASTPool2)
+                if (kvp.Value is Behavior asBehavior)
                 {
-                    Register("ASTPool2", kvp.Key, AllASTPool2s, asASTPool2);
+                    Register("Behavior", kvp.Key, AllBehaviors, asBehavior);
                 }
-                else if (kvp.Value is ASTPool3 asASTPool3)
+                else if (kvp.Value is Template asTemplate)
                 {
-                    Register("ASTPool3", kvp.Key, AllASTPool3s, asASTPool3);
+                    Register("Template", kvp.Key, AllTemplates, asTemplate);
                 }
-                else if (kvp.Value is AST asAST)
+                else if (kvp.Value is Effect asEffect)
                 {
-                    Register("AST", kvp.Key, AllASTs, asAST);
+                    Register("Effect", kvp.Key, AllEffects, asEffect);
                 }
                 else if (kvp.Value is FlowAction asFlowAction)
                 {
@@ -326,11 +326,11 @@ namespace SoulsFormatsExtensions
 
         public void Flatten()
         {
-            foreach (var x in AllASTPool2s)
+            foreach (var x in AllBehaviors)
                 x.ToXIDs(this);
-            foreach (var x in AllASTPool3s)
+            foreach (var x in AllTemplates)
                 x.ToXIDs(this);
-            foreach (var x in AllASTs)
+            foreach (var x in AllEffects)
                 x.ToXIDs(this);
             foreach (var x in AllFlowActions)
                 x.ToXIDs(this);
@@ -349,11 +349,11 @@ namespace SoulsFormatsExtensions
 
         public void Unflatten()
         {
-            foreach (var x in AllASTPool2s)
+            foreach (var x in AllBehaviors)
                 x.FromXIDs(this);
-            foreach (var x in AllASTPool3s)
+            foreach (var x in AllTemplates)
                 x.FromXIDs(this);
-            foreach (var x in AllASTs)
+            foreach (var x in AllEffects)
                 x.FromXIDs(this);
             foreach (var x in AllFlowActions)
                 x.FromXIDs(this);

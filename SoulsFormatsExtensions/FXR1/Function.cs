@@ -28,8 +28,8 @@ namespace SoulsFormatsExtensions
         [XmlInclude(typeof(Function27))]
         [XmlInclude(typeof(Function28))]
         [XmlInclude(typeof(Function29))]
-        [XmlInclude(typeof(Function37))]
-        [XmlInclude(typeof(Function38))]
+        [XmlInclude(typeof(ImportFXREffect))]
+        [XmlInclude(typeof(FXREffect))]
         [XmlInclude(typeof(Function41))]
         [XmlInclude(typeof(Function44))]
         [XmlInclude(typeof(Function45))]
@@ -38,8 +38,8 @@ namespace SoulsFormatsExtensions
         [XmlInclude(typeof(Function59))]
         [XmlInclude(typeof(Function60))]
         [XmlInclude(typeof(Function66))]
-        [XmlInclude(typeof(Function68))]
-        [XmlInclude(typeof(Function69))]
+        [XmlInclude(typeof(PlaySound))]
+        [XmlInclude(typeof(PlaySoundB))]
         [XmlInclude(typeof(Function70))]
         [XmlInclude(typeof(Function71))]
         [XmlInclude(typeof(Function79))]
@@ -66,8 +66,8 @@ namespace SoulsFormatsExtensions
         [XmlInclude(typeof(Function130))]
         [XmlInclude(typeof(Function131))]
         [XmlInclude(typeof(Function132))]
-        [XmlInclude(typeof(Function133))]
-        [XmlInclude(typeof(Function134))]
+        [XmlInclude(typeof(FXRInit))]
+        [XmlInclude(typeof(FXRInitLite))]
         [XmlInclude(typeof(Function136))]
         [XmlInclude(typeof(Function137))]
         [XmlInclude(typeof(Function138))]
@@ -136,8 +136,8 @@ namespace SoulsFormatsExtensions
                     case 27: func = new Function27(); break;
                     case 28: func = new Function28(); break;
                     case 29: func = new Function29(); break;
-                    case 37: func = new Function37(); break;
-                    case 38: func = new Function38(); break;
+                    case 37: func = new ImportFXREffect(); break;
+                    case 38: func = new FXREffect(); break;
                     case 41: func = new Function41(); break;
                     case 44: func = new Function44(); break;
                     case 45: func = new Function45(); break;
@@ -146,8 +146,8 @@ namespace SoulsFormatsExtensions
                     case 59: func = new Function59(); break;
                     case 60: func = new Function60(); break;
                     case 66: func = new Function66(); break;
-                    case 68: func = new Function68(); break;
-                    case 69: func = new Function69(); break;
+                    case 68: func = new PlaySound(); break;
+                    case 69: func = new PlaySoundB(); break;
                     case 70: func = new Function70(); break;
                     case 71: func = new Function71(); break;
                     case 79: func = new Function79(); break;
@@ -174,8 +174,8 @@ namespace SoulsFormatsExtensions
                     case 130: func = new Function130(); break;
                     case 131: func = new Function131(); break;
                     case 132: func = new Function132(); break;
-                    case 133: func = new Function133(); break;
-                    case 134: func = new Function134(); break;
+                    case 133: func = new FXRInit(); break;
+                    case 134: func = new FXRInitLite(); break;
                     case 136: func = new Function136(); break;
                     case 137: func = new Function137(); break;
                     case 138: func = new Function138(); break;
@@ -219,22 +219,22 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function37 : Function
+            public class ImportFXREffect : Function
             {
                 [XmlAttribute]
                 public int TemplateFXRID;
-                public AST Ast;
+                public Effect Effect;
                 [XmlAttribute]
                 public int Unk;
 
                 internal override void InnerToXIDs(FXR1 fxr)
                 {
-                    Ast = fxr.ReferenceAST(Ast);
+                    Effect = fxr.ReferenceEffect(Effect);
                 }
 
                 internal override void InnerFromXIDs(FXR1 fxr)
                 {
-                    Ast = fxr.DereferenceAST(Ast);
+                    Effect = fxr.DereferenceEffect(Effect);
                 }
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
@@ -245,7 +245,7 @@ namespace SoulsFormatsExtensions
                     int astOffset = br.ReadFXR1Varint();
                     Unk = br.ReadInt32();
 
-                    Ast = env.GetAST(br, astOffset);
+                    Effect = env.GetEffect(br, astOffset);
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
@@ -253,27 +253,27 @@ namespace SoulsFormatsExtensions
                     bw.WriteFXR1Varint(37);
 
                     bw.WriteFXR1Varint(TemplateFXRID);
-                    env.RegisterPointer(Ast);
+                    env.RegisterPointer(Effect);
                     bw.WriteInt32(Unk);
                 }
             }
 
-            public class Function38 : Function
+            public class FXREffect : Function
             {
                 [XmlAttribute]
                 public int SubType;
-                public AST Ast;
+                public Effect Effect;
                 [XmlAttribute]
                 public int Unk;
 
                 internal override void InnerToXIDs(FXR1 fxr)
                 {
-                    Ast = fxr.ReferenceAST(Ast);
+                    Effect = fxr.ReferenceEffect(Effect);
                 }
 
                 internal override void InnerFromXIDs(FXR1 fxr)
                 {
-                    Ast = fxr.DereferenceAST(Ast);
+                    Effect = fxr.DereferenceEffect(Effect);
                 }
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
@@ -284,7 +284,7 @@ namespace SoulsFormatsExtensions
                     int astOffset = br.ReadFXR1Varint();
                     Unk = br.ReadInt32();
 
-                    Ast = env.GetAST(br, astOffset);
+                    Effect = env.GetEffect(br, astOffset);
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
@@ -292,35 +292,35 @@ namespace SoulsFormatsExtensions
                     bw.WriteFXR1Varint(38);
 
                     bw.WriteFXR1Varint(SubType);
-                    env.RegisterPointer(Ast);
+                    env.RegisterPointer(Effect);
                     bw.WriteInt32(Unk);
                 }
             }
 
-            public class Function133 : Function
+            public class FXRInit : Function
             {
                 [XmlAttribute]
                 public int FXRID;
                 [XmlAttribute]
                 public int Unk;
-                public AST Ast1;
-                public AST Ast2;
+                public Effect Effect1;
+                public Effect Effect2;
                 public List<FlowNode> Nodes;
 
                 internal override void InnerToXIDs(FXR1 fxr)
                 {
                     for (int i = 0; i < Nodes.Count; i++)
                         Nodes[i] = fxr.ReferenceFlowNode(Nodes[i]);
-                    Ast1 = fxr.ReferenceAST(Ast1);
-                    Ast2 = fxr.ReferenceAST(Ast2);
+                    Effect1 = fxr.ReferenceEffect(Effect1);
+                    Effect2 = fxr.ReferenceEffect(Effect2);
                 }
 
                 internal override void InnerFromXIDs(FXR1 fxr)
                 {
                     for (int i = 0; i < Nodes.Count; i++)
                         Nodes[i] = fxr.DereferenceFlowNode(Nodes[i]);
-                    Ast1 = fxr.DereferenceAST(Ast1);
-                    Ast2 = fxr.DereferenceAST(Ast2);
+                    Effect1 = fxr.DereferenceEffect(Effect1);
+                    Effect2 = fxr.DereferenceEffect(Effect2);
                 }
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
@@ -333,11 +333,11 @@ namespace SoulsFormatsExtensions
                     Unk = br.ReadFXR1Varint();
                     //throw new NotImplementedException();
 
-                    Ast1 = env.GetAST(br, br.Position);
-                    br.Position += AST.GetSize(br.VarintLong);
+                    Effect1 = env.GetEffect(br, br.Position);
+                    br.Position += Effect.GetSize(br.VarintLong);
 
-                    Ast2 = env.GetAST(br, br.Position);
-                    br.Position += AST.GetSize(br.VarintLong);
+                    Effect2 = env.GetEffect(br, br.Position);
+                    br.Position += Effect.GetSize(br.VarintLong);
 
                     int offsetToNodeList = br.ReadFXR1Varint();
                     int nodeCount = br.ReadFXR1Varint();
@@ -359,14 +359,14 @@ namespace SoulsFormatsExtensions
                     for (int i = 0; i < 7; i++)
                         bw.WriteFXR1Varint(0);
                     bw.WriteFXR1Varint(Unk);
-                    Ast1.Write(bw, env);
-                    Ast2.Write(bw, env);
+                    Effect1.Write(bw, env);
+                    Effect2.Write(bw, env);
                     env.RegisterPointer(Nodes);
                     bw.WriteFXR1Varint(Nodes.Count);
                 }
             }
 
-            public class Function134 : Function
+            public class FXRInitLite : Function
             {
                 [XmlAttribute]
                 public int FXRID;
@@ -1296,43 +1296,43 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class Function68 : Function
+            public class PlaySound : Function
             {
                 [XmlAttribute]
-                public int Unk;
+                public int SoundID;
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(68);
 
-                    Unk = br.ReadFXR1Varint();
+                    SoundID = br.ReadFXR1Varint();
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(68);
 
-                    bw.WriteFXR1Varint(Unk);
+                    bw.WriteFXR1Varint(SoundID);
                 }
             }
 
-            public class Function69 : Function
+            public class PlaySoundB : Function
             {
                 [XmlAttribute]
-                public int Unk;
+                public int SoundID;
 
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(69);
 
-                    Unk = br.ReadFXR1Varint();
+                    SoundID = br.ReadFXR1Varint();
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(69);
 
-                    bw.WriteFXR1Varint(Unk);
+                    bw.WriteFXR1Varint(SoundID);
                 }
             }
 

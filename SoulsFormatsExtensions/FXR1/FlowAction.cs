@@ -17,35 +17,35 @@ namespace SoulsFormatsExtensions
 
             [XmlAttribute]
             public int ActionType;
-            public AST ActionAst;
+            public Effect ActionEffect;
 
             public virtual bool ShouldSerializeActionType() => true;
-            public virtual bool ShouldSerializeActionAst() => true;
+            public virtual bool ShouldSerializeActionEffect() => true;
 
             public static int GetSize(bool isLong)
-                => (isLong ? 8 : 4) + AST.GetSize(isLong);
+                => (isLong ? 8 : 4) + Effect.GetSize(isLong);
 
             internal override void ToXIDs(FXR1 fxr)
             {
-                ActionAst = fxr.ReferenceAST(ActionAst);
+                ActionEffect = fxr.ReferenceEffect(ActionEffect);
             }
 
             internal override void FromXIDs(FXR1 fxr)
             {
-                ActionAst = fxr.DereferenceAST(ActionAst);
+                ActionEffect = fxr.DereferenceEffect(ActionEffect);
             }
 
             public void Read(BinaryReaderEx br, FxrEnvironment env)
             {
                 ActionType = br.ReadFXR1Varint();
-                ActionAst = env.GetAST(br, br.Position);
-                br.Position += AST.GetSize(br.VarintLong);
+                ActionEffect = env.GetEffect(br, br.Position);
+                br.Position += Effect.GetSize(br.VarintLong);
             }
 
             public void Write(BinaryWriterEx bw, FxrEnvironment env)
             {
                 bw.WriteFXR1Varint(ActionType);
-                ActionAst.Write(bw, env);
+                ActionEffect.Write(bw, env);
             }
         }
 
@@ -56,7 +56,7 @@ namespace SoulsFormatsExtensions
             public string ReferenceXID;
 
             public override bool ShouldSerializeActionType() => false;
-            public override bool ShouldSerializeActionAst() => false;
+            public override bool ShouldSerializeActionEffect() => false;
 
             public FlowActionRef(FlowAction refVal)
             {

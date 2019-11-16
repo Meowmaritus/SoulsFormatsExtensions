@@ -10,18 +10,18 @@ namespace SoulsFormatsExtensions
 {
     public partial class FXR1
     {
-        [XmlInclude(typeof(ASTPool3Type0))]
-        [XmlInclude(typeof(ASTPool3Type1))]
-        [XmlInclude(typeof(ASTPool3Type2))]
-        [XmlInclude(typeof(ASTPool3Type3))]
-        [XmlInclude(typeof(ASTPool3Type4))]
-        [XmlInclude(typeof(ASTPool3Type5))]
-        [XmlInclude(typeof(ASTPool3Type6))]
-        [XmlInclude(typeof(ASTPool3Type7))]
-        [XmlInclude(typeof(ASTPool3Ref))]
-        public abstract class ASTPool3 : XIDable
+        [XmlInclude(typeof(TemplateType0))]
+        [XmlInclude(typeof(TemplateType1))]
+        [XmlInclude(typeof(TemplateType2))]
+        [XmlInclude(typeof(TemplateType3))]
+        [XmlInclude(typeof(TemplateType4))]
+        [XmlInclude(typeof(TemplateType5))]
+        [XmlInclude(typeof(TemplateType6))]
+        [XmlInclude(typeof(TemplateType7))]
+        [XmlInclude(typeof(TemplateRef))]
+        public abstract class Template : XIDable
         {
-            public override bool ShouldSerializeXID() => FXR1.FlattenASTPool3s;
+            public override bool ShouldSerializeXID() => FXR1.FlattenTemplates;
 
             [XmlIgnore]
             public abstract int Type { get; }
@@ -51,20 +51,20 @@ namespace SoulsFormatsExtensions
 
             }
 
-            public static ASTPool3 GetProperType(BinaryReaderEx br, FxrEnvironment env)
+            public static Template GetProperType(BinaryReaderEx br, FxrEnvironment env)
             {
                 int commandType = br.GetInt32(br.Position);
-                ASTPool3 data = null;
+                Template data = null;
                 switch (commandType)
                 {
-                    case 0: data = new ASTPool3Type0(); break;
-                    case 1: data = new ASTPool3Type1(); break;
-                    case 2: data = new ASTPool3Type2(); break;
-                    case 3: data = new ASTPool3Type3(); break;
-                    case 4: data = new ASTPool3Type4(); break;
-                    case 5: data = new ASTPool3Type5(); break;
-                    case 6: data = new ASTPool3Type6(); break;
-                    case 7: data = new ASTPool3Type7(); break;
+                    case 0: data = new TemplateType0(); break;
+                    case 1: data = new TemplateType1(); break;
+                    case 2: data = new TemplateType2(); break;
+                    case 3: data = new TemplateType3(); break;
+                    case 4: data = new TemplateType4(); break;
+                    case 5: data = new TemplateType5(); break;
+                    case 6: data = new TemplateType6(); break;
+                    case 7: data = new TemplateType7(); break;
                 }
                 return data;
             }
@@ -81,7 +81,7 @@ namespace SoulsFormatsExtensions
         }
 
 
-        public class ASTPool3Ref : ASTPool3
+        public class TemplateRef : Template
         {
             public override int Type => -1;
 
@@ -90,12 +90,12 @@ namespace SoulsFormatsExtensions
 
             public override bool ShouldSerializeCommandType() => false;
 
-            public ASTPool3Ref(ASTPool3 refVal)
+            public TemplateRef(Template refVal)
             {
                 ReferenceXID = refVal?.XID;
             }
 
-            public ASTPool3Ref()
+            public TemplateRef()
             {
 
             }
@@ -112,7 +112,7 @@ namespace SoulsFormatsExtensions
         }
 
 
-        public class ASTPool3Type0 : ASTPool3
+        public class TemplateType0 : Template
         {
             public override int Type => 0;
 
@@ -132,7 +132,7 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class ASTPool3Type1 : ASTPool3
+        public class TemplateType1 : Template
         {
             public override int Type => 1;
 
@@ -185,7 +185,7 @@ namespace SoulsFormatsExtensions
 
 
 
-        public class ASTPool3Type2 : ASTPool3
+        public class TemplateType2 : Template
         {
             public override int Type => 2;
 
@@ -225,7 +225,7 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class ASTPool3Type3 : ASTPool3
+        public class TemplateType3 : Template
         {
             public override int Type => 3;
 
@@ -255,7 +255,7 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class ASTPool3Type4 : ASTPool3
+        public class TemplateType4 : Template
         {
             public override int Type => 4;
 
@@ -275,7 +275,7 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class ASTPool3Type5 : ASTPool3
+        public class TemplateType5 : Template
         {
             public override int Type => 5;
 
@@ -295,7 +295,7 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class ASTPool3Type6 : ASTPool3
+        public class TemplateType6 : Template
         {
             public override int Type => 6;
 
@@ -318,7 +318,7 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class ASTPool3Type7 : ASTPool3
+        public class TemplateType7 : Template
         {
             public override int Type => 7;
 

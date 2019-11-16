@@ -54,7 +54,7 @@ namespace SoulsFormatsExtensions
                     OffsetsByObject.Add(thingThere, offset);
             }
 
-            public FunctionPointer GetASTFunction(BinaryReaderEx br, long offset)
+            public FunctionPointer GetEffectFunction(BinaryReaderEx br, long offset)
             {
                 if (offset == 0)
                     return null;
@@ -78,14 +78,14 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public ASTPool2 GetASTPool2(BinaryReaderEx br, long offset)
+            public Behavior GetBehavior(BinaryReaderEx br, long offset)
             {
                 if (offset == 0)
                     return null;
 
                 if (ObjectsByOffset.ContainsKey(offset))
                 {
-                    if (ObjectsByOffset[offset] is ASTPool2 v)
+                    if (ObjectsByOffset[offset] is Behavior v)
                         return v;
                     else
                         throw new InvalidOperationException();
@@ -93,7 +93,7 @@ namespace SoulsFormatsExtensions
                 else
                 {
                     br.StepIn(offset);
-                    var newVal = ASTPool2.Read(br, this);
+                    var newVal = Behavior.Read(br, this);
                     RegisterOffset(offset, newVal);
                     newVal.XID = $"0x{offset:X}";
                     br.StepOut();
@@ -102,14 +102,14 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public ASTPool3 GetASTPool3(BinaryReaderEx br, long offset)
+            public Template GetTemplate(BinaryReaderEx br, long offset)
             {
                 if (offset == 0)
                     return null;
 
                 if (ObjectsByOffset.ContainsKey(offset))
                 {
-                    if (ObjectsByOffset[offset] is ASTPool3 v)
+                    if (ObjectsByOffset[offset] is Template v)
                         return v;
                     else
                         throw new InvalidOperationException();
@@ -117,7 +117,7 @@ namespace SoulsFormatsExtensions
                 else
                 {
                     br.StepIn(offset);
-                    var newVal = ASTPool3.GetProperType(br, this);
+                    var newVal = Template.GetProperType(br, this);
                     RegisterOffset(offset, newVal);
                     newVal.XID = $"0x{offset:X}";
                     newVal.Read(br, this);
@@ -153,21 +153,21 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public AST GetAST(BinaryReaderEx br, long offset)
+            public Effect GetEffect(BinaryReaderEx br, long offset)
             {
                 if (offset == 0)
                     return null;
 
                 if (ObjectsByOffset.ContainsKey(offset))
                 {
-                    if (ObjectsByOffset[offset] is AST v)
+                    if (ObjectsByOffset[offset] is Effect v)
                         return v;
                     else
                         throw new InvalidOperationException();
                 }
                 else
                 {
-                    var newVal = new AST();
+                    var newVal = new Effect();
                     RegisterOffset(offset, newVal);
                     br.StepIn(offset);
                     newVal.Read(br, this);
@@ -317,10 +317,10 @@ namespace SoulsFormatsExtensions
                     {
                         switch (data)
                         {
-                            case FunctionPointer asASTFunction: asASTFunction.Write(bw, this); break;
-                            case ASTPool2 asASTPool2: asASTPool2.Write(bw, this); break;
-                            case ASTPool3 asASTPool3: asASTPool3.Write(bw, this); break;
-                            case AST asAST: asAST.Write(bw, this); break;
+                            case FunctionPointer asEffectFunction: asEffectFunction.Write(bw, this); break;
+                            case Behavior asBehavior: asBehavior.Write(bw, this); break;
+                            case Template asTemplate: asTemplate.Write(bw, this); break;
+                            case Effect asEffect: asEffect.Write(bw, this); break;
                             case FlowAction asFlowAction: asFlowAction.Write(bw, this); break;
                             case FlowEdge asFlowEdge: asFlowEdge.Write(bw, this); break;
                             case FlowNode asFlowNode: asFlowNode.Write(bw, this); break;
@@ -353,8 +353,8 @@ namespace SoulsFormatsExtensions
                                     v.Write(bw, this);
                                 }
                                 break;
-                            case List<FunctionPointer> asASTFunctionList:
-                                foreach (var v in asASTFunctionList)
+                            case List<FunctionPointer> asEffectFunctionList:
+                                foreach (var v in asEffectFunctionList)
                                 {
                                     RegisterOffset(bw.Position, v);
                                     RegisterPointerOffset(bw.Position);

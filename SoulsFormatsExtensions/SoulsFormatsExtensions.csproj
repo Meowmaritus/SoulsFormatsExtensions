@@ -44,18 +44,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExtensionMethods.cs" />
-    <Compile Include="FXR1\AST.cs" />
+    <Compile Include="FXR1\Effect.cs" />
     <Compile Include="FXR1\FunctionPointer.cs" />
-    <Compile Include="FXR1\Curve3.cs" />
     <Compile Include="FXR1\FlowAction.cs" />
     <Compile Include="FXR1\FlowEdge.cs" />
     <Compile Include="FXR1\FlowNode.cs" />
-    <Compile Include="FXR1\ASTPool3.cs" />
+    <Compile Include="FXR1\Template.cs" />
     <Compile Include="FXR1\Param.cs" />
     <Compile Include="FXR1\Function.cs" />
-    <Compile Include="FXR1\ASTPool2.cs" />
+    <Compile Include="FXR1\Behavior.cs" />
     <Compile Include="FXR1\FXR1.cs" />
-    <Compile Include="FXR1\Curve1.cs" />
     <Compile Include="FXR1\FxrEnvironment.cs" />
     <Compile Include="FXR1\PreDataEntry.cs" />
     <Compile Include="FXR1\XIDable.cs" />
