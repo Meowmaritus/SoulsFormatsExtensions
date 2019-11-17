@@ -34,15 +34,16 @@ namespace SoulsFormatsExtensions
                 Container = fxr.DereferenceFXContainer(Container);
             }
 
-            public void Read(BinaryReaderEx br, FxrEnvironment env)
+            internal void Read(BinaryReaderEx br, FxrEnvironment env)
             {
                 ActionType = br.ReadFXR1Varint();
-                Container = env.GetEffect(br, br.Position);
+                Container = env.GetFXContainer(br, br.Position);
                 br.Position += FXContainer.GetSize(br.VarintLong);
             }
 
-            public void Write(BinaryWriterEx bw, FxrEnvironment env)
+            internal void Write(BinaryWriterEx bw, FxrEnvironment env)
             {
+                env.RegisterOffset(bw.Position, this);
                 bw.WriteFXR1Varint(ActionType);
                 Container.Write(bw, env);
             }

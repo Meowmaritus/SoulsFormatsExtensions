@@ -38,7 +38,7 @@ namespace SoulsFormatsExtensions
                 Unk11 = br.ReadInt32();
             }
 
-            public void Write(BinaryWriterEx bw, FXBehavior beh)
+            internal void Write(BinaryWriterEx bw, FXBehavior beh)
             {
                 beh.WriteNode(Unk1);
                 beh.WriteNode(Unk2);
@@ -53,7 +53,7 @@ namespace SoulsFormatsExtensions
                 bw.WriteInt32(Unk11);
             }
 
-            public static DS1RExtraNodes Read(BinaryReaderEx br, FxrEnvironment env)
+            internal static DS1RExtraNodes Read(BinaryReaderEx br, FxrEnvironment env)
             {
                 var p = new DS1RExtraNodes();
                 p.ReadInner(br, env);

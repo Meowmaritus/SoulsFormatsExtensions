@@ -31,7 +31,7 @@ namespace SoulsFormatsExtensions
                 return ticks;
             }
 
-            public static void WriteListDirectly(BinaryWriterEx bw, List<FloatTick> ticks)
+            internal static void WriteListDirectly(BinaryWriterEx bw, List<FloatTick> ticks)
             {
                 bw.WriteInt32(ticks.Count);
                 for (int i = 0; i < ticks.Count; i++)
@@ -66,7 +66,7 @@ namespace SoulsFormatsExtensions
                 return ticks;
             }
 
-            public static void WriteListInFXNode(BinaryWriterEx bw, FxrEnvironment env, List<FloatTick> ticks)
+            internal static void WriteListInFXNode(BinaryWriterEx bw, FxrEnvironment env, List<FloatTick> ticks)
             {
                 var times = new List<float>(ticks.Count);
                 var flattenedValues = new List<float>(ticks.Count);
@@ -104,7 +104,7 @@ namespace SoulsFormatsExtensions
                 return ticks;
             }
 
-            public static void WriteListDirectly(BinaryWriterEx bw, List<IntTick> ticks)
+            internal static void WriteListDirectly(BinaryWriterEx bw, List<IntTick> ticks)
             {
                 bw.WriteInt32(ticks.Count);
                 for (int i = 0; i < ticks.Count; i++)
@@ -139,7 +139,7 @@ namespace SoulsFormatsExtensions
                 return ticks;
             }
 
-            public static void WriteListInFXNode(BinaryWriterEx bw, FxrEnvironment env, List<IntTick> ticks)
+            internal static void WriteListInFXNode(BinaryWriterEx bw, FxrEnvironment env, List<IntTick> ticks)
             {
                 List<float> times = new List<float>(ticks.Count);
                 List<int> flattenedValues = new List<int>(ticks.Count);
@@ -185,7 +185,7 @@ namespace SoulsFormatsExtensions
                 return ticks;
             }
 
-            public static void WriteListDirectly(BinaryWriterEx bw, List<Float3Tick> ticks)
+            internal static void WriteListDirectly(BinaryWriterEx bw, List<Float3Tick> ticks)
             {
                 bw.WriteInt32(ticks.Count);
                 for (int i = 0; i < ticks.Count; i++)
@@ -226,7 +226,7 @@ namespace SoulsFormatsExtensions
                 return ticks;
             }
 
-            public static void WriteListInFXNode(BinaryWriterEx bw, FxrEnvironment env, List<Float3Tick> ticks)
+            internal static void WriteListInFXNode(BinaryWriterEx bw, FxrEnvironment env, List<Float3Tick> ticks)
             {
                 var times = new List<float>(ticks.Count);
                 var flattenedValues = new List<float>(ticks.Count);
@@ -287,7 +287,7 @@ namespace SoulsFormatsExtensions
                 return ticks;
             }
 
-            public static void WriteListInFXNode(BinaryWriterEx bw, FxrEnvironment env, List<ColorTick> ticks)
+            internal static void WriteListInFXNode(BinaryWriterEx bw, FxrEnvironment env, List<ColorTick> ticks)
             {
                 var times = new List<float>(ticks.Count);
                 var flattenedValues = new List<float>(ticks.Count);
@@ -361,7 +361,7 @@ namespace SoulsFormatsExtensions
                 return ticks;
             }
 
-            public static void WriteListInFXNode(BinaryWriterEx bw, FxrEnvironment env, List<Color3Tick> ticks)
+            internal static void WriteListInFXNode(BinaryWriterEx bw, FxrEnvironment env, List<Color3Tick> ticks)
             {
                 var times = new List<float>(ticks.Count);
                 var flattenedValues = new List<float>(ticks.Count);

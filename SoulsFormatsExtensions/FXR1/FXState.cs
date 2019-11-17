@@ -10,7 +10,7 @@ namespace SoulsFormatsExtensions
 {
     public partial class FXR1
     {
-        [XmlInclude(typeof(StateRef))]
+        [XmlInclude(typeof(FXStateRef))]
         public class FXState : XIDable
         {
             public override bool ShouldSerializeXID() => FXR1.FlattenStates;
@@ -40,7 +40,7 @@ namespace SoulsFormatsExtensions
             public static int GetSize(bool isLong)
                 => isLong ? 24 : 16;
 
-            public void Read(BinaryReaderEx br, FxrEnvironment env)
+            internal void Read(BinaryReaderEx br, FxrEnvironment env)
             {
                 int edgesOffset = br.ReadFXR1Varint();
                 int actionsOffset = br.ReadFXR1Varint();
@@ -53,7 +53,7 @@ namespace SoulsFormatsExtensions
                 br.StepIn(edgesOffset);
                 for (int i = 0; i < edgeNum; i++)
                 {
-                    Transitions.Add(env.GetTransition(br, br.Position));
+                    Transitions.Add(env.GetFXTransition(br, br.Position));
                     br.Position += FXTransition.GetSize(br.VarintLong);
                 }
                 br.StepOut();
@@ -67,7 +67,7 @@ namespace SoulsFormatsExtensions
                 br.StepOut();
             }
 
-            public void Write(BinaryWriterEx bw, FxrEnvironment env)
+            internal void Write(BinaryWriterEx bw, FxrEnvironment env)
             {
                 env.RegisterPointer(Transitions);
                 env.RegisterPointer(Actions);
@@ -76,7 +76,7 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class StateRef : FXState
+        public class FXStateRef : FXState
         {
             [XmlAttribute]
             public string ReferenceXID;
@@ -84,11 +84,11 @@ namespace SoulsFormatsExtensions
             public override bool ShouldSerializeEdges() => false;
             public override bool ShouldSerializeActions() => false;
 
-            public StateRef(FXState refVal)
+            public FXStateRef(FXState refVal)
             {
                 ReferenceXID = refVal?.XID;
             }
-            public StateRef()
+            public FXStateRef()
             {
 
             }

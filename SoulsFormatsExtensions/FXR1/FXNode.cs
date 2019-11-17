@@ -106,13 +106,14 @@ namespace SoulsFormatsExtensions
 
             }
 
-            public void Write(BinaryWriterEx bw, FxrEnvironment env)
+            internal void Write(BinaryWriterEx bw, FxrEnvironment env)
             {
+                env.RegisterOffset(bw.Position, this);
                 env.RegisterFXNodeOffsetHere();
                 WriteInner(bw, env);
             }
 
-            public static FXNode GetProperFXNodeType(BinaryReaderEx br, FxrEnvironment env)
+            internal static FXNode GetProperFXNodeType(BinaryReaderEx br, FxrEnvironment env)
             {
                 long functionID = br.GetFXR1Varint(br.Position);
                 FXNode func = null;
@@ -188,7 +189,7 @@ namespace SoulsFormatsExtensions
                 return func;
             }
 
-            public void Read(BinaryReaderEx br, FxrEnvironment env)
+            internal void Read(BinaryReaderEx br, FxrEnvironment env)
             {
                 ReadInner(br, env);
             }
@@ -242,7 +243,7 @@ namespace SoulsFormatsExtensions
                     int astOffset = br.ReadFXR1Varint();
                     Unk = br.ReadInt32();
 
-                    Container = env.GetEffect(br, astOffset);
+                    Container = env.GetFXContainer(br, astOffset);
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
@@ -279,7 +280,7 @@ namespace SoulsFormatsExtensions
                     int astOffset = br.ReadFXR1Varint();
                     Unk = br.ReadInt32();
 
-                    Container = env.GetEffect(br, astOffset);
+                    Container = env.GetFXContainer(br, astOffset);
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
@@ -298,20 +299,20 @@ namespace SoulsFormatsExtensions
                 public int Unk;
                 public FXContainer Container1;
                 public FXContainer Container2;
-                public List<FXState> Nodes;
+                public List<FXState> States;
 
                 internal override void InnerToXIDs(FXR1 fxr)
                 {
-                    for (int i = 0; i < Nodes.Count; i++)
-                        Nodes[i] = fxr.ReferenceState(Nodes[i]);
+                    for (int i = 0; i < States.Count; i++)
+                        States[i] = fxr.ReferenceState(States[i]);
                     Container1 = fxr.ReferenceFXContainer(Container1);
                     Container2 = fxr.ReferenceFXContainer(Container2);
                 }
 
                 internal override void InnerFromXIDs(FXR1 fxr)
                 {
-                    for (int i = 0; i < Nodes.Count; i++)
-                        Nodes[i] = fxr.DereferenceState(Nodes[i]);
+                    for (int i = 0; i < States.Count; i++)
+                        States[i] = fxr.DereferenceState(States[i]);
                     Container1 = fxr.DereferenceFXContainer(Container1);
                     Container2 = fxr.DereferenceFXContainer(Container2);
                 }
@@ -326,19 +327,19 @@ namespace SoulsFormatsExtensions
                     Unk = br.ReadFXR1Varint();
                     //throw new NotImplementedException();
 
-                    Container1 = env.GetEffect(br, br.Position);
+                    Container1 = env.GetFXContainer(br, br.Position);
                     br.Position += FXContainer.GetSize(br.VarintLong);
 
-                    Container2 = env.GetEffect(br, br.Position);
+                    Container2 = env.GetFXContainer(br, br.Position);
                     br.Position += FXContainer.GetSize(br.VarintLong);
 
                     int offsetToNodeList = br.ReadFXR1Varint();
                     int nodeCount = br.ReadFXR1Varint();
-                    Nodes = new List<FXState>();
+                    States = new List<FXState>();
                     br.StepIn(offsetToNodeList);
                     for (int i = 0; i < nodeCount; i++)
                     {
-                        Nodes.Add(env.GetState(br, br.Position));
+                        States.Add(env.GetFXState(br, br.Position));
                         br.Position += FXState.GetSize(br.VarintLong);
                     }
                     br.StepOut();
@@ -354,8 +355,8 @@ namespace SoulsFormatsExtensions
                     bw.WriteFXR1Varint(Unk);
                     Container1.Write(bw, env);
                     Container2.Write(bw, env);
-                    env.RegisterPointer(Nodes);
-                    bw.WriteFXR1Varint(Nodes.Count);
+                    env.RegisterPointer(States);
+                    bw.WriteFXR1Varint(States.Count);
                 }
             }
 

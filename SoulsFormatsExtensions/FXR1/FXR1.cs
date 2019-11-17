@@ -1,9 +1,11 @@
 ﻿using SoulsFormats;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace SoulsFormatsExtensions
@@ -18,22 +20,57 @@ namespace SoulsFormatsExtensions
         public FXNode RootFXNode { get; set; }
 
 
+        internal void WriteToXml(string xmlPath)
+        {
+            if (File.Exists(xmlPath))
+                File.Delete(xmlPath);
+            using (var testStream = File.OpenWrite(xmlPath))
+            {
+                var test = new XmlSerializer(typeof(FXR1));
+                using (var xmlWriter = XmlWriter.Create(testStream, new XmlWriterSettings()
+                {
+                    Indent = true,
+                }))
+                {
+                    Flatten();
+                    test.Serialize(xmlWriter, this);
+                    Unflatten();
+                } 
+            }
+        }
+
+        public static FXR1 ReadFromXml(string xmlPath)
+        {
+            using (var testStream = File.OpenRead(xmlPath))
+            {
+                var test = new XmlSerializer(typeof(FXR1));
+                using (var xmlReader = XmlReader.Create(testStream))
+                {
+                    var fxr = (FXR1)test.Deserialize(xmlReader);
+                    fxr.Unflatten();
+                    return fxr;
+                }
+            }
+        }
+
+
+
         [XmlIgnore]
-        public static bool FlattenStates = true;
+        internal static bool FlattenStates = true;
         [XmlIgnore]
-        public static bool FlattenFXNodePointers = false;
+        internal static bool FlattenFXNodePointers = false;
         [XmlIgnore]
-        public static bool FlattenTransitions = true;
+        internal static bool FlattenTransitions = true;
         [XmlIgnore]
-        public static bool FlattenFXActions = false;
+        internal static bool FlattenFXActions = false;
         [XmlIgnore]
-        public static bool FlattenFXNodes = false;
+        internal static bool FlattenFXNodes = false;
         [XmlIgnore]
-        public static bool FlattenFXContainers = false;
+        internal static bool FlattenFXContainers = false;
         [XmlIgnore]
-        public static bool FlattenFXBehaviors = false;
+        internal static bool FlattenFXBehaviors = false;
         [XmlIgnore]
-        public static bool FlattenTemplates = false;
+        internal static bool FlattenTemplates = false;
 
         public List<FXState> AllStates { get; set; } = new List<FXState>();
         public List<FXNodePointer> AllFXNodePointers { get; set; } = new List<FXNodePointer>();
@@ -55,32 +92,32 @@ namespace SoulsFormatsExtensions
         public bool ShouldSerializeAllFXBehaviors() => FlattenFXBehaviors;
         public bool ShouldSerializeAllTemplates() => FlattenTemplates;
 
-        
-        public FXState GetState(string xid) => AllStates.FirstOrDefault(x => x.XID == xid);
-        public FXState DereferenceState(FXState v)
+
+        internal FXState GetState(string xid) => AllStates.FirstOrDefault(x => x.XID == xid);
+        internal FXState DereferenceState(FXState v)
         {
             if (!FlattenStates)
                 return v;
 
-            if (v is StateRef asRef)
+            if (v is FXStateRef asRef)
                 return GetState(asRef.ReferenceXID);
             else
                 return v;
         }
-        public FXState ReferenceState(FXState v)
+        internal FXState ReferenceState(FXState v)
         {
             if (!FlattenStates)
                 return v;
 
-            if (v is StateRef asRef)
+            if (v is FXStateRef asRef)
                 return v;
             else
-                return new StateRef(v);
+                return new FXStateRef(v);
         }
 
-        
-        public FXNodePointer GetFXNodePointer(string xid) => AllFXNodePointers.FirstOrDefault(x => x.XID == xid);
-        public FXNodePointer DereferenceFXNodePointer(FXNodePointer v)
+
+        internal FXNodePointer GetFXNodePointer(string xid) => AllFXNodePointers.FirstOrDefault(x => x.XID == xid);
+        internal FXNodePointer DereferenceFXNodePointer(FXNodePointer v)
         {
             if (!FlattenFXNodePointers)
                 return v;
@@ -90,7 +127,7 @@ namespace SoulsFormatsExtensions
             else
                 return v;
         }
-        public FXNodePointer ReferenceFXNodePointer(FXNodePointer v)
+        internal FXNodePointer ReferenceFXNodePointer(FXNodePointer v)
         {
             if (!FlattenFXNodePointers)
                 return v;
@@ -101,33 +138,33 @@ namespace SoulsFormatsExtensions
                 return new FXNodePointerRef(v);
         }
 
-        
-        public FXTransition GetTransition(string xid) => AllTransitions.FirstOrDefault(x => x.XID == xid);
-        public FXTransition DereferenceTransition(FXTransition v)
+
+        internal FXTransition GetTransition(string xid) => AllTransitions.FirstOrDefault(x => x.XID == xid);
+        internal FXTransition DereferenceTransition(FXTransition v)
         {
             if (!FlattenTransitions)
                 return v;
 
-            if (v is TransitionRef asRef)
+            if (v is FXTransitionRef asRef)
                 return GetTransition(asRef.ReferenceXID);
             else
                 return v;
         }
 
-        public FXTransition ReferenceTransition(FXTransition v)
+        internal FXTransition ReferenceTransition(FXTransition v)
         {
             if (!FlattenTransitions)
                 return v;
 
-            if (v is TransitionRef asRef)
+            if (v is FXTransitionRef asRef)
                 return v;
             else
-                return new TransitionRef(v);
+                return new FXTransitionRef(v);
         }
 
-        
-        public FXAction GetFXAction(string xid) => AllFXActions.FirstOrDefault(x => x.XID == xid);
-        public FXAction DereferenceFXAction(FXAction v)
+
+        internal FXAction GetFXAction(string xid) => AllFXActions.FirstOrDefault(x => x.XID == xid);
+        internal FXAction DereferenceFXAction(FXAction v)
         {
             if (!FlattenFXActions)
                 return v;
@@ -137,7 +174,7 @@ namespace SoulsFormatsExtensions
             else
                 return v;
         }
-        public FXAction ReferenceFXAction(FXAction v)
+        internal FXAction ReferenceFXAction(FXAction v)
         {
             if (!FlattenFXActions)
                 return v;
@@ -148,9 +185,9 @@ namespace SoulsFormatsExtensions
                 return new FXActionRef(v);
         }
 
-        
-        public FXNode GetFXNode(string xid) => AllFXNodes.FirstOrDefault(x => x.XID == xid);
-        public FXNode DereferenceFXNode(FXNode v)
+
+        internal FXNode GetFXNode(string xid) => AllFXNodes.FirstOrDefault(x => x.XID == xid);
+        internal FXNode DereferenceFXNode(FXNode v)
         {
             if (!FlattenFXNodes)
                 return v;
@@ -160,7 +197,7 @@ namespace SoulsFormatsExtensions
             else
                 return v;
         }
-        public FXNode ReferenceFXNode(FXNode v)
+        internal FXNode ReferenceFXNode(FXNode v)
         {
             if (!FlattenFXNodes)
                 return v;
@@ -171,9 +208,9 @@ namespace SoulsFormatsExtensions
                 return new FXNode.FXNodeRef(v);
         }
 
-        
-        public FXContainer GetFXContainer(string xid) => AllFXContainers.FirstOrDefault(x => x.XID == xid);
-        public FXContainer DereferenceFXContainer(FXContainer v)
+
+        internal FXContainer GetFXContainer(string xid) => AllFXContainers.FirstOrDefault(x => x.XID == xid);
+        internal FXContainer DereferenceFXContainer(FXContainer v)
         {
             if (!FlattenFXContainers)
                 return v;
@@ -183,7 +220,7 @@ namespace SoulsFormatsExtensions
             else
                 return v;
         }
-        public FXContainer ReferenceFXContainer(FXContainer v)
+        internal FXContainer ReferenceFXContainer(FXContainer v)
         {
             if (!FlattenFXContainers)
                 return v;
@@ -194,9 +231,9 @@ namespace SoulsFormatsExtensions
                 return new FXContainerRef(v);
         }
 
-        
-        public FXBehavior GetBehavior(string xid) => AllFXBehaviors.FirstOrDefault(x => x.XID == xid);
-        public FXBehavior DereferenceFXBehavior(FXBehavior v)
+
+        internal FXBehavior GetBehavior(string xid) => AllFXBehaviors.FirstOrDefault(x => x.XID == xid);
+        internal FXBehavior DereferenceFXBehavior(FXBehavior v)
         {
             if (!FlattenFXBehaviors)
                 return v;
@@ -206,7 +243,7 @@ namespace SoulsFormatsExtensions
             else
                 return v;
         }
-        public FXBehavior ReferenceFXBehavior(FXBehavior v)
+        internal FXBehavior ReferenceFXBehavior(FXBehavior v)
         {
             if (!FlattenFXBehaviors)
                 return v;
@@ -217,9 +254,9 @@ namespace SoulsFormatsExtensions
                 return new BehaviorRef(v);
         }
 
-        
-        public FXTemplate GetTemplate(string xid) => AllTemplates.FirstOrDefault(x => x.XID == xid);
-        public FXTemplate DereferenceTemplate(FXTemplate v)
+
+        internal FXTemplate GetTemplate(string xid) => AllTemplates.FirstOrDefault(x => x.XID == xid);
+        internal FXTemplate DereferenceTemplate(FXTemplate v)
         {
             if (!FlattenTemplates)
                 return v;
@@ -229,7 +266,7 @@ namespace SoulsFormatsExtensions
             else
                 return v;
         }
-        public FXTemplate ReferenceTemplate(FXTemplate v)
+        internal FXTemplate ReferenceTemplate(FXTemplate v)
         {
             if (!FlattenTemplates)
                 return v;
@@ -239,10 +276,6 @@ namespace SoulsFormatsExtensions
             else
                 return new FXTemplateRef(v);
         }
-
-
-        [XmlIgnore]
-        public List<FXField> Debug_AllLoadedNodes;
 
         protected override void Read(BinaryReaderEx br)
         {
@@ -293,6 +326,12 @@ namespace SoulsFormatsExtensions
 
             foreach (var kvp in env.ObjectsByOffset)
             {
+                //switch (kvp.Value)
+                //{
+                //    case FXState state: Register("FXState", kvp.Key, AllStates, state); break;
+                //    case FXTransition transition: Register("FXTransition", kvp.Key, AllTransitions, transition); break;
+                //}
+
                 if (kvp.Value is FXBehavior asBehavior)
                 {
                     Register("Behavior", kvp.Key, AllFXBehaviors, asBehavior);
@@ -311,11 +350,11 @@ namespace SoulsFormatsExtensions
                 }
                 else if (kvp.Value is FXTransition asTransition)
                 {
-                    Register("Transition", kvp.Key, AllTransitions, asTransition);
+                    Register("FXTransition", kvp.Key, AllTransitions, asTransition);
                 }
                 else if (kvp.Value is FXState asState)
                 {
-                    Register("State", kvp.Key, AllStates, asState);
+                    Register("FXState", kvp.Key, AllStates, asState);
                 }
                 else if (kvp.Value is FXNode asFXNode)
                 {
@@ -330,8 +369,6 @@ namespace SoulsFormatsExtensions
                     throw new NotImplementedException();
                 }
             }
-
-            Debug_AllLoadedNodes = env.Debug_AllReadNodes;
         }
 
         public void Flatten()
@@ -402,13 +439,12 @@ namespace SoulsFormatsExtensions
 
             bw.Pad(16);
             
-            // Write RootFXNode and everything else :fatcat:
+            // Write RootFXNode and everything else.
             env.FinishRecursiveWrite();
 
             bw.FillFXR1Varint("OffsetToTable", (int)bw.Position);
             env.WritePointerTable("TablePointerCount");
             env.WriteFXNodeTable("TableFXNodeCount");
-
         }
 
     }

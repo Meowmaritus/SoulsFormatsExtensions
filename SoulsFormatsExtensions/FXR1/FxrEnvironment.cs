@@ -9,21 +9,13 @@ namespace SoulsFormatsExtensions
 {
     public partial class FXR1
     {
-        public class FxrEnvironment
+        internal class FxrEnvironment
         {
             public BinaryWriterEx bw;
 
             public FXR1 fxr;
 
-            public List<FXField> Debug_AllReadNodes = new List<FXField>();
-
             public List<FXNode> XmlFXContainer = new List<FXNode>();
-
-            public void Debug_RegisterReadNode(FXField p)
-            {
-                if (!Debug_AllReadNodes.Contains(p))
-                    Debug_AllReadNodes.Add(p);
-            }
 
             private List<long> PointerOffsets = new List<long>();
             private List<long> FXNodeOffets = new List<long>();
@@ -54,7 +46,7 @@ namespace SoulsFormatsExtensions
                     OffsetsByObject.Add(thingThere, offset);
             }
 
-            public FXNodePointer GetEffectFXNode(BinaryReaderEx br, long offset)
+            public FXNodePointer GetFXNodePointer(BinaryReaderEx br, long offset)
             {
                 if (offset == 0)
                     return null;
@@ -78,7 +70,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public FXBehavior GetBehavior(BinaryReaderEx br, long offset)
+            public FXBehavior GetFXBehavior(BinaryReaderEx br, long offset)
             {
                 if (offset == 0)
                     return null;
@@ -102,7 +94,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public FXTemplate GetTemplate(BinaryReaderEx br, long offset)
+            public FXTemplate GetFXTemplate(BinaryReaderEx br, long offset)
             {
                 if (offset == 0)
                     return null;
@@ -153,7 +145,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public FXContainer GetEffect(BinaryReaderEx br, long offset)
+            public FXContainer GetFXContainer(BinaryReaderEx br, long offset)
             {
                 if (offset == 0)
                     return null;
@@ -177,7 +169,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public FXState GetState(BinaryReaderEx br, long offset)
+            public FXState GetFXState(BinaryReaderEx br, long offset)
             {
                 if (offset == 0)
                     return null;
@@ -202,7 +194,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public FXTransition GetTransition(BinaryReaderEx br, long offset)
+            public FXTransition GetFXTransition(BinaryReaderEx br, long offset)
             {
                 if (offset == 0)
                     return null;
@@ -295,6 +287,8 @@ namespace SoulsFormatsExtensions
                 }
             }
 
+            private List<object> DEBUG_ObjectWriteOrder = new List<object>();
+
 
             public void FinishRecursiveWrite()
             {
@@ -311,6 +305,8 @@ namespace SoulsFormatsExtensions
                 {
                     // Register this as an offset for recursive write and pointer shit
                     RegisterOffset(bw.Position, kvp.Key);
+
+                    DEBUG_ObjectWriteOrder.Add(kvp.Key);
 
                     // Write the actual data
                     void DoDataWrite(object data)
@@ -401,7 +397,7 @@ namespace SoulsFormatsExtensions
                     FXNodeOffets.Add(bw.Position);
             }
 
-            //public void WriteAllFXNodes()
+            //internal void WriteAllFXNodes()
             //{
             //    foreach (var func in ThingsToWrite.OfType<FXNode>())
             //    {
@@ -410,7 +406,7 @@ namespace SoulsFormatsExtensions
             //    }
             //}
 
-            public void WriteFXNodeTable(string tableCountFillLabel)
+            internal void WriteFXNodeTable(string tableCountFillLabel)
             {
                 foreach (var location in FXNodeOffets.OrderBy(x => x))
                 {
@@ -419,7 +415,7 @@ namespace SoulsFormatsExtensions
                 bw.FillInt32(tableCountFillLabel, FXNodeOffets.Count);
             }
 
-            public void WritePointerTable(string tableCountFillLabel)
+            internal void WritePointerTable(string tableCountFillLabel)
             {
                 foreach (var offset in PointerOffsets.OrderBy(x => x))
                 {
@@ -428,7 +424,7 @@ namespace SoulsFormatsExtensions
                 bw.FillInt32(tableCountFillLabel, PointerOffsets.Count);
             }
 
-            public void ReadPointerTable(BinaryReaderEx br, int count)
+            internal void ReadPointerTable(BinaryReaderEx br, int count)
             {
                 PointerOffsets = new List<long>();
                 for (int i = 0; i < count; i++)

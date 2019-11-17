@@ -10,62 +10,62 @@ namespace SoulsFormatsExtensions
 {
     public partial class FXR1
     {
-        [XmlInclude(typeof(TransitionRef))]
+        [XmlInclude(typeof(FXTransitionRef))]
         public class FXTransition : XIDable
         {
             public override bool ShouldSerializeXID() => FXR1.FlattenTransitions;
 
             public FXState TargetState;
-            public FXNode Evaluator;
+            public FXNode EvaluatorNode;
 
             public virtual bool ShouldSerializeTargetState() => true;
-            public virtual bool ShouldSerializeNode() => true;
+            public virtual bool ShouldSerializeEvaluatorNode() => true;
 
             internal override void ToXIDs(FXR1 fxr)
             {
                 TargetState = fxr.ReferenceState(TargetState);
-                Evaluator = fxr.ReferenceFXNode(Evaluator);
+                EvaluatorNode = fxr.ReferenceFXNode(EvaluatorNode);
             }
 
             internal override void FromXIDs(FXR1 fxr)
             {
                 TargetState = fxr.DereferenceState(TargetState);
-                Evaluator = fxr.DereferenceFXNode(Evaluator);
+                EvaluatorNode = fxr.DereferenceFXNode(EvaluatorNode);
             }
 
             public static int GetSize(bool isLong)
                 => isLong ? 16 : 8;
 
-            public void Read(BinaryReaderEx br, FxrEnvironment env)
+            internal void Read(BinaryReaderEx br, FxrEnvironment env)
             {
                 int endNodeOffset = br.ReadFXR1Varint();
                 int functionOffset = br.ReadFXR1Varint();
 
-                //TESTING
-                TargetState = env.GetState(br, endNodeOffset);
-                Evaluator = env.GetFXNode(br, functionOffset);
+                TargetState = env.GetFXState(br, endNodeOffset);
+                EvaluatorNode = env.GetFXNode(br, functionOffset);
             }
 
-            public void Write(BinaryWriterEx bw, FxrEnvironment env)
+            internal void Write(BinaryWriterEx bw, FxrEnvironment env)
             {
+                env.RegisterOffset(bw.Position, this);
                 env.RegisterPointer(TargetState);
-                env.RegisterPointer(Evaluator);
+                env.RegisterPointer(EvaluatorNode);
             }
         }
 
-        public class TransitionRef : FXTransition
+        public class FXTransitionRef : FXTransition
         {
             [XmlAttribute]
             public string ReferenceXID;
 
             public override bool ShouldSerializeTargetState() => false;
-            public override bool ShouldSerializeNode() => false;
+            public override bool ShouldSerializeEvaluatorNode() => false;
 
-            public TransitionRef(FXTransition refVal)
+            public FXTransitionRef(FXTransition refVal)
             {
                 ReferenceXID = refVal?.XID;
             }
-            public TransitionRef()
+            public FXTransitionRef()
             {
 
             }

@@ -34,12 +34,12 @@ namespace SoulsFormatsExtensions
             [XmlIgnore]
             public abstract int Type { get; }
 
-            public abstract void InnerRead(BinaryReaderEx br, FxrEnvironment env);
-            public abstract void InnerWrite(BinaryWriterEx bw, FxrEnvironment env);
+            internal abstract void InnerRead(BinaryReaderEx br, FxrEnvironment env);
+            internal abstract void InnerWrite(BinaryWriterEx bw, FxrEnvironment env);
 
             internal virtual bool IsEmptyPointer() => false;
 
-            public static FXField Read(BinaryReaderEx br, FxrEnvironment env)
+            internal static FXField Read(BinaryReaderEx br, FxrEnvironment env)
             {
                 int type = br.ReadFXR1Varint();
                 int offset = br.ReadFXR1Varint();
@@ -72,8 +72,6 @@ namespace SoulsFormatsExtensions
                 v.InnerRead(br, env);
                 br.StepOut();
 
-                env.Debug_RegisterReadNode(v);
-
                 return v;
             }
 
@@ -92,12 +90,12 @@ namespace SoulsFormatsExtensions
 
                 public List<FloatTick> Ticks;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Ticks = FloatTick.ReadListDirectly(br);
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     FloatTick.WriteListDirectly(bw, Ticks);
                 }
@@ -109,12 +107,12 @@ namespace SoulsFormatsExtensions
 
                 public List<FloatTick> Ticks;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Ticks = FloatTick.ReadListDirectly(br);
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     FloatTick.WriteListDirectly(bw, Ticks);
                 }
@@ -130,14 +128,14 @@ namespace SoulsFormatsExtensions
                 [XmlAttribute]
                 public float Max;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Ticks = FloatTick.ReadListDirectly(br);
                     Min = br.ReadSingle();
                     Max = br.ReadSingle();
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     FloatTick.WriteListDirectly(bw, Ticks);
                     bw.WriteSingle(Min);
@@ -153,13 +151,13 @@ namespace SoulsFormatsExtensions
                 [XmlAttribute]
                 public int ResourceIndex;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Ticks = FloatTick.ReadListDirectly(br);
                     ResourceIndex = br.ReadInt32();
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     FloatTick.WriteListDirectly(bw, Ticks);
                     bw.WriteInt32(ResourceIndex);
@@ -178,7 +176,7 @@ namespace SoulsFormatsExtensions
                 [XmlAttribute]
                 public int ResourceIndex;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Ticks = FloatTick.ReadListDirectly(br);
                     Min = br.ReadSingle();
@@ -186,7 +184,7 @@ namespace SoulsFormatsExtensions
                     ResourceIndex = br.ReadInt32();
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     FloatTick.WriteListDirectly(bw, Ticks);
                     bw.WriteSingle(Min);
@@ -201,12 +199,12 @@ namespace SoulsFormatsExtensions
 
                 public List<Float3Tick> Ticks;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Ticks = Float3Tick.ReadListDirectly(br);
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     Float3Tick.WriteListDirectly(bw, Ticks);
                 }
@@ -222,14 +220,14 @@ namespace SoulsFormatsExtensions
                 [XmlAttribute]
                 public float Max;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Ticks = Float3Tick.ReadListDirectly(br);
                     Min = br.ReadSingle();
                     Max = br.ReadSingle();
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     Float3Tick.WriteListDirectly(bw, Ticks);
                     bw.WriteSingle(Min);
@@ -243,12 +241,12 @@ namespace SoulsFormatsExtensions
 
                 public List<FloatTick> Ticks;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Ticks = FloatTick.ReadListDirectly(br);
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     FloatTick.WriteListDirectly(bw, Ticks);
                 }
@@ -260,12 +258,12 @@ namespace SoulsFormatsExtensions
 
                 public List<FloatTick> Ticks;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Ticks = FloatTick.ReadListDirectly(br);
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     FloatTick.WriteListDirectly(bw, Ticks);
                 }
@@ -281,14 +279,14 @@ namespace SoulsFormatsExtensions
                 [XmlAttribute]
                 public float Max;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Ticks = FloatTick.ReadListDirectly(br);
                     Min = br.ReadSingle();
                     Max = br.ReadSingle();
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     FloatTick.WriteListDirectly(bw, Ticks);
                     bw.WriteSingle(Min);
@@ -302,12 +300,12 @@ namespace SoulsFormatsExtensions
 
                 public List<Float3Tick> Ticks;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Ticks = Float3Tick.ReadListDirectly(br);
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     Float3Tick.WriteListDirectly(bw, Ticks);
                 }
@@ -320,12 +318,22 @@ namespace SoulsFormatsExtensions
                 [XmlAttribute]
                 public float Value;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                public ConstFloat()
+                {
+
+                }
+
+                public ConstFloat(float value)
+                {
+                    Value = value;
+                }
+
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Value = br.ReadSingle();
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteSingle(Value);
                 }
@@ -342,13 +350,13 @@ namespace SoulsFormatsExtensions
                 [XmlAttribute]
                 public float Max;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Base = br.ReadSingle();
                     Min = br.ReadSingle();
                     Max = br.ReadSingle();
                 }
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteSingle(Base);
                     bw.WriteSingle(Min);
@@ -365,12 +373,12 @@ namespace SoulsFormatsExtensions
                 [XmlAttribute]
                 public int Unk2;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Unk1 = br.ReadSingle();
                     Unk2 = br.ReadInt32();
                 }
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteSingle(Unk1);
                     bw.WriteInt32(Unk2);
@@ -390,14 +398,14 @@ namespace SoulsFormatsExtensions
                 [XmlAttribute]
                 public int ResourceIndex;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Unk1 = br.ReadSingle();
                     Unk2 = br.ReadSingle();
                     Unk3 = br.ReadSingle();
                     ResourceIndex = br.ReadInt32();
                 }
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteSingle(Unk1);
                     bw.WriteSingle(Unk2);
@@ -412,12 +420,12 @@ namespace SoulsFormatsExtensions
                 
                 internal override bool IsEmptyPointer() => true;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
 
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
 
                 }

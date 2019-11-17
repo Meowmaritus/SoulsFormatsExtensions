@@ -52,7 +52,7 @@ namespace SoulsFormatsExtensions
             public static int GetSize(bool isLong)
                 => isLong ? 40 : 24;
 
-            public void Read(BinaryReaderEx br, FxrEnvironment env)
+            internal void Read(BinaryReaderEx br, FxrEnvironment env)
             {
                 int commandPool1TableOffset = br.ReadFXR1Varint();
                 int commandPool1TableCount = br.ReadInt32();
@@ -73,31 +73,33 @@ namespace SoulsFormatsExtensions
                 {
                     //int next = br.ReadInt32();
                     //ast.Pool1List.Add(env.GetEffectPool1(br, next));
-                    var paramPointer = env.GetEffectFXNode(br, br.Position);
+                    var paramPointer = env.GetFXNodePointer(br, br.Position);
                     FXNodes.Add(paramPointer.Node);
                     br.Position += FXNodePointer.GetSize(br.VarintLong);
                 }
                 br.StepOut();
 
-                Behavior = env.GetBehavior(br, commandPool2Offset);
-                Template = env.GetTemplate(br, commandPool3Offset);
+                Behavior = env.GetFXBehavior(br, commandPool2Offset);
+                Template = env.GetFXTemplate(br, commandPool3Offset);
             }
 
-            public void Write(BinaryWriterEx bw, FxrEnvironment env)
+            internal void Write(BinaryWriterEx bw, FxrEnvironment env)
             {
-                var paramPointers = new List<FXNodePointer>();
+                env.RegisterOffset(bw.Position, this);
+
+                var nodePointers = new List<FXNodePointer>();
 
                 for (int i = 0; i < FXNodes.Count; i++)
                 {
-                    paramPointers.Add(new FXNodePointer() { Node = FXNodes[i] });
+                    nodePointers.Add(new FXNodePointer() { Node = FXNodes[i] });
                 }
 
                 if (Behavior != null)
                     Behavior.ContainingContainer = this;
 
-                env.RegisterPointer(paramPointers);
-                bw.WriteInt32(paramPointers.Count);
-                bw.WriteInt32(paramPointers.Count); //Not a typo
+                env.RegisterPointer(nodePointers);
+                bw.WriteInt32(nodePointers.Count);
+                bw.WriteInt32(nodePointers.Count);
                 bw.WriteByte(UnkFlag1);
                 bw.WriteByte(UnkFlag2);
                 bw.WriteByte(UnkFlag3);

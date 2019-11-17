@@ -32,14 +32,15 @@ namespace SoulsFormatsExtensions
 
             public virtual bool ShouldSerializeNode() => true;
 
-            public void Read(BinaryReaderEx br, FxrEnvironment env)
+            internal void Read(BinaryReaderEx br, FxrEnvironment env)
             {
                 long funcOffset = br.ReadFXR1Varint();
                 Node = env.GetFXNode(br, funcOffset);
             }
 
-            public void Write(BinaryWriterEx bw, FxrEnvironment env)
+            internal void Write(BinaryWriterEx bw, FxrEnvironment env)
             {
+                env.RegisterOffset(bw.Position, this);
                 env.RegisterPointer(Node);
             }
         }

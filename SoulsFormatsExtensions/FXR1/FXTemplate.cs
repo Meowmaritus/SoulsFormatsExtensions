@@ -24,12 +24,12 @@ namespace SoulsFormatsExtensions
             public override bool ShouldSerializeXID() => FXR1.FlattenTemplates;
 
             [XmlIgnore]
-            public abstract int Type { get; }
+            public abstract int TemplateType { get; }
 
             public virtual bool ShouldSerializeCommandType() => true;
 
-            public abstract void InnerRead(BinaryReaderEx br, FxrEnvironment env);
-            public abstract void InnerWrite(BinaryWriterEx bw, FxrEnvironment env);
+            internal abstract void InnerRead(BinaryReaderEx br, FxrEnvironment env);
+            internal abstract void InnerWrite(BinaryWriterEx bw, FxrEnvironment env);
 
             internal override void ToXIDs(FXR1 fxr)
             {
@@ -51,7 +51,7 @@ namespace SoulsFormatsExtensions
 
             }
 
-            public static FXTemplate GetProperType(BinaryReaderEx br, FxrEnvironment env)
+            internal static FXTemplate GetProperType(BinaryReaderEx br, FxrEnvironment env)
             {
                 int commandType = br.GetInt32(br.Position);
                 FXTemplate data = null;
@@ -69,13 +69,14 @@ namespace SoulsFormatsExtensions
                 return data;
             }
 
-            public void Read(BinaryReaderEx br, FxrEnvironment env)
+            internal void Read(BinaryReaderEx br, FxrEnvironment env)
             {
                 InnerRead(br, env);
             }
 
-            public void Write(BinaryWriterEx bw, FxrEnvironment env)
+            internal void Write(BinaryWriterEx bw, FxrEnvironment env)
             {
+                env.RegisterOffset(bw.Position, this);
                 InnerWrite(bw, env);
             }
         }
@@ -83,7 +84,7 @@ namespace SoulsFormatsExtensions
 
         public class FXTemplateRef : FXTemplate
         {
-            public override int Type => -1;
+            public override int TemplateType => -1;
 
             [XmlAttribute]
             public string ReferenceXID;
@@ -100,12 +101,12 @@ namespace SoulsFormatsExtensions
 
             }
 
-            public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+            internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
             {
                 throw new InvalidOperationException("Cannot actually serialize a reference class.");
             }
 
-            public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+            internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
             {
                 throw new InvalidOperationException("Cannot actually deserialize a reference class.");
             }
@@ -114,17 +115,17 @@ namespace SoulsFormatsExtensions
 
         public class FXTemplate0 : FXTemplate
         {
-            public override int Type => 0;
+            public override int TemplateType => 0;
 
             public int Unk;
-            public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+            internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
             {
                 br.AssertInt32(0);
 
                 Unk = br.ReadInt32();
             }
 
-            public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+            internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
             {
                 bw.WriteInt32(0);
 
@@ -134,7 +135,7 @@ namespace SoulsFormatsExtensions
 
         public class FXTemplate1 : FXTemplate
         {
-            public override int Type => 1;
+            public override int TemplateType => 1;
 
             public int Unk1;
             public int Unk2;
@@ -148,7 +149,7 @@ namespace SoulsFormatsExtensions
             public float Unk10;
             public float Unk11;
 
-            public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+            internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
             {
                 br.AssertInt32(1);
 
@@ -165,7 +166,7 @@ namespace SoulsFormatsExtensions
                 Unk11 = br.ReadSingle();
             }
 
-            public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+            internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
             {
                 bw.WriteInt32(1);
 
@@ -187,7 +188,7 @@ namespace SoulsFormatsExtensions
 
         public class FXTemplate2 : FXTemplate
         {
-            public override int Type => 2;
+            public override int TemplateType => 2;
 
             public float Lifetime;
             public float Unk2;
@@ -196,7 +197,7 @@ namespace SoulsFormatsExtensions
             public byte Unk5;
             public byte Unk6;
 
-            public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+            internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
             {
                 br.AssertInt32(2);
 
@@ -210,7 +211,7 @@ namespace SoulsFormatsExtensions
                 br.AssertInt16(0);
             }
 
-            public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+            internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
             {
                 bw.WriteInt32(2);
 
@@ -227,14 +228,14 @@ namespace SoulsFormatsExtensions
 
         public class FXTemplate3 : FXTemplate
         {
-            public override int Type => 3;
+            public override int TemplateType => 3;
 
             public float Unk1;
             public int Unk2;
             public float Unk3;
             public int Unk4;
 
-            public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+            internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
             {
                 br.AssertInt32(3);
 
@@ -244,7 +245,7 @@ namespace SoulsFormatsExtensions
                 Unk4 = br.ReadInt32();
             }
 
-            public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+            internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
             {
                 bw.WriteInt32(3);
 
@@ -257,17 +258,17 @@ namespace SoulsFormatsExtensions
 
         public class FXTemplate4 : FXTemplate
         {
-            public override int Type => 4;
+            public override int TemplateType => 4;
 
             public int Unk;
-            public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+            internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
             {
                 br.AssertInt32(4);
 
                 Unk = br.ReadInt32();
             }
 
-            public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+            internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
             {
                 bw.WriteInt32(4);
 
@@ -277,17 +278,17 @@ namespace SoulsFormatsExtensions
 
         public class FXTemplate5 : FXTemplate
         {
-            public override int Type => 5;
+            public override int TemplateType => 5;
 
             public int Unk;
-            public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+            internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
             {
                 br.AssertInt32(5);
 
                 Unk = br.ReadInt32();
             }
 
-            public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+            internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
             {
                 bw.WriteInt32(5);
 
@@ -297,11 +298,11 @@ namespace SoulsFormatsExtensions
 
         public class FXTemplate6 : FXTemplate
         {
-            public override int Type => 6;
+            public override int TemplateType => 6;
 
             public float Unk1;
             public int Unk2;
-            public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+            internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
             {
                 br.AssertInt32(6);
 
@@ -309,7 +310,7 @@ namespace SoulsFormatsExtensions
                 Unk2 = br.ReadInt32();
             }
 
-            public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+            internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
             {
                 bw.WriteInt32(6);
 
@@ -320,17 +321,17 @@ namespace SoulsFormatsExtensions
 
         public class FXTemplate7 : FXTemplate
         {
-            public override int Type => 7;
+            public override int TemplateType => 7;
 
             public int Unk;
-            public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+            internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
             {
                 br.AssertInt32(7);
 
                 Unk = br.ReadInt32();
             }
 
-            public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+            internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
             {
                 bw.WriteInt32(7);
 

@@ -18,25 +18,25 @@ namespace SoulsFormatsExtensions
             public FXField Data;
         }
 
-        [XmlInclude(typeof(FXBehaviorType27))]
-        [XmlInclude(typeof(FXBehaviorType28))]
-        [XmlInclude(typeof(FXBehaviorType29))]
-        [XmlInclude(typeof(FXBehaviorType30))]
-        [XmlInclude(typeof(FXBehaviorType31))]
-        [XmlInclude(typeof(FXBehaviorType32))]
-        [XmlInclude(typeof(FXBehaviorType40))]
-        [XmlInclude(typeof(FXBehaviorType43))]
-        [XmlInclude(typeof(FXBehaviorType55))]
-        [XmlInclude(typeof(FXBehaviorType59))]
-        [XmlInclude(typeof(FXBehaviorType61))]
-        [XmlInclude(typeof(FXBehaviorType66))]
-        [XmlInclude(typeof(FXBehaviorType70))]
-        [XmlInclude(typeof(FXBehaviorType71))]
-        [XmlInclude(typeof(FXBehaviorType84))]
-        [XmlInclude(typeof(FXBehaviorType105))]
-        [XmlInclude(typeof(FXBehaviorType107))]
-        [XmlInclude(typeof(FXBehaviorType108))]
-        [XmlInclude(typeof(FXBehaviorType117))]
+        [XmlInclude(typeof(FXBehavior27))]
+        [XmlInclude(typeof(FXBehavior28))]
+        [XmlInclude(typeof(FXBehavior29))]
+        [XmlInclude(typeof(FXBehavior30))]
+        [XmlInclude(typeof(FXBehavior31))]
+        [XmlInclude(typeof(FXBehavior32))]
+        [XmlInclude(typeof(FXBehavior40))]
+        [XmlInclude(typeof(FXBehavior43))]
+        [XmlInclude(typeof(FXBehavior55))]
+        [XmlInclude(typeof(FXBehavior59))]
+        [XmlInclude(typeof(FXBehavior61))]
+        [XmlInclude(typeof(FXBehavior66))]
+        [XmlInclude(typeof(FXBehavior70))]
+        [XmlInclude(typeof(FXBehavior71))]
+        [XmlInclude(typeof(FXBehavior84))]
+        [XmlInclude(typeof(FXBehavior105))]
+        [XmlInclude(typeof(FXBehavior107))]
+        [XmlInclude(typeof(ParticleBehavior108))]
+        [XmlInclude(typeof(FXBehavior117))]
         [XmlInclude(typeof(BehaviorRef))]
         public abstract class FXBehavior : XIDable
         {
@@ -55,8 +55,8 @@ namespace SoulsFormatsExtensions
 
             public virtual bool ShouldSerializeResources() => true;
 
-            public abstract void InnerRead(BinaryReaderEx br, FxrEnvironment env);
-            public abstract void InnerWrite(BinaryWriterEx bw, FxrEnvironment env);
+            internal abstract void InnerRead(BinaryReaderEx br, FxrEnvironment env);
+            internal abstract void InnerWrite(BinaryWriterEx bw, FxrEnvironment env);
 
             internal override void ToXIDs(FXR1 fxr)
             {
@@ -121,13 +121,15 @@ namespace SoulsFormatsExtensions
 
             internal void Write(BinaryWriterEx bw, FxrEnvironment env)
             {
+                env.RegisterOffset(bw.Position, this);
+
                 long startPos = bw.Position;
 
                 bw.WriteInt32(Type);
                 bw.ReserveInt32("Behavior.Size");
                 bw.WriteFXR1Varint(Resources.Count);
                 bw.ReserveInt32("Behavior.Resources.Numbers");
-                bw.ReserveInt32("Behavior.Resources.Nodes");
+                bw.ReserveInt32("Behavior.Resources.Datas");
                 env.RegisterPointer(ContainingContainer, useExistingPointerOnly: true);
 
                 paramWriteLocations.Clear();
@@ -143,7 +145,7 @@ namespace SoulsFormatsExtensions
                     bw.WriteInt32(Resources[i].Unk);
                 }
 
-                bw.FillInt32("Behavior.Resources.Nodes", (int)bw.Position);
+                bw.FillInt32("Behavior.Resources.Datas", (int)bw.Position);
                 for (int i = 0; i < Resources.Count; i++)
                 {
                     WriteNode(Resources[i].Data);
@@ -176,7 +178,7 @@ namespace SoulsFormatsExtensions
                 currentWriteEnvironment = null;
             }
 
-            public static FXBehavior Read(BinaryReaderEx br, FxrEnvironment env)
+            internal static FXBehavior Read(BinaryReaderEx br, FxrEnvironment env)
             {
                 long startOffset = br.Position;
 
@@ -187,31 +189,31 @@ namespace SoulsFormatsExtensions
                 int offsetToResourceNodes = br.ReadFXR1Varint();
 
                 int offsetToParentEffect = br.ReadFXR1Varint();
-                var parentEffect = env.GetEffect(br, offsetToParentEffect);
+                var parentEffect = env.GetFXContainer(br, offsetToParentEffect);
 
                 FXBehavior data;
 
                 switch (subType)
                 {
-                    case 27: data = new FXBehaviorType27(); break;
-                    case 28: data = new FXBehaviorType28(); break;
-                    case 29: data = new FXBehaviorType29(); break;
-                    case 30: data = new FXBehaviorType30(); break;
-                    case 31: data = new FXBehaviorType31(); break;
-                    case 32: data = new FXBehaviorType32(); break;
-                    case 40: data = new FXBehaviorType40(); break;
-                    case 43: data = new FXBehaviorType43(); break;
-                    case 55: data = new FXBehaviorType55(); break;
-                    case 59: data = new FXBehaviorType59(); break;
-                    case 61: data = new FXBehaviorType61(); break;
-                    case 66: data = new FXBehaviorType66(); break;
-                    case 70: data = new FXBehaviorType70(); break;
-                    case 71: data = new FXBehaviorType71(); break;
-                    case 84: data = new FXBehaviorType84(); break;
-                    case 105: data = new FXBehaviorType105(); break;
-                    case 107: data = new FXBehaviorType107(); break;
-                    case 108: data = new FXBehaviorType108(); break;
-                    case 117: data = new FXBehaviorType117(); break;
+                    case 27: data = new FXBehavior27(); break;
+                    case 28: data = new FXBehavior28(); break;
+                    case 29: data = new FXBehavior29(); break;
+                    case 30: data = new FXBehavior30(); break;
+                    case 31: data = new FXBehavior31(); break;
+                    case 32: data = new FXBehavior32(); break;
+                    case 40: data = new FXBehavior40(); break;
+                    case 43: data = new FXBehavior43(); break;
+                    case 55: data = new FXBehavior55(); break;
+                    case 59: data = new FXBehavior59(); break;
+                    case 61: data = new FXBehavior61(); break;
+                    case 66: data = new FXBehavior66(); break;
+                    case 70: data = new FXBehavior70(); break;
+                    case 71: data = new FXBehavior71(); break;
+                    case 84: data = new FXBehavior84(); break;
+                    case 105: data = new FXBehavior105(); break;
+                    case 107: data = new FXBehavior107(); break;
+                    case 108: data = new ParticleBehavior108(); break;
+                    case 117: data = new FXBehavior117(); break;
                     default: throw new NotImplementedException();
                 }
 
@@ -254,7 +256,7 @@ namespace SoulsFormatsExtensions
                 return data;
             }
 
-            public class FXBehaviorType27 : FXBehavior
+            public class FXBehavior27 : FXBehavior
             {
                 public override int Type => 27;
 
@@ -280,7 +282,7 @@ namespace SoulsFormatsExtensions
                 public float Unk11;
                 public DS1RExtraNodes DS1RData;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Unk1 = br.ReadSingle();
                     Unk2 = br.ReadSingle();
@@ -319,7 +321,7 @@ namespace SoulsFormatsExtensions
                     
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteSingle(Unk1);
                     bw.WriteSingle(Unk2);
@@ -359,7 +361,7 @@ namespace SoulsFormatsExtensions
 
 
 
-            public class FXBehaviorType28 : FXBehavior
+            public class FXBehavior28 : FXBehavior
             {
                 public override int Type => 28;
 
@@ -368,7 +370,7 @@ namespace SoulsFormatsExtensions
                 public FXField Unk3;
                 public int Unk4;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Unk1 = FXField.Read(br, env);
                     Unk2 = FXField.Read(br, env);
@@ -376,7 +378,7 @@ namespace SoulsFormatsExtensions
                     Unk4 = br.ReadInt32();
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     WriteNode(Unk1);
                     WriteNode(Unk2);
@@ -386,7 +388,7 @@ namespace SoulsFormatsExtensions
             }
 
 
-            public class FXBehaviorType29 : FXBehavior
+            public class FXBehavior29 : FXBehavior
             {
                 public override int Type => 29;
 
@@ -397,7 +399,7 @@ namespace SoulsFormatsExtensions
                 public FXField Unk5;
                 public int Unk6;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Unk1 = FXField.Read(br, env);
                     Unk2 = FXField.Read(br, env);
@@ -407,7 +409,7 @@ namespace SoulsFormatsExtensions
                     Unk6 = br.ReadInt32();
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     WriteNode(Unk1);
                     WriteNode(Unk2);
@@ -418,7 +420,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class FXBehaviorType30 : FXBehavior
+            public class FXBehavior30 : FXBehavior
             {
                 public override int Type => 30;
 
@@ -430,7 +432,7 @@ namespace SoulsFormatsExtensions
                 public int Unk3;
                 public int Unk4;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Unk1_1 = FXField.Read(br, env);
                     Unk1_2 = FXField.Read(br, env);
@@ -441,7 +443,7 @@ namespace SoulsFormatsExtensions
                     Unk4 = br.ReadFXR1Varint();
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     WriteNode(Unk1_1);
                     WriteNode(Unk1_2);
@@ -454,7 +456,7 @@ namespace SoulsFormatsExtensions
             }
 
 
-            public class FXBehaviorType31 : FXBehavior
+            public class FXBehavior31 : FXBehavior
             {
                 public override int Type => 31;
 
@@ -465,7 +467,7 @@ namespace SoulsFormatsExtensions
                 public int Unk2;
                 public int Unk3;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Unk1_1 = FXField.Read(br, env);
                     Unk1_2 = FXField.Read(br, env);
@@ -475,7 +477,7 @@ namespace SoulsFormatsExtensions
                     Unk3 = br.ReadInt32();
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     WriteNode(Unk1_1);
                     WriteNode(Unk1_2);
@@ -486,7 +488,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class FXBehaviorType32 : FXBehavior
+            public class FXBehavior32 : FXBehavior
             {
                 public override int Type => 32;
 
@@ -499,7 +501,7 @@ namespace SoulsFormatsExtensions
                 public int Unk2;
                 public int Unk3;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     OffsetX = FXField.Read(br, env);
                     OffsetY = FXField.Read(br, env);
@@ -511,7 +513,7 @@ namespace SoulsFormatsExtensions
                     Unk3 = br.ReadInt32();
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     WriteNode(OffsetX);
                     WriteNode(OffsetY);
@@ -524,7 +526,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class FXBehaviorType40 : FXBehavior
+            public class FXBehavior40 : FXBehavior
             {
                 public override int Type => 40;
 
@@ -556,7 +558,7 @@ namespace SoulsFormatsExtensions
 
                 public DS1RExtraNodes DS1RData;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertInt32(0);
 
@@ -599,7 +601,7 @@ namespace SoulsFormatsExtensions
                         DS1RData = DS1RExtraNodes.Read(br, env);
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteInt32(0);
 
@@ -643,7 +645,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class FXBehaviorType43 : FXBehavior
+            public class FXBehavior43 : FXBehavior
             {
                 public override int Type => 43;
 
@@ -669,7 +671,7 @@ namespace SoulsFormatsExtensions
                 public FXField Unk7_13;
                 public int Unk8;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Unk1 = br.ReadSingle();
                     br.AssertInt32(0);
@@ -696,7 +698,7 @@ namespace SoulsFormatsExtensions
                     Unk8 = br.ReadInt32();
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteSingle(Unk1);
                     bw.WriteInt32(0);
@@ -724,7 +726,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class FXBehaviorType55 : FXBehavior
+            public class FXBehavior55 : FXBehavior
             {
                 public override int Type => 55;
 
@@ -733,7 +735,7 @@ namespace SoulsFormatsExtensions
                 public FXField Unk3;
                 public float Unk4;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Unk1 = FXField.Read(br, env);
                     Unk2 = FXField.Read(br, env);
@@ -744,7 +746,7 @@ namespace SoulsFormatsExtensions
                     Unk4 = br.ReadSingle();
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     WriteNode(Unk1);
                     WriteNode(Unk2);
@@ -756,7 +758,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class FXBehaviorType59 : FXBehavior
+            public class FXBehavior59 : FXBehavior
             {
                 public override int Type => 59;
 
@@ -786,7 +788,7 @@ namespace SoulsFormatsExtensions
 
                 public DS1RExtraNodes DS1RData;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Unk1 = br.ReadSingle();
 
@@ -827,7 +829,7 @@ namespace SoulsFormatsExtensions
                         DS1RData = DS1RExtraNodes.Read(br, env);
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteSingle(Unk1);
 
@@ -869,7 +871,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class FXBehaviorType61 : FXBehavior
+            public class FXBehavior61 : FXBehavior
             {
                 public override int Type => 61;
 
@@ -901,7 +903,7 @@ namespace SoulsFormatsExtensions
 
                 public DS1RExtraNodes DS1RData;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertInt32(0);
                     br.AssertInt32(0);
@@ -946,7 +948,7 @@ namespace SoulsFormatsExtensions
                         DS1RData = DS1RExtraNodes.Read(br, env);
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteInt32(0);
                     bw.WriteInt32(0);
@@ -993,7 +995,7 @@ namespace SoulsFormatsExtensions
             }
 
 
-            public class FXBehaviorType66 : FXBehavior
+            public class FXBehavior66 : FXBehavior
             {
                 public override int Type => 66;
 
@@ -1034,7 +1036,7 @@ namespace SoulsFormatsExtensions
 
                 public DS1RExtraNodes DS1RData;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Unk1 = br.ReadSingle();
                     Unk2 = br.ReadSingle();
@@ -1084,7 +1086,7 @@ namespace SoulsFormatsExtensions
                     }
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteSingle(Unk1);
                     bw.WriteSingle(Unk2);
@@ -1135,7 +1137,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class FXBehaviorType70 : FXBehavior
+            public class FXBehavior70 : FXBehavior
             {
                 public override int Type => 70;
 
@@ -1191,7 +1193,7 @@ namespace SoulsFormatsExtensions
 
                 public DS1RExtraNodes DS1RData;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Unk1 = br.ReadSingle();
                     Unk2 = br.ReadSingle();
@@ -1265,7 +1267,7 @@ namespace SoulsFormatsExtensions
                         DS1RData = DS1RExtraNodes.Read(br, env);
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteSingle(Unk1);
                     bw.WriteSingle(Unk2);
@@ -1340,7 +1342,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class FXBehaviorType71 : FXBehavior
+            public class FXBehavior71 : FXBehavior
             {
                 public override int Type => 71;
 
@@ -1394,7 +1396,7 @@ namespace SoulsFormatsExtensions
 
                 public DS1RExtraNodes DS1RData;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Unk1 = br.ReadSingle();
                     Unk2 = br.ReadSingle();
@@ -1456,7 +1458,7 @@ namespace SoulsFormatsExtensions
                         DS1RData = DS1RExtraNodes.Read(br, env);
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteSingle(Unk1);
                     bw.WriteSingle(Unk2);
@@ -1519,7 +1521,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class FXBehaviorType84 : FXBehavior
+            public class FXBehavior84 : FXBehavior
             {
                 public override int Type => 84;
 
@@ -1530,7 +1532,7 @@ namespace SoulsFormatsExtensions
                 public FXField Unk3;
                 public int Unk4;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Unk1_1 = FXField.Read(br, env);
                     Unk1_2 = FXField.Read(br, env);
@@ -1541,7 +1543,7 @@ namespace SoulsFormatsExtensions
                     Unk4 = br.ReadInt32();
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     WriteNode(Unk1_1);
                     WriteNode(Unk1_2);
@@ -1553,7 +1555,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class FXBehaviorType105 : FXBehavior
+            public class FXBehavior105 : FXBehavior
             {
                 public override int Type => 105;
 
@@ -1565,7 +1567,7 @@ namespace SoulsFormatsExtensions
                 public int Unk4;
                 public FXField Unk5;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Unk1_1 = FXField.Read(br, env);
                     Unk1_2 = FXField.Read(br, env);
@@ -1577,7 +1579,7 @@ namespace SoulsFormatsExtensions
                     Unk5 = FXField.Read(br, env);
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     WriteNode(Unk1_1);
                     WriteNode(Unk1_2);
@@ -1590,7 +1592,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class FXBehaviorType107 : FXBehavior
+            public class FXBehavior107 : FXBehavior
             {
                 public override int Type => 107;
 
@@ -1605,7 +1607,7 @@ namespace SoulsFormatsExtensions
                 public FXField Unk8;
                 public FXField Unk9;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Unk1 = br.ReadSingle();
                     br.AssertInt32(0);
@@ -1620,7 +1622,7 @@ namespace SoulsFormatsExtensions
                     Unk9 = FXField.Read(br, env);
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteSingle(Unk1);
                     bw.WriteInt32(0);
@@ -1636,7 +1638,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class FXBehaviorType108 : FXBehavior
+            public class ParticleBehavior108 : FXBehavior
             {
                 public override int Type => 108;
 
@@ -1685,7 +1687,7 @@ namespace SoulsFormatsExtensions
 
                 public DS1RExtraNodes DS1RData;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Unk1 = br.ReadSingle();
                     Unk2 = br.ReadSingle();
@@ -1741,7 +1743,7 @@ namespace SoulsFormatsExtensions
                         DS1RData = DS1RExtraNodes.Read(br, env);
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteSingle(Unk1);
                     bw.WriteSingle(Unk2);
@@ -1798,7 +1800,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class FXBehaviorType117 : FXBehavior
+            public class FXBehavior117 : FXBehavior
             {
                 public override int Type => 117;
 
@@ -1812,7 +1814,7 @@ namespace SoulsFormatsExtensions
                 public int Unk3;
                 public FXField Unk4;
 
-                public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+                internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Unk1_1 = FXField.Read(br, env);
                     Unk1_2 = FXField.Read(br, env);
@@ -1825,7 +1827,7 @@ namespace SoulsFormatsExtensions
                     Unk4 = FXField.Read(br, env);
                 }
 
-                public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+                internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     WriteNode(Unk1_1);
                     WriteNode(Unk1_2);
@@ -1860,12 +1862,12 @@ namespace SoulsFormatsExtensions
 
             }
 
-            public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
+            internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
             {
                 throw new InvalidOperationException("Cannot actually serialize a reference class.");
             }
 
-            public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
+            internal override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
             {
                 throw new InvalidOperationException("Cannot actually deserialize a reference class.");
             }
