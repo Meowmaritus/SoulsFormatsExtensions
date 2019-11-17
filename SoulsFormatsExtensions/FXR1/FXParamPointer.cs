@@ -10,52 +10,52 @@ namespace SoulsFormatsExtensions
 {
     public partial class FXR1
     {
-        [XmlInclude(typeof(FXParamPointerRef))]
-        public class FXParamPointer : XIDable
+        [XmlInclude(typeof(FXNodePointerRef))]
+        public class FXNodePointer : XIDable
         {
-            public override bool ShouldSerializeXID() => FXR1.FlattenFXParamPointers;
+            public override bool ShouldSerializeXID() => FXR1.FlattenFXNodePointers;
 
             public static int GetSize(bool isLong)
                 => isLong ? 8 : 4;
 
-            public FXParam Param;
+            public FXNode Node;
 
             internal override void ToXIDs(FXR1 fxr)
             {
-                Param = fxr.ReferenceFXParam(Param);
+                Node = fxr.ReferenceFXNode(Node);
             }
 
             internal override void FromXIDs(FXR1 fxr)
             {
-                Param = fxr.DereferenceFXParam(Param);
+                Node = fxr.DereferenceFXNode(Node);
             }
 
-            public virtual bool ShouldSerializeParam() => true;
+            public virtual bool ShouldSerializeNode() => true;
 
             public void Read(BinaryReaderEx br, FxrEnvironment env)
             {
                 long funcOffset = br.ReadFXR1Varint();
-                Param = env.GetFXParam(br, funcOffset);
+                Node = env.GetFXNode(br, funcOffset);
             }
 
             public void Write(BinaryWriterEx bw, FxrEnvironment env)
             {
-                env.RegisterPointer(Param);
+                env.RegisterPointer(Node);
             }
         }
 
-        public class FXParamPointerRef : FXParamPointer
+        public class FXNodePointerRef : FXNodePointer
         {
             [XmlAttribute]
             public string ReferenceXID;
 
-            public override bool ShouldSerializeParam() => false;
+            public override bool ShouldSerializeNode() => false;
 
-            public FXParamPointerRef(FXParamPointer refVal)
+            public FXNodePointerRef(FXNodePointer refVal)
             {
                 ReferenceXID = refVal.XID;
             }
-            public FXParamPointerRef()
+            public FXNodePointerRef()
             {
 
             }

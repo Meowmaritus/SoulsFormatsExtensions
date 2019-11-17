@@ -15,18 +15,18 @@ namespace SoulsFormatsExtensions
 
             public FXR1 fxr;
 
-            public List<FXField> Debug_AllReadParams = new List<FXField>();
+            public List<FXField> Debug_AllReadNodes = new List<FXField>();
 
-            public List<FXParam> XmlFXParamList = new List<FXParam>();
+            public List<FXNode> XmlFXContainer = new List<FXNode>();
 
-            public void Debug_RegisterReadParam(FXField p)
+            public void Debug_RegisterReadNode(FXField p)
             {
-                if (!Debug_AllReadParams.Contains(p))
-                    Debug_AllReadParams.Add(p);
+                if (!Debug_AllReadNodes.Contains(p))
+                    Debug_AllReadNodes.Add(p);
             }
 
             private List<long> PointerOffsets = new List<long>();
-            private List<long> FXParamOffets = new List<long>();
+            private List<long> FXNodeOffets = new List<long>();
 
             public Dictionary<long, object> ObjectsByOffset = new Dictionary<long, object>();
             public Dictionary<object, long> OffsetsByObject = new Dictionary<object, long>();
@@ -54,21 +54,21 @@ namespace SoulsFormatsExtensions
                     OffsetsByObject.Add(thingThere, offset);
             }
 
-            public FXParamPointer GetEffectFXParam(BinaryReaderEx br, long offset)
+            public FXNodePointer GetEffectFXNode(BinaryReaderEx br, long offset)
             {
                 if (offset == 0)
                     return null;
 
                 if (ObjectsByOffset.ContainsKey(offset))
                 {
-                    if (ObjectsByOffset[offset] is FXParamPointer v)
+                    if (ObjectsByOffset[offset] is FXNodePointer v)
                         return v;
                     else 
                         throw new InvalidOperationException();
                 }
                 else
                 {
-                    var newVal = new FXParamPointer();
+                    var newVal = new FXNodePointer();
                     RegisterOffset(offset, newVal);
                     br.StepIn(offset);
                     newVal.Read(br, this);
@@ -102,14 +102,14 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public Template GetTemplate(BinaryReaderEx br, long offset)
+            public FXTemplate GetTemplate(BinaryReaderEx br, long offset)
             {
                 if (offset == 0)
                     return null;
 
                 if (ObjectsByOffset.ContainsKey(offset))
                 {
-                    if (ObjectsByOffset[offset] is Template v)
+                    if (ObjectsByOffset[offset] is FXTemplate v)
                         return v;
                     else
                         throw new InvalidOperationException();
@@ -117,7 +117,7 @@ namespace SoulsFormatsExtensions
                 else
                 {
                     br.StepIn(offset);
-                    var newVal = Template.GetProperType(br, this);
+                    var newVal = FXTemplate.GetProperType(br, this);
                     RegisterOffset(offset, newVal);
                     newVal.XID = $"0x{offset:X}";
                     newVal.Read(br, this);
@@ -127,14 +127,14 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public FXParam GetFXParam(BinaryReaderEx br, long offset)
+            public FXNode GetFXNode(BinaryReaderEx br, long offset)
             {
                 if (offset == 0)
                     return null;
 
                 if (ObjectsByOffset.ContainsKey(offset))
                 {
-                    if (ObjectsByOffset[offset] is FXParam v)
+                    if (ObjectsByOffset[offset] is FXNode v)
                         return v;
                     else
                         throw new InvalidOperationException();
@@ -142,10 +142,10 @@ namespace SoulsFormatsExtensions
                 else
                 {
                     br.StepIn(offset);
-                    var newVal = FXParam.GetProperFXParamType(br, this);
+                    var newVal = FXNode.GetProperFXNodeType(br, this);
                     RegisterOffset(offset, newVal);
                     newVal.XID = $"0x{offset:X}";
-                    XmlFXParamList.Add(newVal);
+                    XmlFXContainer.Add(newVal);
                     newVal.Read(br, this);
                     br.StepOut();
                     
@@ -153,21 +153,21 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public FXParamList GetEffect(BinaryReaderEx br, long offset)
+            public FXContainer GetEffect(BinaryReaderEx br, long offset)
             {
                 if (offset == 0)
                     return null;
 
                 if (ObjectsByOffset.ContainsKey(offset))
                 {
-                    if (ObjectsByOffset[offset] is FXParamList v)
+                    if (ObjectsByOffset[offset] is FXContainer v)
                         return v;
                     else
                         throw new InvalidOperationException();
                 }
                 else
                 {
-                    var newVal = new FXParamList();
+                    var newVal = new FXContainer();
                     RegisterOffset(offset, newVal);
                     br.StepIn(offset);
                     newVal.Read(br, this);
@@ -177,21 +177,21 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public FlowNode GetFlowNode(BinaryReaderEx br, long offset)
+            public FXState GetState(BinaryReaderEx br, long offset)
             {
                 if (offset == 0)
                     return null;
 
                 if (ObjectsByOffset.ContainsKey(offset))
                 {
-                    if (ObjectsByOffset[offset] is FlowNode v)
+                    if (ObjectsByOffset[offset] is FXState v)
                         return v;
                     else
                         throw new InvalidOperationException();
                 }
                 else
                 {
-                    var newVal = new FlowNode();
+                    var newVal = new FXState();
                     RegisterOffset(offset, newVal);
                     newVal.XID = $"0x{offset:X}";
                     br.StepIn(offset);
@@ -202,21 +202,21 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public FlowEdge GetFlowEdge(BinaryReaderEx br, long offset)
+            public FXTransition GetTransition(BinaryReaderEx br, long offset)
             {
                 if (offset == 0)
                     return null;
 
                 if (ObjectsByOffset.ContainsKey(offset))
                 {
-                    if (ObjectsByOffset[offset] is FlowEdge v)
+                    if (ObjectsByOffset[offset] is FXTransition v)
                         return v;
                     else
                         throw new InvalidOperationException();
                 }
                 else
                 {
-                    var newVal = new FlowEdge();
+                    var newVal = new FXTransition();
                     RegisterOffset(offset, newVal);
                     newVal.XID = $"0x{offset:X}";
                     br.StepIn(offset);
@@ -317,23 +317,23 @@ namespace SoulsFormatsExtensions
                     {
                         switch (data)
                         {
-                            case FXParamPointer asEffectFXParam: asEffectFXParam.Write(bw, this); break;
+                            case FXNodePointer asEffectFXNode: asEffectFXNode.Write(bw, this); break;
                             case FXBehavior asBehavior: asBehavior.Write(bw, this); break;
-                            case Template asTemplate: asTemplate.Write(bw, this); break;
-                            case FXParamList asEffect: asEffect.Write(bw, this); break;
+                            case FXTemplate asTemplate: asTemplate.Write(bw, this); break;
+                            case FXContainer asEffect: asEffect.Write(bw, this); break;
                             case FXAction asFXAction: asFXAction.Write(bw, this); break;
-                            case FlowEdge asFlowEdge: asFlowEdge.Write(bw, this); break;
-                            case FlowNode asFlowNode: asFlowNode.Write(bw, this); break;
-                            case FXParam asFXParam: asFXParam.Write(bw, this); break;
-                            case List<FXParam> asFXParamList:
-                                foreach (var v in asFXParamList)
+                            case FXTransition asTransition: asTransition.Write(bw, this); break;
+                            case FXState asState: asState.Write(bw, this); break;
+                            case FXNode asFXNode: asFXNode.Write(bw, this); break;
+                            case List<FXNode> asFXContainer:
+                                foreach (var v in asFXContainer)
                                     RegisterPointer(v);
                                 break;
-                            case List<FlowEdge> asFlowEdgeList:
+                            case List<FXTransition> asTransitionList:
                                 //if (!PointerOffsets.Contains(bw.Position))
                                 //    PointerOffsets.Add(bw.Position);
 
-                                foreach (var v in asFlowEdgeList)
+                                foreach (var v in asTransitionList)
                                 {
                                     RegisterOffset(bw.Position, v);
                                     v.Write(bw, this);
@@ -346,15 +346,15 @@ namespace SoulsFormatsExtensions
                                     v.Write(bw, this);
                                 }
                                 break;
-                            case List<FlowNode> asFlowNodeList:
-                                foreach (var v in asFlowNodeList)
+                            case List<FXState> asStateList:
+                                foreach (var v in asStateList)
                                 {
                                     RegisterOffset(bw.Position, v);
                                     v.Write(bw, this);
                                 }
                                 break;
-                            case List<FXParamPointer> asEffectFXParamList:
-                                foreach (var v in asEffectFXParamList)
+                            case List<FXNodePointer> asEffectFXContainer:
+                                foreach (var v in asEffectFXContainer)
                                 {
                                     RegisterOffset(bw.Position, v);
                                     RegisterPointerOffset(bw.Position);
@@ -395,28 +395,28 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public void RegisterFXParamOffsetHere()
+            public void RegisterFXNodeOffsetHere()
             {
-                if (!FXParamOffets.Contains(bw.Position))
-                    FXParamOffets.Add(bw.Position);
+                if (!FXNodeOffets.Contains(bw.Position))
+                    FXNodeOffets.Add(bw.Position);
             }
 
-            //public void WriteAllFXParams()
+            //public void WriteAllFXNodes()
             //{
-            //    foreach (var func in ThingsToWrite.OfType<FXParam>())
+            //    foreach (var func in ThingsToWrite.OfType<FXNode>())
             //    {
-            //        RegisterFXParamOffsetHere();
+            //        RegisterFXNodeOffsetHere();
             //        func.WriteInner(bw, this);
             //    }
             //}
 
-            public void WriteFXParamTable(string tableCountFillLabel)
+            public void WriteFXNodeTable(string tableCountFillLabel)
             {
-                foreach (var location in FXParamOffets.OrderBy(x => x))
+                foreach (var location in FXNodeOffets.OrderBy(x => x))
                 {
                     bw.WriteFXR1Varint((int)location);
                 }
-                bw.FillInt32(tableCountFillLabel, FXParamOffets.Count);
+                bw.FillInt32(tableCountFillLabel, FXNodeOffets.Count);
             }
 
             public void WritePointerTable(string tableCountFillLabel)

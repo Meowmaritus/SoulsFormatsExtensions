@@ -15,37 +15,36 @@ namespace SoulsFormatsExtensions
         {
             public override bool ShouldSerializeXID() => FXR1.FlattenFXActions;
 
-            [XmlAttribute]
             public int ActionType;
-            public FXParamList ParamList;
+            public FXContainer Container;
 
             public virtual bool ShouldSerializeActionType() => true;
-            public virtual bool ShouldSerializeParamList() => true;
+            public virtual bool ShouldSerializeContainer() => true;
 
             public static int GetSize(bool isLong)
-                => (isLong ? 8 : 4) + FXParamList.GetSize(isLong);
+                => (isLong ? 8 : 4) + FXContainer.GetSize(isLong);
 
             internal override void ToXIDs(FXR1 fxr)
             {
-                ParamList = fxr.ReferenceFXParamList(ParamList);
+                Container = fxr.ReferenceFXContainer(Container);
             }
 
             internal override void FromXIDs(FXR1 fxr)
             {
-                ParamList = fxr.DereferenceFXParamList(ParamList);
+                Container = fxr.DereferenceFXContainer(Container);
             }
 
             public void Read(BinaryReaderEx br, FxrEnvironment env)
             {
                 ActionType = br.ReadFXR1Varint();
-                ParamList = env.GetEffect(br, br.Position);
-                br.Position += FXParamList.GetSize(br.VarintLong);
+                Container = env.GetEffect(br, br.Position);
+                br.Position += FXContainer.GetSize(br.VarintLong);
             }
 
             public void Write(BinaryWriterEx bw, FxrEnvironment env)
             {
                 bw.WriteFXR1Varint(ActionType);
-                ParamList.Write(bw, env);
+                Container.Write(bw, env);
             }
         }
 
@@ -56,7 +55,7 @@ namespace SoulsFormatsExtensions
             public string ReferenceXID;
 
             public override bool ShouldSerializeActionType() => false;
-            public override bool ShouldSerializeParamList() => false;
+            public override bool ShouldSerializeContainer() => false;
 
             public FXActionRef(FXAction refVal)
             {

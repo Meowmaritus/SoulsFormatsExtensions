@@ -10,12 +10,12 @@ namespace SoulsFormatsExtensions
 {
     public partial class FXR1
     {
-        [XmlInclude(typeof(FlowNodeRef))]
-        public class FlowNode : XIDable
+        [XmlInclude(typeof(StateRef))]
+        public class FXState : XIDable
         {
-            public override bool ShouldSerializeXID() => FXR1.FlattenFlowNodes;
+            public override bool ShouldSerializeXID() => FXR1.FlattenStates;
 
-            public List<FlowEdge> Edges;
+            public List<FXTransition> Transitions;
             public List<FXAction> Actions;
 
             public virtual bool ShouldSerializeEdges() => true;
@@ -23,16 +23,16 @@ namespace SoulsFormatsExtensions
 
             internal override void ToXIDs(FXR1 fxr)
             {
-                for (int i = 0; i < Edges.Count; i++)
-                    Edges[i] = fxr.ReferenceFlowEdge(Edges[i]);
+                for (int i = 0; i < Transitions.Count; i++)
+                    Transitions[i] = fxr.ReferenceTransition(Transitions[i]);
                 for (int i = 0; i < Actions.Count; i++)
                     Actions[i] = fxr.ReferenceFXAction(Actions[i]);
             }
 
             internal override void FromXIDs(FXR1 fxr)
             {
-                for (int i = 0; i < Edges.Count; i++)
-                    Edges[i] = fxr.DereferenceFlowEdge(Edges[i]);
+                for (int i = 0; i < Transitions.Count; i++)
+                    Transitions[i] = fxr.DereferenceTransition(Transitions[i]);
                 for (int i = 0; i < Actions.Count; i++)
                     Actions[i] = fxr.DereferenceFXAction(Actions[i]);
             }
@@ -47,14 +47,14 @@ namespace SoulsFormatsExtensions
                 int edgeNum = br.ReadInt32();
                 int actionNum = br.ReadInt32();
 
-                Edges = new List<FlowEdge>(edgeNum);
+                Transitions = new List<FXTransition>(edgeNum);
                 Actions = new List<FXAction>(actionNum);
 
                 br.StepIn(edgesOffset);
                 for (int i = 0; i < edgeNum; i++)
                 {
-                    Edges.Add(env.GetFlowEdge(br, br.Position));
-                    br.Position += FlowEdge.GetSize(br.VarintLong);
+                    Transitions.Add(env.GetTransition(br, br.Position));
+                    br.Position += FXTransition.GetSize(br.VarintLong);
                 }
                 br.StepOut();
 
@@ -69,14 +69,14 @@ namespace SoulsFormatsExtensions
 
             public void Write(BinaryWriterEx bw, FxrEnvironment env)
             {
-                env.RegisterPointer(Edges);
+                env.RegisterPointer(Transitions);
                 env.RegisterPointer(Actions);
-                bw.WriteInt32(Edges.Count);
+                bw.WriteInt32(Transitions.Count);
                 bw.WriteInt32(Actions.Count);
             }
         }
 
-        public class FlowNodeRef : FlowNode
+        public class StateRef : FXState
         {
             [XmlAttribute]
             public string ReferenceXID;
@@ -84,11 +84,11 @@ namespace SoulsFormatsExtensions
             public override bool ShouldSerializeEdges() => false;
             public override bool ShouldSerializeActions() => false;
 
-            public FlowNodeRef(FlowNode refVal)
+            public StateRef(FXState refVal)
             {
                 ReferenceXID = refVal?.XID;
             }
-            public FlowNodeRef()
+            public StateRef()
             {
 
             }

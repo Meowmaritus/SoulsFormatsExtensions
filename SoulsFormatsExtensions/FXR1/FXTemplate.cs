@@ -10,16 +10,16 @@ namespace SoulsFormatsExtensions
 {
     public partial class FXR1
     {
-        [XmlInclude(typeof(TemplateType0))]
-        [XmlInclude(typeof(TemplateType1))]
-        [XmlInclude(typeof(TemplateType2))]
-        [XmlInclude(typeof(TemplateType3))]
-        [XmlInclude(typeof(TemplateType4))]
-        [XmlInclude(typeof(TemplateType5))]
-        [XmlInclude(typeof(TemplateType6))]
-        [XmlInclude(typeof(TemplateType7))]
-        [XmlInclude(typeof(TemplateRef))]
-        public abstract class Template : XIDable
+        [XmlInclude(typeof(FXTemplate0))]
+        [XmlInclude(typeof(FXTemplate1))]
+        [XmlInclude(typeof(FXTemplate2))]
+        [XmlInclude(typeof(FXTemplate3))]
+        [XmlInclude(typeof(FXTemplate4))]
+        [XmlInclude(typeof(FXTemplate5))]
+        [XmlInclude(typeof(FXTemplate6))]
+        [XmlInclude(typeof(FXTemplate7))]
+        [XmlInclude(typeof(FXTemplateRef))]
+        public abstract class FXTemplate : XIDable
         {
             public override bool ShouldSerializeXID() => FXR1.FlattenTemplates;
 
@@ -51,20 +51,20 @@ namespace SoulsFormatsExtensions
 
             }
 
-            public static Template GetProperType(BinaryReaderEx br, FxrEnvironment env)
+            public static FXTemplate GetProperType(BinaryReaderEx br, FxrEnvironment env)
             {
                 int commandType = br.GetInt32(br.Position);
-                Template data = null;
+                FXTemplate data = null;
                 switch (commandType)
                 {
-                    case 0: data = new TemplateType0(); break;
-                    case 1: data = new TemplateType1(); break;
-                    case 2: data = new TemplateType2(); break;
-                    case 3: data = new TemplateType3(); break;
-                    case 4: data = new TemplateType4(); break;
-                    case 5: data = new TemplateType5(); break;
-                    case 6: data = new TemplateType6(); break;
-                    case 7: data = new TemplateType7(); break;
+                    case 0: data = new FXTemplate0(); break;
+                    case 1: data = new FXTemplate1(); break;
+                    case 2: data = new FXTemplate2(); break;
+                    case 3: data = new FXTemplate3(); break;
+                    case 4: data = new FXTemplate4(); break;
+                    case 5: data = new FXTemplate5(); break;
+                    case 6: data = new FXTemplate6(); break;
+                    case 7: data = new FXTemplate7(); break;
                 }
                 return data;
             }
@@ -81,7 +81,7 @@ namespace SoulsFormatsExtensions
         }
 
 
-        public class TemplateRef : Template
+        public class FXTemplateRef : FXTemplate
         {
             public override int Type => -1;
 
@@ -90,12 +90,12 @@ namespace SoulsFormatsExtensions
 
             public override bool ShouldSerializeCommandType() => false;
 
-            public TemplateRef(Template refVal)
+            public FXTemplateRef(FXTemplate refVal)
             {
                 ReferenceXID = refVal?.XID;
             }
 
-            public TemplateRef()
+            public FXTemplateRef()
             {
 
             }
@@ -112,7 +112,7 @@ namespace SoulsFormatsExtensions
         }
 
 
-        public class TemplateType0 : Template
+        public class FXTemplate0 : FXTemplate
         {
             public override int Type => 0;
 
@@ -132,7 +132,7 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class TemplateType1 : Template
+        public class FXTemplate1 : FXTemplate
         {
             public override int Type => 1;
 
@@ -185,7 +185,7 @@ namespace SoulsFormatsExtensions
 
 
 
-        public class TemplateType2 : Template
+        public class FXTemplate2 : FXTemplate
         {
             public override int Type => 2;
 
@@ -225,7 +225,7 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class TemplateType3 : Template
+        public class FXTemplate3 : FXTemplate
         {
             public override int Type => 3;
 
@@ -255,7 +255,7 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class TemplateType4 : Template
+        public class FXTemplate4 : FXTemplate
         {
             public override int Type => 4;
 
@@ -275,7 +275,7 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class TemplateType5 : Template
+        public class FXTemplate5 : FXTemplate
         {
             public override int Type => 5;
 
@@ -295,7 +295,7 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class TemplateType6 : Template
+        public class FXTemplate6 : FXTemplate
         {
             public override int Type => 6;
 
@@ -318,7 +318,7 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class TemplateType7 : Template
+        public class FXTemplate7 : FXTemplate
         {
             public override int Type => 7;
 

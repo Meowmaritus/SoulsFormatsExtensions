@@ -45,18 +45,18 @@
   <ItemGroup>
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="FXR1\DS1RExtraParams.cs" />
-    <Compile Include="FXR1\FXParamList.cs" />
+    <Compile Include="FXR1\FXContainer.cs" />
     <Compile Include="FXR1\FXParamPointer.cs" />
     <Compile Include="FXR1\FXAction.cs" />
-    <Compile Include="FXR1\FlowEdge.cs" />
-    <Compile Include="FXR1\FlowNode.cs" />
-    <Compile Include="FXR1\Template.cs" />
+    <Compile Include="FXR1\FXTransition.cs" />
+    <Compile Include="FXR1\FXState.cs" />
+    <Compile Include="FXR1\FXTemplate.cs" />
     <Compile Include="FXR1\FXField.cs" />
-    <Compile Include="FXR1\FXParam.cs" />
+    <Compile Include="FXR1\FXNode.cs" />
     <Compile Include="FXR1\FXBehavior.cs" />
     <Compile Include="FXR1\FXR1.cs" />
     <Compile Include="FXR1\FxrEnvironment.cs" />
-    <Compile Include="FXR1\PreDataEntry.cs" />
+    <Compile Include="FXR1\Ticks.cs" />
     <Compile Include="FXR1\XIDable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

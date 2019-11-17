@@ -4,47 +4,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Schema;
 using System.Xml.Serialization;
 
 namespace SoulsFormatsExtensions
 {
     public partial class FXR1
     {
-        public struct FloatTick
-        {
-            [XmlAttribute]
-            public float Time;
-            [XmlAttribute]
-            public float Value;
-        }
-
-        public struct Vector3Tick
-        {
-            [XmlAttribute]
-            public float Time;
-            [XmlAttribute]
-            public float X;
-            [XmlAttribute]
-            public float Y;
-            [XmlAttribute]
-            public float Z;
-        }
 
         [XmlInclude(typeof(ConstFloatSequence))]
         [XmlInclude(typeof(FloatSequence))]
         [XmlInclude(typeof(RangedFloatSequence))]
         [XmlInclude(typeof(FloatSequenceEx))]
         [XmlInclude(typeof(RangedFloatSequenceEx))]
-        [XmlInclude(typeof(Vector3Sequence))]
-        [XmlInclude(typeof(RangedVector3Sequence))]
+        [XmlInclude(typeof(Float3Sequence))]
+        [XmlInclude(typeof(RangedFloat3Sequence))]
         [XmlInclude(typeof(RepeatingConstFloatSequence))]
         [XmlInclude(typeof(RepeatingFloatSequence))]
         [XmlInclude(typeof(RangedFloatSequenceB))]
-        [XmlInclude(typeof(NewVector3Sequence))]
-        [XmlInclude(typeof(ConstInt))]
-        [XmlInclude(typeof(ParamType25))]
-        [XmlInclude(typeof(ParamType26))]
-        [XmlInclude(typeof(ParamType27))]
+        [XmlInclude(typeof(NewFloat3Sequence))]
+        [XmlInclude(typeof(ConstFloat))]
+        [XmlInclude(typeof(NodeType25))]
+        [XmlInclude(typeof(NodeType26))]
+        [XmlInclude(typeof(NodeType27))]
         [XmlInclude(typeof(Empty))]
         public abstract class FXField
         {
@@ -71,16 +54,16 @@ namespace SoulsFormatsExtensions
                     case 5: v = new RangedFloatSequence(); break;
                     case 6: v = new FloatSequenceEx(); break;
                     case 7: v = new RangedFloatSequenceEx(); break;
-                    case 8: v = new Vector3Sequence(); break;
-                    case 9: v = new RangedVector3Sequence(); break;
+                    case 8: v = new Float3Sequence(); break;
+                    case 9: v = new RangedFloat3Sequence(); break;
                     case 12: v = new RepeatingConstFloatSequence(); break; //Constant, repeats
                     case 16: v = new RepeatingFloatSequence(); break; //Repeats
                     case 17: v = new RangedFloatSequenceB(); break;
-                    case 20: v = new NewVector3Sequence(); break; //DS1R Only
-                    case 24: v = new ConstInt(); break;
-                    case 25: v = new ParamType25(); break;
-                    case 26: v = new ParamType26(); break;
-                    case 27: v = new ParamType27(); break;
+                    case 20: v = new NewFloat3Sequence(); break; //DS1R Only
+                    case 24: v = new ConstFloat(); break;
+                    case 25: v = new NodeType25(); break;
+                    case 26: v = new NodeType26(); break;
+                    case 27: v = new NodeType27(); break;
                     case 28: v = new Empty(); break;
                     default: throw new NotImplementedException();
                 }
@@ -89,14 +72,14 @@ namespace SoulsFormatsExtensions
                 v.InnerRead(br, env);
                 br.StepOut();
 
-                env.Debug_RegisterReadParam(v);
+                env.Debug_RegisterReadNode(v);
 
                 return v;
             }
 
-            //public static Param[] ReadMany(BinaryReaderEx br, FxrEnvironment env, int count)
+            //public static Node[] ReadMany(BinaryReaderEx br, FxrEnvironment env, int count)
             //{
-            //    Param[] list = new Param[count];
+            //    Node[] list = new Node[count];
             //    for (int i = 0; i < count; i++)
             //        list[i] = Read(br, env);
             //    return list;
@@ -107,25 +90,16 @@ namespace SoulsFormatsExtensions
             {
                 public override int Type => 0;
 
-                public FloatTick[] Values;
+                public List<FloatTick> Ticks;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
-                    int listSize = br.ReadInt32();
-                    Values = new FloatTick[listSize];
-                    for (int i = 0; i < listSize; i++)
-                        Values[i].Time = br.ReadSingle();
-                    for (int i = 0; i < listSize; i++)
-                        Values[i].Value = br.ReadSingle();
+                    Ticks = FloatTick.ReadListDirectly(br);
                 }
 
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
-                    bw.WriteInt32(Values.Length);
-                    for (int i = 0; i < Values.Length; i++)
-                        bw.WriteSingle(Values[i].Time);
-                    for (int i = 0; i < Values.Length; i++)
-                        bw.WriteSingle(Values[i].Value);
+                    FloatTick.WriteListDirectly(bw, Ticks);
                 }
             }
 
@@ -133,25 +107,16 @@ namespace SoulsFormatsExtensions
             {
                 public override int Type => 4;
 
-                public FloatTick[] Values;
+                public List<FloatTick> Ticks;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
-                    int listSize = br.ReadInt32();
-                    Values = new FloatTick[listSize];
-                    for (int i = 0; i < listSize; i++)
-                        Values[i].Time = br.ReadSingle();
-                    for (int i = 0; i < listSize; i++)
-                        Values[i].Value = br.ReadSingle();
+                    Ticks = FloatTick.ReadListDirectly(br);
                 }
 
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
-                    bw.WriteInt32(Values.Length);
-                    for (int i = 0; i < Values.Length; i++)
-                        bw.WriteSingle(Values[i].Time);
-                    for (int i = 0; i < Values.Length; i++)
-                        bw.WriteSingle(Values[i].Value);
+                    FloatTick.WriteListDirectly(bw, Ticks);
                 }
             }
 
@@ -159,7 +124,7 @@ namespace SoulsFormatsExtensions
             {
                 public override int Type => 5;
 
-                public FloatTick[] Values;
+                public List<FloatTick> Ticks;
                 [XmlAttribute]
                 public float Min;
                 [XmlAttribute]
@@ -167,23 +132,14 @@ namespace SoulsFormatsExtensions
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
-                    int listSize = br.ReadInt32();
-                    Values = new FloatTick[listSize];
-                    for (int i = 0; i < listSize; i++)
-                        Values[i].Time = br.ReadSingle();
-                    for (int i = 0; i < listSize; i++)
-                        Values[i].Value = br.ReadSingle();
+                    Ticks = FloatTick.ReadListDirectly(br);
                     Min = br.ReadSingle();
                     Max = br.ReadSingle();
                 }
 
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
-                    bw.WriteInt32(Values.Length);
-                    for (int i = 0; i < Values.Length; i++)
-                        bw.WriteSingle(Values[i].Time);
-                    for (int i = 0; i < Values.Length; i++)
-                        bw.WriteSingle(Values[i].Value);
+                    FloatTick.WriteListDirectly(bw, Ticks);
                     bw.WriteSingle(Min);
                     bw.WriteSingle(Max);
                 }
@@ -193,29 +149,20 @@ namespace SoulsFormatsExtensions
             {
                 public override int Type => 6;
 
-                public FloatTick[] Values;
+                public List<FloatTick> Ticks;
                 [XmlAttribute]
-                public int PreDataIndex;
+                public int ResourceIndex;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
-                    int listSize = br.ReadInt32();
-                    Values = new FloatTick[listSize];
-                    for (int i = 0; i < listSize; i++)
-                        Values[i].Time = br.ReadSingle();
-                    for (int i = 0; i < listSize; i++)
-                        Values[i].Value = br.ReadSingle();
-                    PreDataIndex = br.ReadInt32();
+                    Ticks = FloatTick.ReadListDirectly(br);
+                    ResourceIndex = br.ReadInt32();
                 }
 
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
-                    bw.WriteInt32(Values.Length);
-                    for (int i = 0; i < Values.Length; i++)
-                        bw.WriteSingle(Values[i].Time);
-                    for (int i = 0; i < Values.Length; i++)
-                        bw.WriteSingle(Values[i].Value);
-                    bw.WriteInt32(PreDataIndex);
+                    FloatTick.WriteListDirectly(bw, Ticks);
+                    bw.WriteInt32(ResourceIndex);
                 }
             }
 
@@ -223,79 +170,53 @@ namespace SoulsFormatsExtensions
             {
                 public override int Type => 7;
 
-                public FloatTick[] Values;
+                public List<FloatTick> Ticks;
                 [XmlAttribute]
                 public float Min;
                 [XmlAttribute]
                 public float Max;
                 [XmlAttribute]
-                public int PreDataIndex;
+                public int ResourceIndex;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
-                    int listSize = br.ReadInt32();
-                    Values = new FloatTick[listSize];
-                    for (int i = 0; i < listSize; i++)
-                        Values[i].Time = br.ReadSingle();
-                    for (int i = 0; i < listSize; i++)
-                        Values[i].Value = br.ReadSingle();
+                    Ticks = FloatTick.ReadListDirectly(br);
                     Min = br.ReadSingle();
                     Max = br.ReadSingle();
-                    PreDataIndex = br.ReadInt32();
+                    ResourceIndex = br.ReadInt32();
                 }
 
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
-                    bw.WriteInt32(Values.Length);
-                    for (int i = 0; i < Values.Length; i++)
-                        bw.WriteSingle(Values[i].Time);
-                    for (int i = 0; i < Values.Length; i++)
-                        bw.WriteSingle(Values[i].Value);
+                    FloatTick.WriteListDirectly(bw, Ticks);
                     bw.WriteSingle(Min);
                     bw.WriteSingle(Max);
-                    bw.WriteInt32(PreDataIndex);
+                    bw.WriteInt32(ResourceIndex);
                 }
             }
 
-            public class Vector3Sequence : FXField
+            public class Float3Sequence : FXField
             {
                 public override int Type => 8;
 
-                public Vector3Tick[] Values;
+                public List<Float3Tick> Ticks;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
-                    int listSize = br.ReadInt32();
-                    Values = new Vector3Tick[listSize];
-                    for (int i = 0; i < listSize; i++)
-                        Values[i].Time = br.ReadSingle();
-                    for (int i = 0; i < listSize; i++)
-                        Values[i].X = br.ReadSingle();
-                    for (int i = 0; i < listSize; i++)
-                        Values[i].Y = br.ReadSingle();
-                    for (int i = 0; i < listSize; i++)
-                        Values[i].Z = br.ReadSingle();
+                    Ticks = Float3Tick.ReadListDirectly(br);
                 }
 
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
-                    bw.WriteInt32(Values.Length);
-                    for (int i = 0; i < Values.Length; i++)
-                        bw.WriteSingle(Values[i].Time);
-                    for (int i = 0; i < Values.Length; i++)
-                        bw.WriteSingle(Values[i].X);
-                    for (int i = 0; i < Values.Length; i++)
-                        bw.WriteSingle(Values[i].Y);
-                    for (int i = 0; i < Values.Length; i++)
-                        bw.WriteSingle(Values[i].Z);
+                    Float3Tick.WriteListDirectly(bw, Ticks);
                 }
             }
 
-            public class RangedVector3Sequence : FXField
+            public class RangedFloat3Sequence : FXField
             {
                 public override int Type => 9;
 
-                public Vector3Tick[] Values;
+                public List<Float3Tick> Ticks;
                 [XmlAttribute]
                 public float Min;
                 [XmlAttribute]
@@ -303,31 +224,14 @@ namespace SoulsFormatsExtensions
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
-                    int listSize = br.ReadInt32();
-                    Values = new Vector3Tick[listSize];
-                    for (int i = 0; i < listSize; i++)
-                        Values[i].Time = br.ReadSingle();
-                    for (int i = 0; i < listSize; i++)
-                        Values[i].X = br.ReadSingle();
-                    for (int i = 0; i < listSize; i++)
-                        Values[i].Y = br.ReadSingle();
-                    for (int i = 0; i < listSize; i++)
-                        Values[i].Z = br.ReadSingle();
+                    Ticks = Float3Tick.ReadListDirectly(br);
                     Min = br.ReadSingle();
                     Max = br.ReadSingle();
                 }
 
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
-                    bw.WriteInt32(Values.Length);
-                    for (int i = 0; i < Values.Length; i++)
-                        bw.WriteSingle(Values[i].Time);
-                    for (int i = 0; i < Values.Length; i++)
-                        bw.WriteSingle(Values[i].X);
-                    for (int i = 0; i < Values.Length; i++)
-                        bw.WriteSingle(Values[i].Y);
-                    for (int i = 0; i < Values.Length; i++)
-                        bw.WriteSingle(Values[i].Z);
+                    Float3Tick.WriteListDirectly(bw, Ticks);
                     bw.WriteSingle(Min);
                     bw.WriteSingle(Max);
                 }
@@ -337,25 +241,16 @@ namespace SoulsFormatsExtensions
             {
                 public override int Type => 12;
 
-                public FloatTick[] Values;
+                public List<FloatTick> Ticks;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
-                    int listSize = br.ReadInt32();
-                    Values = new FloatTick[listSize];
-                    for (int i = 0; i < listSize; i++)
-                        Values[i].Time = br.ReadSingle();
-                    for (int i = 0; i < listSize; i++)
-                        Values[i].Value = br.ReadSingle();
+                    Ticks = FloatTick.ReadListDirectly(br);
                 }
 
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
-                    bw.WriteInt32(Values.Length);
-                    for (int i = 0; i < Values.Length; i++)
-                        bw.WriteSingle(Values[i].Time);
-                    for (int i = 0; i < Values.Length; i++)
-                        bw.WriteSingle(Values[i].Value);
+                    FloatTick.WriteListDirectly(bw, Ticks);
                 }
             }
 
@@ -363,25 +258,16 @@ namespace SoulsFormatsExtensions
             {
                 public override int Type => 16;
 
-                public FloatTick[] Values;
+                public List<FloatTick> Ticks;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
-                    int listSize = br.ReadInt32();
-                    Values = new FloatTick[listSize];
-                    for (int i = 0; i < listSize; i++)
-                        Values[i].Time = br.ReadSingle();
-                    for (int i = 0; i < listSize; i++)
-                        Values[i].Value = br.ReadSingle();
+                    Ticks = FloatTick.ReadListDirectly(br);
                 }
 
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
-                    bw.WriteInt32(Values.Length);
-                    for (int i = 0; i < Values.Length; i++)
-                        bw.WriteSingle(Values[i].Time);
-                    for (int i = 0; i < Values.Length; i++)
-                        bw.WriteSingle(Values[i].Value);
+                    FloatTick.WriteListDirectly(bw, Ticks);
                 }
             }
 
@@ -389,7 +275,7 @@ namespace SoulsFormatsExtensions
             {
                 public override int Type => 17;
 
-                public FloatTick[] Values;
+                public List<FloatTick> Ticks;
                 [XmlAttribute]
                 public float Min;
                 [XmlAttribute]
@@ -397,63 +283,37 @@ namespace SoulsFormatsExtensions
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
-                    int listSize = br.ReadInt32();
-                    Values = new FloatTick[listSize];
-                    for (int i = 0; i < listSize; i++)
-                        Values[i].Time = br.ReadSingle();
-                    for (int i = 0; i < listSize; i++)
-                        Values[i].Value = br.ReadSingle();
+                    Ticks = FloatTick.ReadListDirectly(br);
                     Min = br.ReadSingle();
                     Max = br.ReadSingle();
                 }
 
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
-                    bw.WriteInt32(Values.Length);
-                    for (int i = 0; i < Values.Length; i++)
-                        bw.WriteSingle(Values[i].Time);
-                    for (int i = 0; i < Values.Length; i++)
-                        bw.WriteSingle(Values[i].Value);
+                    FloatTick.WriteListDirectly(bw, Ticks);
                     bw.WriteSingle(Min);
                     bw.WriteSingle(Max);
                 }
             }
 
-            public class NewVector3Sequence : FXField
+            public class NewFloat3Sequence : FXField
             {
                 public override int Type => 20;
 
-                public Vector3Tick[] Values;
+                public List<Float3Tick> Ticks;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
-                    int listSize = br.ReadInt32();
-                    Values = new Vector3Tick[listSize];
-                    for (int i = 0; i < listSize; i++)
-                        Values[i].Time = br.ReadSingle();
-                    for (int i = 0; i < listSize; i++)
-                        Values[i].X = br.ReadSingle();
-                    for (int i = 0; i < listSize; i++)
-                        Values[i].Y = br.ReadSingle();
-                    for (int i = 0; i < listSize; i++)
-                        Values[i].Z = br.ReadSingle();
+                    Ticks = Float3Tick.ReadListDirectly(br);
                 }
 
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
-                    bw.WriteInt32(Values.Length);
-                    for (int i = 0; i < Values.Length; i++)
-                        bw.WriteSingle(Values[i].Time);
-                    for (int i = 0; i < Values.Length; i++)
-                        bw.WriteSingle(Values[i].X);
-                    for (int i = 0; i < Values.Length; i++)
-                        bw.WriteSingle(Values[i].Y);
-                    for (int i = 0; i < Values.Length; i++)
-                        bw.WriteSingle(Values[i].Z);
+                    Float3Tick.WriteListDirectly(bw, Ticks);
                 }
             }
 
-            public class ConstInt : FXField
+            public class ConstFloat : FXField
             {
                 public override int Type => 24;
 
@@ -471,7 +331,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class ParamType25 : FXField
+            public class NodeType25 : FXField
             {
                 public override int Type => 25;
 
@@ -496,7 +356,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class ParamType26 : FXField
+            public class NodeType26 : FXField
             {
                 public override int Type => 26;
 
@@ -517,7 +377,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class ParamType27 : FXField
+            public class NodeType27 : FXField
             {
                 public override int Type => 27;
 
@@ -528,21 +388,21 @@ namespace SoulsFormatsExtensions
                 [XmlAttribute]
                 public float Unk3;
                 [XmlAttribute]
-                public int PreDataIndex;
+                public int ResourceIndex;
 
                 public override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
                 {
                     Unk1 = br.ReadSingle();
                     Unk2 = br.ReadSingle();
                     Unk3 = br.ReadSingle();
-                    PreDataIndex = br.ReadInt32();
+                    ResourceIndex = br.ReadInt32();
                 }
                 public override void InnerWrite(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteSingle(Unk1);
                     bw.WriteSingle(Unk2);
                     bw.WriteSingle(Unk3);
-                    bw.WriteInt32(PreDataIndex);
+                    bw.WriteInt32(ResourceIndex);
                 }
             }
 

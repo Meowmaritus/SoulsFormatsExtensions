@@ -15,114 +15,114 @@ namespace SoulsFormatsExtensions
         public int Unk1 { get; set; }
         public int Unk2 { get; set; }
 
-        public FXParam RootFXParam { get; set; }
+        public FXNode RootFXNode { get; set; }
 
 
         [XmlIgnore]
-        public static bool FlattenFlowNodes = true;
+        public static bool FlattenStates = true;
         [XmlIgnore]
-        public static bool FlattenFXParamPointers = false;
+        public static bool FlattenFXNodePointers = false;
         [XmlIgnore]
-        public static bool FlattenFlowEdges = true;
+        public static bool FlattenTransitions = true;
         [XmlIgnore]
         public static bool FlattenFXActions = false;
         [XmlIgnore]
-        public static bool FlattenFXParams = false;
+        public static bool FlattenFXNodes = false;
         [XmlIgnore]
-        public static bool FlattenFXParamLists = false;
+        public static bool FlattenFXContainers = false;
         [XmlIgnore]
         public static bool FlattenFXBehaviors = false;
         [XmlIgnore]
         public static bool FlattenTemplates = false;
 
-        public List<FlowNode> AllFlowNodes { get; set; } = new List<FlowNode>();
-        public List<FXParamPointer> AllFXParamPointers { get; set; } = new List<FXParamPointer>();
-        public List<FlowEdge> AllFlowEdges { get; set; } = new List<FlowEdge>();
+        public List<FXState> AllStates { get; set; } = new List<FXState>();
+        public List<FXNodePointer> AllFXNodePointers { get; set; } = new List<FXNodePointer>();
+        public List<FXTransition> AllTransitions { get; set; } = new List<FXTransition>();
         public List<FXAction> AllFXActions { get; set; } = new List<FXAction>();
-        public List<FXParam> AllFXParams { get; set; } = new List<FXParam>();
-        public List<FXParamList> AllFXParamLists { get; set; } = new List<FXParamList>();
+        public List<FXNode> AllFXNodes { get; set; } = new List<FXNode>();
+        public List<FXContainer> AllFXContainers { get; set; } = new List<FXContainer>();
         public List<FXBehavior> AllFXBehaviors { get; set; } = new List<FXBehavior>();
-        public List<Template> AllTemplates { get; set; } = new List<Template>();
+        public List<FXTemplate> AllTemplates { get; set; } = new List<FXTemplate>();
 
 
 
-        public bool ShouldSerializeAllFlowNodes() => FlattenFlowNodes;
-        public bool ShouldSerializeAllFXParamPointers() => FlattenFXParamPointers;
-        public bool ShouldSerializeAllFlowEdges() => FlattenFlowEdges;
+        public bool ShouldSerializeAllStates() => FlattenStates;
+        public bool ShouldSerializeAllFXNodePointers() => FlattenFXNodePointers;
+        public bool ShouldSerializeAllTransitions() => FlattenTransitions;
         public bool ShouldSerializeAllFXActions() => FlattenFXActions;
-        public bool ShouldSerializeAllFXParams() => FlattenFXParams;
-        public bool ShouldSerializeAllFXParamLists() => FlattenFXParamLists;
+        public bool ShouldSerializeAllFXNodes() => FlattenFXNodes;
+        public bool ShouldSerializeAllFXContainers() => FlattenFXContainers;
         public bool ShouldSerializeAllFXBehaviors() => FlattenFXBehaviors;
         public bool ShouldSerializeAllTemplates() => FlattenTemplates;
 
         
-        public FlowNode GetFlowNode(string xid) => AllFlowNodes.FirstOrDefault(x => x.XID == xid);
-        public FlowNode DereferenceFlowNode(FlowNode v)
+        public FXState GetState(string xid) => AllStates.FirstOrDefault(x => x.XID == xid);
+        public FXState DereferenceState(FXState v)
         {
-            if (!FlattenFlowNodes)
+            if (!FlattenStates)
                 return v;
 
-            if (v is FlowNodeRef asRef)
-                return GetFlowNode(asRef.ReferenceXID);
+            if (v is StateRef asRef)
+                return GetState(asRef.ReferenceXID);
             else
                 return v;
         }
-        public FlowNode ReferenceFlowNode(FlowNode v)
+        public FXState ReferenceState(FXState v)
         {
-            if (!FlattenFlowNodes)
+            if (!FlattenStates)
                 return v;
 
-            if (v is FlowNodeRef asRef)
+            if (v is StateRef asRef)
                 return v;
             else
-                return new FlowNodeRef(v);
-        }
-
-        
-        public FXParamPointer GetFXParamPointer(string xid) => AllFXParamPointers.FirstOrDefault(x => x.XID == xid);
-        public FXParamPointer DereferenceFXParamPointer(FXParamPointer v)
-        {
-            if (!FlattenFXParamPointers)
-                return v;
-
-            if (v is FXParamPointerRef asRef)
-                return GetFXParamPointer(asRef.ReferenceXID);
-            else
-                return v;
-        }
-        public FXParamPointer ReferenceFXParamPointer(FXParamPointer v)
-        {
-            if (!FlattenFXParamPointers)
-                return v;
-
-            if (v is FXParamPointerRef asRef)
-                return v;
-            else
-                return new FXParamPointerRef(v);
+                return new StateRef(v);
         }
 
         
-        public FlowEdge GetFlowEdge(string xid) => AllFlowEdges.FirstOrDefault(x => x.XID == xid);
-        public FlowEdge DereferenceFlowEdge(FlowEdge v)
+        public FXNodePointer GetFXNodePointer(string xid) => AllFXNodePointers.FirstOrDefault(x => x.XID == xid);
+        public FXNodePointer DereferenceFXNodePointer(FXNodePointer v)
         {
-            if (!FlattenFlowEdges)
+            if (!FlattenFXNodePointers)
                 return v;
 
-            if (v is FlowEdgeRef asRef)
-                return GetFlowEdge(asRef.ReferenceXID);
+            if (v is FXNodePointerRef asRef)
+                return GetFXNodePointer(asRef.ReferenceXID);
+            else
+                return v;
+        }
+        public FXNodePointer ReferenceFXNodePointer(FXNodePointer v)
+        {
+            if (!FlattenFXNodePointers)
+                return v;
+
+            if (v is FXNodePointerRef asRef)
+                return v;
+            else
+                return new FXNodePointerRef(v);
+        }
+
+        
+        public FXTransition GetTransition(string xid) => AllTransitions.FirstOrDefault(x => x.XID == xid);
+        public FXTransition DereferenceTransition(FXTransition v)
+        {
+            if (!FlattenTransitions)
+                return v;
+
+            if (v is TransitionRef asRef)
+                return GetTransition(asRef.ReferenceXID);
             else
                 return v;
         }
 
-        public FlowEdge ReferenceFlowEdge(FlowEdge v)
+        public FXTransition ReferenceTransition(FXTransition v)
         {
-            if (!FlattenFlowEdges)
+            if (!FlattenTransitions)
                 return v;
 
-            if (v is FlowEdgeRef asRef)
+            if (v is TransitionRef asRef)
                 return v;
             else
-                return new FlowEdgeRef(v);
+                return new TransitionRef(v);
         }
 
         
@@ -149,49 +149,49 @@ namespace SoulsFormatsExtensions
         }
 
         
-        public FXParam GetFXParam(string xid) => AllFXParams.FirstOrDefault(x => x.XID == xid);
-        public FXParam DereferenceFXParam(FXParam v)
+        public FXNode GetFXNode(string xid) => AllFXNodes.FirstOrDefault(x => x.XID == xid);
+        public FXNode DereferenceFXNode(FXNode v)
         {
-            if (!FlattenFXParams)
+            if (!FlattenFXNodes)
                 return v;
 
-            if (v is FXParam.FXParamRef asRef)
-                return GetFXParam(asRef.ReferenceXID);
+            if (v is FXNode.FXNodeRef asRef)
+                return GetFXNode(asRef.ReferenceXID);
             else
                 return v;
         }
-        public FXParam ReferenceFXParam(FXParam v)
+        public FXNode ReferenceFXNode(FXNode v)
         {
-            if (!FlattenFXParams)
+            if (!FlattenFXNodes)
                 return v;
 
-            if (v is FXParam.FXParamRef asRef)
+            if (v is FXNode.FXNodeRef asRef)
                 return v;
             else
-                return new FXParam.FXParamRef(v);
+                return new FXNode.FXNodeRef(v);
         }
 
         
-        public FXParamList GetFXParamList(string xid) => AllFXParamLists.FirstOrDefault(x => x.XID == xid);
-        public FXParamList DereferenceFXParamList(FXParamList v)
+        public FXContainer GetFXContainer(string xid) => AllFXContainers.FirstOrDefault(x => x.XID == xid);
+        public FXContainer DereferenceFXContainer(FXContainer v)
         {
-            if (!FlattenFXParamLists)
+            if (!FlattenFXContainers)
                 return v;
 
-            if (v is FXParamListRef asRef)
-                return GetFXParamList(asRef.ReferenceXID);
+            if (v is FXContainerRef asRef)
+                return GetFXContainer(asRef.ReferenceXID);
             else
                 return v;
         }
-        public FXParamList ReferenceFXParamList(FXParamList v)
+        public FXContainer ReferenceFXContainer(FXContainer v)
         {
-            if (!FlattenFXParamLists)
+            if (!FlattenFXContainers)
                 return v;
 
-            if (v is FXParamListRef asRef)
+            if (v is FXContainerRef asRef)
                 return v;
             else
-                return new FXParamListRef(v);
+                return new FXContainerRef(v);
         }
 
         
@@ -218,31 +218,31 @@ namespace SoulsFormatsExtensions
         }
 
         
-        public Template GetTemplate(string xid) => AllTemplates.FirstOrDefault(x => x.XID == xid);
-        public Template DereferenceTemplate(Template v)
+        public FXTemplate GetTemplate(string xid) => AllTemplates.FirstOrDefault(x => x.XID == xid);
+        public FXTemplate DereferenceTemplate(FXTemplate v)
         {
             if (!FlattenTemplates)
                 return v;
 
-            if (v is TemplateRef asRef)
+            if (v is FXTemplateRef asRef)
                 return GetTemplate(asRef.ReferenceXID);
             else
                 return v;
         }
-        public Template ReferenceTemplate(Template v)
+        public FXTemplate ReferenceTemplate(FXTemplate v)
         {
             if (!FlattenTemplates)
                 return v;
 
-            if (v is TemplateRef asRef)
+            if (v is FXTemplateRef asRef)
                 return v;
             else
-                return new TemplateRef(v);
+                return new FXTemplateRef(v);
         }
 
 
         [XmlIgnore]
-        public List<FXField> Debug_AllLoadedParams;
+        public List<FXField> Debug_AllLoadedNodes;
 
         protected override void Read(BinaryReaderEx br)
         {
@@ -265,12 +265,12 @@ namespace SoulsFormatsExtensions
 
             AllFXBehaviors.Clear();
             AllTemplates.Clear();
-            AllFXParamLists.Clear();
+            AllFXContainers.Clear();
             AllFXActions.Clear();
-            AllFlowEdges.Clear();
-            AllFlowNodes.Clear();
-            AllFXParams.Clear();
-            AllFXParamPointers.Clear();
+            AllTransitions.Clear();
+            AllStates.Clear();
+            AllFXNodes.Clear();
+            AllFXNodePointers.Clear();
 
             env.fxr = this;
 
@@ -280,7 +280,7 @@ namespace SoulsFormatsExtensions
 
             br.Pad(16);
 
-            RootFXParam = env.GetFXParam(br, br.Position);
+            RootFXNode = env.GetFXNode(br, br.Position);
 
             void Register<T>(string type, long offset, List<T> list, T thing)
                 where T : XIDable
@@ -297,33 +297,33 @@ namespace SoulsFormatsExtensions
                 {
                     Register("Behavior", kvp.Key, AllFXBehaviors, asBehavior);
                 }
-                else if (kvp.Value is Template asTemplate)
+                else if (kvp.Value is FXTemplate asTemplate)
                 {
                     Register("Template", kvp.Key, AllTemplates, asTemplate);
                 }
-                else if (kvp.Value is FXParamList asFXParamList)
+                else if (kvp.Value is FXContainer asFXContainer)
                 {
-                    Register("FXParamList", kvp.Key, AllFXParamLists, asFXParamList);
+                    Register("FXContainer", kvp.Key, AllFXContainers, asFXContainer);
                 }
                 else if (kvp.Value is FXAction asFXAction)
                 {
                     Register("FXAction", kvp.Key, AllFXActions, asFXAction);
                 }
-                else if (kvp.Value is FlowEdge asFlowEdge)
+                else if (kvp.Value is FXTransition asTransition)
                 {
-                    Register("FlowEdge", kvp.Key, AllFlowEdges, asFlowEdge);
+                    Register("Transition", kvp.Key, AllTransitions, asTransition);
                 }
-                else if (kvp.Value is FlowNode asFlowNode)
+                else if (kvp.Value is FXState asState)
                 {
-                    Register("FlowNode", kvp.Key, AllFlowNodes, asFlowNode);
+                    Register("State", kvp.Key, AllStates, asState);
                 }
-                else if (kvp.Value is FXParam asFXParam)
+                else if (kvp.Value is FXNode asFXNode)
                 {
-                    Register("FXParam", kvp.Key, AllFXParams, asFXParam);
+                    Register("FXNode", kvp.Key, AllFXNodes, asFXNode);
                 }
-                else if (kvp.Value is FXParamPointer asFXParamPointer)
+                else if (kvp.Value is FXNodePointer asFXNodePointer)
                 {
-                    Register("FXParamPointer", kvp.Key, AllFXParamPointers, asFXParamPointer);
+                    Register("FXNodePointer", kvp.Key, AllFXNodePointers, asFXNodePointer);
                 }
                 else
                 {
@@ -331,7 +331,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            Debug_AllLoadedParams = env.Debug_AllReadParams;
+            Debug_AllLoadedNodes = env.Debug_AllReadNodes;
         }
 
         public void Flatten()
@@ -340,21 +340,21 @@ namespace SoulsFormatsExtensions
                 x.ToXIDs(this);
             foreach (var x in AllTemplates)
                 x.ToXIDs(this);
-            foreach (var x in AllFXParamLists)
+            foreach (var x in AllFXContainers)
                 x.ToXIDs(this);
             foreach (var x in AllFXActions)
                 x.ToXIDs(this);
-            foreach (var x in AllFlowEdges)
+            foreach (var x in AllTransitions)
                 x.ToXIDs(this);
-            foreach (var x in AllFlowNodes)
+            foreach (var x in AllStates)
                 x.ToXIDs(this);
-            foreach (var x in AllFXParams)
+            foreach (var x in AllFXNodes)
                 x.ToXIDs(this);
-            foreach (var x in AllFXParamPointers)
+            foreach (var x in AllFXNodePointers)
                 x.ToXIDs(this);
 
-            RootFXParam.ToXIDs(this);
-            //RootFXParam = ReferenceFXParam(RootFXParam);
+            RootFXNode.ToXIDs(this);
+            //RootFXNode = ReferenceFXNode(RootFXNode);
         }
 
         public void Unflatten()
@@ -363,21 +363,21 @@ namespace SoulsFormatsExtensions
                 x.FromXIDs(this);
             foreach (var x in AllTemplates)
                 x.FromXIDs(this);
-            foreach (var x in AllFXParamLists)
+            foreach (var x in AllFXContainers)
                 x.FromXIDs(this);
             foreach (var x in AllFXActions)
                 x.FromXIDs(this);
-            foreach (var x in AllFlowEdges)
+            foreach (var x in AllTransitions)
                 x.FromXIDs(this);
-            foreach (var x in AllFlowNodes)
+            foreach (var x in AllStates)
                 x.FromXIDs(this);
-            foreach (var x in AllFXParams)
+            foreach (var x in AllFXNodes)
                 x.FromXIDs(this);
-            foreach (var x in AllFXParamPointers)
+            foreach (var x in AllFXNodePointers)
                 x.FromXIDs(this);
 
-            RootFXParam.FromXIDs(this);
-            //RootFXParam = DereferenceFXParam(RootFXParam);
+            RootFXNode.FromXIDs(this);
+            //RootFXNode = DereferenceFXNode(RootFXNode);
         }
 
         protected override void Write(BinaryWriterEx bw)
@@ -390,24 +390,24 @@ namespace SoulsFormatsExtensions
             env.bw = bw;
             env.fxr = this;
 
-            env.RegisterPointer(RootFXParam);
+            env.RegisterPointer(RootFXNode);
 
             bw.ReserveFXR1Varint("OffsetToTable");
 
             bw.ReserveInt32("TablePointerCount");
-            bw.ReserveInt32("TableFXParamCount");
+            bw.ReserveInt32("TableFXNodeCount");
 
             bw.WriteInt32(Unk1);
             bw.WriteInt32(Unk2);
 
             bw.Pad(16);
             
-            // Write RootFXParam and everything else :fatcat:
+            // Write RootFXNode and everything else :fatcat:
             env.FinishRecursiveWrite();
 
             bw.FillFXR1Varint("OffsetToTable", (int)bw.Position);
             env.WritePointerTable("TablePointerCount");
-            env.WriteFXParamTable("TableFXParamCount");
+            env.WriteFXNodeTable("TableFXNodeCount");
 
         }
 

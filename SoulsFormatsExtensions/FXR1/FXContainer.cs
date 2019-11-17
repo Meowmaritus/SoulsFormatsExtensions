@@ -10,10 +10,10 @@ namespace SoulsFormatsExtensions
 {
     public partial class FXR1
     {
-        [XmlInclude(typeof(FXParamListRef))]
-        public class FXParamList : XIDable
+        [XmlInclude(typeof(FXContainerRef))]
+        public class FXContainer : XIDable
         {
-            public override bool ShouldSerializeXID() => FXR1.FlattenFXParamLists;
+            public override bool ShouldSerializeXID() => FXR1.FlattenFXContainers;
 
             [XmlAttribute]
             public byte UnkFlag1;
@@ -22,19 +22,14 @@ namespace SoulsFormatsExtensions
             [XmlAttribute]
             public byte UnkFlag3;
 
-            [XmlElement(IsNullable = true)]
-            public List<FXParam> FXParams;
-
-            [XmlElement(IsNullable = true)]
+            public List<FXNode> FXNodes;
             public FXBehavior Behavior;
-
-            [XmlElement(IsNullable = true)]
-            public Template Template;
+            public FXTemplate Template;
 
             public virtual bool ShouldSerializeUnkFlag1() => true;
             public virtual bool ShouldSerializeUnkFlag2() => true;
             public virtual bool ShouldSerializeUnkFlag3() => true;
-            public virtual bool ShouldSerializeFXParams() => true;
+            public virtual bool ShouldSerializeFXNodes() => true;
             public virtual bool ShouldSerializeBehavior() => true;
             public virtual bool ShouldSerializeTemplate() => true;
 
@@ -42,16 +37,16 @@ namespace SoulsFormatsExtensions
             {
                 Behavior = fxr.ReferenceFXBehavior(Behavior);
                 Template = fxr.ReferenceTemplate(Template);
-                for (int i = 0; i < FXParams.Count; i++)
-                    FXParams[i] = fxr.ReferenceFXParam(FXParams[i]);
+                for (int i = 0; i < FXNodes.Count; i++)
+                    FXNodes[i] = fxr.ReferenceFXNode(FXNodes[i]);
             }
 
             internal override void FromXIDs(FXR1 fxr)
             {
                 Behavior = fxr.DereferenceFXBehavior(Behavior);
                 Template = fxr.DereferenceTemplate(Template);
-                for (int i = 0; i < FXParams.Count; i++)
-                    FXParams[i] = fxr.DereferenceFXParam(FXParams[i]);
+                for (int i = 0; i < FXNodes.Count; i++)
+                    FXNodes[i] = fxr.DereferenceFXNode(FXNodes[i]);
             }
 
             public static int GetSize(bool isLong)
@@ -73,14 +68,14 @@ namespace SoulsFormatsExtensions
                 int commandPool3Offset = br.ReadFXR1Varint();
 
                 br.StepIn(commandPool1TableOffset);
-                FXParams = new List<FXParam>(commandPool1TableCount);
+                FXNodes = new List<FXNode>(commandPool1TableCount);
                 for (int i = 0; i < commandPool1TableCount; i++)
                 {
                     //int next = br.ReadInt32();
                     //ast.Pool1List.Add(env.GetEffectPool1(br, next));
-                    var paramPointer = env.GetEffectFXParam(br, br.Position);
-                    FXParams.Add(paramPointer.Param);
-                    br.Position += FXParamPointer.GetSize(br.VarintLong);
+                    var paramPointer = env.GetEffectFXNode(br, br.Position);
+                    FXNodes.Add(paramPointer.Node);
+                    br.Position += FXNodePointer.GetSize(br.VarintLong);
                 }
                 br.StepOut();
 
@@ -90,15 +85,15 @@ namespace SoulsFormatsExtensions
 
             public void Write(BinaryWriterEx bw, FxrEnvironment env)
             {
-                var paramPointers = new List<FXParamPointer>();
+                var paramPointers = new List<FXNodePointer>();
 
-                for (int i = 0; i < FXParams.Count; i++)
+                for (int i = 0; i < FXNodes.Count; i++)
                 {
-                    paramPointers.Add(new FXParamPointer() { Param = FXParams[i] });
+                    paramPointers.Add(new FXNodePointer() { Node = FXNodes[i] });
                 }
 
                 if (Behavior != null)
-                    Behavior.ContainingParamList = this;
+                    Behavior.ContainingContainer = this;
 
                 env.RegisterPointer(paramPointers);
                 bw.WriteInt32(paramPointers.Count);
@@ -113,7 +108,7 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class FXParamListRef : FXParamList
+        public class FXContainerRef : FXContainer
         {
             [XmlAttribute]
             public string ReferenceXID;
@@ -121,15 +116,15 @@ namespace SoulsFormatsExtensions
             public override bool ShouldSerializeUnkFlag1() => false;
             public override bool ShouldSerializeUnkFlag2() => false;
             public override bool ShouldSerializeUnkFlag3() => false;
-            public override bool ShouldSerializeFXParams() => false;
+            public override bool ShouldSerializeFXNodes() => false;
             public override bool ShouldSerializeBehavior() => false;
             public override bool ShouldSerializeTemplate() => false;
 
-            public FXParamListRef(FXParamList refVal)
+            public FXContainerRef(FXContainer refVal)
             {
                 ReferenceXID = refVal?.XID;
             }
-            public FXParamListRef() 
+            public FXContainerRef() 
             {
 
             }

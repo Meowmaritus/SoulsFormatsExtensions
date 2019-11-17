@@ -9,7 +9,7 @@ namespace SoulsFormatsExtensions
 {
     public partial class FXR1
     {
-        public class DS1RExtraParams
+        public class DS1RExtraNodes
         {
             public FXField Unk1;
             public FXField Unk2;
@@ -40,11 +40,11 @@ namespace SoulsFormatsExtensions
 
             public void Write(BinaryWriterEx bw, FXBehavior beh)
             {
-                beh.WriteParam(Unk1);
-                beh.WriteParam(Unk2);
-                beh.WriteParam(Unk3);
-                beh.WriteParam(Unk4);
-                beh.WriteParam(Unk5);
+                beh.WriteNode(Unk1);
+                beh.WriteNode(Unk2);
+                beh.WriteNode(Unk3);
+                beh.WriteNode(Unk4);
+                beh.WriteNode(Unk5);
                 bw.WriteSingle(Unk6);
                 bw.WriteInt32(Unk7);
                 bw.WriteInt32(Unk8);
@@ -53,9 +53,9 @@ namespace SoulsFormatsExtensions
                 bw.WriteInt32(Unk11);
             }
 
-            public static DS1RExtraParams Read(BinaryReaderEx br, FxrEnvironment env)
+            public static DS1RExtraNodes Read(BinaryReaderEx br, FxrEnvironment env)
             {
-                var p = new DS1RExtraParams();
+                var p = new DS1RExtraNodes();
                 p.ReadInner(br, env);
                 return p;
             }
