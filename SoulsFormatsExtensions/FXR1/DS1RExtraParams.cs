@@ -38,7 +38,7 @@ namespace SoulsFormatsExtensions
                 Unk11 = br.ReadInt32();
             }
 
-            internal void Write(BinaryWriterEx bw, FXBehavior beh)
+            internal void Write(BinaryWriterEx bw, FXActionData beh)
             {
                 beh.WriteNode(Unk1);
                 beh.WriteNode(Unk2);

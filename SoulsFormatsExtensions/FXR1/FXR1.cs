@@ -68,9 +68,9 @@ namespace SoulsFormatsExtensions
         [XmlIgnore]
         internal static bool FlattenFXContainers = false;
         [XmlIgnore]
-        internal static bool FlattenFXBehaviors = false;
+        internal static bool FlattenFXActionDatas = false;
         [XmlIgnore]
-        internal static bool FlattenTemplates = false;
+        internal static bool FlattenModifiers = false;
 
         public List<FXState> AllStates { get; set; } = new List<FXState>();
         public List<FXNodePointer> AllFXNodePointers { get; set; } = new List<FXNodePointer>();
@@ -78,8 +78,8 @@ namespace SoulsFormatsExtensions
         public List<FXAction> AllFXActions { get; set; } = new List<FXAction>();
         public List<FXNode> AllFXNodes { get; set; } = new List<FXNode>();
         public List<FXContainer> AllFXContainers { get; set; } = new List<FXContainer>();
-        public List<FXBehavior> AllFXBehaviors { get; set; } = new List<FXBehavior>();
-        public List<FXTemplate> AllTemplates { get; set; } = new List<FXTemplate>();
+        public List<FXActionData> AllFXActionDatas { get; set; } = new List<FXActionData>();
+        public List<FXModifier> AllModifiers { get; set; } = new List<FXModifier>();
 
 
 
@@ -89,8 +89,8 @@ namespace SoulsFormatsExtensions
         public bool ShouldSerializeAllFXActions() => FlattenFXActions;
         public bool ShouldSerializeAllFXNodes() => FlattenFXNodes;
         public bool ShouldSerializeAllFXContainers() => FlattenFXContainers;
-        public bool ShouldSerializeAllFXBehaviors() => FlattenFXBehaviors;
-        public bool ShouldSerializeAllTemplates() => FlattenTemplates;
+        public bool ShouldSerializeAllFXActionDatas() => FlattenFXActionDatas;
+        public bool ShouldSerializeAllModifiers() => FlattenModifiers;
 
 
         internal FXState GetState(string xid) => AllStates.FirstOrDefault(x => x.XID == xid);
@@ -232,49 +232,49 @@ namespace SoulsFormatsExtensions
         }
 
 
-        internal FXBehavior GetBehavior(string xid) => AllFXBehaviors.FirstOrDefault(x => x.XID == xid);
-        internal FXBehavior DereferenceFXBehavior(FXBehavior v)
+        internal FXActionData GetActionData(string xid) => AllFXActionDatas.FirstOrDefault(x => x.XID == xid);
+        internal FXActionData DereferenceFXActionData(FXActionData v)
         {
-            if (!FlattenFXBehaviors)
+            if (!FlattenFXActionDatas)
                 return v;
 
-            if (v is BehaviorRef asRef)
-                return GetBehavior(asRef.ReferenceXID);
+            if (v is ActionDataRef asRef)
+                return GetActionData(asRef.ReferenceXID);
             else
                 return v;
         }
-        internal FXBehavior ReferenceFXBehavior(FXBehavior v)
+        internal FXActionData ReferenceFXActionData(FXActionData v)
         {
-            if (!FlattenFXBehaviors)
+            if (!FlattenFXActionDatas)
                 return v;
 
-            if (v is BehaviorRef asRef)
+            if (v is ActionDataRef asRef)
                 return v;
             else
-                return new BehaviorRef(v);
+                return new ActionDataRef(v);
         }
 
 
-        internal FXTemplate GetTemplate(string xid) => AllTemplates.FirstOrDefault(x => x.XID == xid);
-        internal FXTemplate DereferenceTemplate(FXTemplate v)
+        internal FXModifier GetModifier(string xid) => AllModifiers.FirstOrDefault(x => x.XID == xid);
+        internal FXModifier DereferenceModifier(FXModifier v)
         {
-            if (!FlattenTemplates)
+            if (!FlattenModifiers)
                 return v;
 
-            if (v is FXTemplateRef asRef)
-                return GetTemplate(asRef.ReferenceXID);
+            if (v is FXModifierRef asRef)
+                return GetModifier(asRef.ReferenceXID);
             else
                 return v;
         }
-        internal FXTemplate ReferenceTemplate(FXTemplate v)
+        internal FXModifier ReferenceModifier(FXModifier v)
         {
-            if (!FlattenTemplates)
+            if (!FlattenModifiers)
                 return v;
 
-            if (v is FXTemplateRef asRef)
+            if (v is FXModifierRef asRef)
                 return v;
             else
-                return new FXTemplateRef(v);
+                return new FXModifierRef(v);
         }
 
         protected override void Read(BinaryReaderEx br)
@@ -296,8 +296,8 @@ namespace SoulsFormatsExtensions
 
             var env = new FxrEnvironment();
 
-            AllFXBehaviors.Clear();
-            AllTemplates.Clear();
+            AllFXActionDatas.Clear();
+            AllModifiers.Clear();
             AllFXContainers.Clear();
             AllFXActions.Clear();
             AllTransitions.Clear();
@@ -332,13 +332,13 @@ namespace SoulsFormatsExtensions
                 //    case FXTransition transition: Register("FXTransition", kvp.Key, AllTransitions, transition); break;
                 //}
 
-                if (kvp.Value is FXBehavior asBehavior)
+                if (kvp.Value is FXActionData asActionData)
                 {
-                    Register("Behavior", kvp.Key, AllFXBehaviors, asBehavior);
+                    Register("ActionData", kvp.Key, AllFXActionDatas, asActionData);
                 }
-                else if (kvp.Value is FXTemplate asTemplate)
+                else if (kvp.Value is FXModifier asModifier)
                 {
-                    Register("Template", kvp.Key, AllTemplates, asTemplate);
+                    Register("Modifier", kvp.Key, AllModifiers, asModifier);
                 }
                 else if (kvp.Value is FXContainer asFXContainer)
                 {
@@ -373,9 +373,9 @@ namespace SoulsFormatsExtensions
 
         public void Flatten()
         {
-            foreach (var x in AllFXBehaviors)
+            foreach (var x in AllFXActionDatas)
                 x.ToXIDs(this);
-            foreach (var x in AllTemplates)
+            foreach (var x in AllModifiers)
                 x.ToXIDs(this);
             foreach (var x in AllFXContainers)
                 x.ToXIDs(this);
@@ -396,9 +396,9 @@ namespace SoulsFormatsExtensions
 
         public void Unflatten()
         {
-            foreach (var x in AllFXBehaviors)
+            foreach (var x in AllFXActionDatas)
                 x.FromXIDs(this);
-            foreach (var x in AllTemplates)
+            foreach (var x in AllModifiers)
                 x.FromXIDs(this);
             foreach (var x in AllFXContainers)
                 x.FromXIDs(this);

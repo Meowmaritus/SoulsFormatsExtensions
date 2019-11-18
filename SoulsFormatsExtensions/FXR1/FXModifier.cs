@@ -10,21 +10,21 @@ namespace SoulsFormatsExtensions
 {
     public partial class FXR1
     {
-        [XmlInclude(typeof(FXTemplate0))]
-        [XmlInclude(typeof(FXTemplate1))]
-        [XmlInclude(typeof(FXTemplate2))]
-        [XmlInclude(typeof(FXTemplate3))]
-        [XmlInclude(typeof(FXTemplate4))]
-        [XmlInclude(typeof(FXTemplate5))]
-        [XmlInclude(typeof(FXTemplate6))]
-        [XmlInclude(typeof(FXTemplate7))]
-        [XmlInclude(typeof(FXTemplateRef))]
-        public abstract class FXTemplate : XIDable
+        [XmlInclude(typeof(FXModifier0))]
+        [XmlInclude(typeof(FXModifier1))]
+        [XmlInclude(typeof(FXModifier2))]
+        [XmlInclude(typeof(FXModifier3))]
+        [XmlInclude(typeof(FXModifier4))]
+        [XmlInclude(typeof(FXModifier5))]
+        [XmlInclude(typeof(FXModifier6))]
+        [XmlInclude(typeof(FXModifier7))]
+        [XmlInclude(typeof(FXModifierRef))]
+        public abstract class FXModifier : XIDable
         {
-            public override bool ShouldSerializeXID() => FXR1.FlattenTemplates;
+            public override bool ShouldSerializeXID() => FXR1.FlattenModifiers;
 
             [XmlIgnore]
-            public abstract int TemplateType { get; }
+            public abstract int ModifierType { get; }
 
             public virtual bool ShouldSerializeCommandType() => true;
 
@@ -51,20 +51,20 @@ namespace SoulsFormatsExtensions
 
             }
 
-            internal static FXTemplate GetProperType(BinaryReaderEx br, FxrEnvironment env)
+            internal static FXModifier GetProperType(BinaryReaderEx br, FxrEnvironment env)
             {
                 int commandType = br.GetInt32(br.Position);
-                FXTemplate data = null;
+                FXModifier data = null;
                 switch (commandType)
                 {
-                    case 0: data = new FXTemplate0(); break;
-                    case 1: data = new FXTemplate1(); break;
-                    case 2: data = new FXTemplate2(); break;
-                    case 3: data = new FXTemplate3(); break;
-                    case 4: data = new FXTemplate4(); break;
-                    case 5: data = new FXTemplate5(); break;
-                    case 6: data = new FXTemplate6(); break;
-                    case 7: data = new FXTemplate7(); break;
+                    case 0: data = new FXModifier0(); break;
+                    case 1: data = new FXModifier1(); break;
+                    case 2: data = new FXModifier2(); break;
+                    case 3: data = new FXModifier3(); break;
+                    case 4: data = new FXModifier4(); break;
+                    case 5: data = new FXModifier5(); break;
+                    case 6: data = new FXModifier6(); break;
+                    case 7: data = new FXModifier7(); break;
                 }
                 return data;
             }
@@ -82,21 +82,21 @@ namespace SoulsFormatsExtensions
         }
 
 
-        public class FXTemplateRef : FXTemplate
+        public class FXModifierRef : FXModifier
         {
-            public override int TemplateType => -1;
+            public override int ModifierType => -1;
 
             [XmlAttribute]
             public string ReferenceXID;
 
             public override bool ShouldSerializeCommandType() => false;
 
-            public FXTemplateRef(FXTemplate refVal)
+            public FXModifierRef(FXModifier refVal)
             {
                 ReferenceXID = refVal?.XID;
             }
 
-            public FXTemplateRef()
+            public FXModifierRef()
             {
 
             }
@@ -113,9 +113,9 @@ namespace SoulsFormatsExtensions
         }
 
 
-        public class FXTemplate0 : FXTemplate
+        public class FXModifier0 : FXModifier
         {
-            public override int TemplateType => 0;
+            public override int ModifierType => 0;
 
             public int Unk;
             internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
@@ -133,9 +133,9 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class FXTemplate1 : FXTemplate
+        public class FXModifier1 : FXModifier
         {
-            public override int TemplateType => 1;
+            public override int ModifierType => 1;
 
             public int Unk1;
             public int Unk2;
@@ -186,9 +186,9 @@ namespace SoulsFormatsExtensions
 
 
 
-        public class FXTemplate2 : FXTemplate
+        public class FXModifier2 : FXModifier
         {
-            public override int TemplateType => 2;
+            public override int ModifierType => 2;
 
             public float Lifetime;
             public float Unk2;
@@ -226,9 +226,9 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class FXTemplate3 : FXTemplate
+        public class FXModifier3 : FXModifier
         {
-            public override int TemplateType => 3;
+            public override int ModifierType => 3;
 
             public float Unk1;
             public int Unk2;
@@ -256,9 +256,9 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class FXTemplate4 : FXTemplate
+        public class FXModifier4 : FXModifier
         {
-            public override int TemplateType => 4;
+            public override int ModifierType => 4;
 
             public int Unk;
             internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
@@ -276,9 +276,9 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class FXTemplate5 : FXTemplate
+        public class FXModifier5 : FXModifier
         {
-            public override int TemplateType => 5;
+            public override int ModifierType => 5;
 
             public int Unk;
             internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)
@@ -296,9 +296,9 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class FXTemplate6 : FXTemplate
+        public class FXModifier6 : FXModifier
         {
-            public override int TemplateType => 6;
+            public override int ModifierType => 6;
 
             public float Unk1;
             public int Unk2;
@@ -319,9 +319,9 @@ namespace SoulsFormatsExtensions
             }
         }
 
-        public class FXTemplate7 : FXTemplate
+        public class FXModifier7 : FXModifier
         {
-            public override int TemplateType => 7;
+            public override int ModifierType => 7;
 
             public int Unk;
             internal override void InnerRead(BinaryReaderEx br, FxrEnvironment env)

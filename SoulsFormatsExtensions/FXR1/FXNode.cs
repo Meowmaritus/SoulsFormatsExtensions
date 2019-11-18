@@ -47,8 +47,8 @@ namespace SoulsFormatsExtensions
         [XmlInclude(typeof(Tick2Node))]
         [XmlInclude(typeof(IndexedTick2Node))]
         [XmlInclude(typeof(IntSequenceNode89))]
-        [XmlInclude(typeof(ColorSequenceNodeNode91))]
-        [XmlInclude(typeof(ColorSequenceNodeNode95))]
+        [XmlInclude(typeof(FloatSequenceNodeNode91))]
+        [XmlInclude(typeof(FloatSequenceNodeNode95))]
         [XmlInclude(typeof(IntNode111))]
         [XmlInclude(typeof(EmptyNode112))]
         [XmlInclude(typeof(EmptyNode113))]
@@ -156,8 +156,8 @@ namespace SoulsFormatsExtensions
                     case 85: func = new Tick2Node(); break;
                     case 87: func = new IndexedTick2Node(); break;
                     case 89: func = new IntSequenceNode89(); break;
-                    case 91: func = new ColorSequenceNodeNode91(); break;
-                    case 95: func = new ColorSequenceNodeNode95(); break;
+                    case 91: func = new FloatSequenceNodeNode91(); break;
+                    case 95: func = new FloatSequenceNodeNode95(); break;
                     case 111: func = new IntNode111(); break;
                     case 112: func = new EmptyNode112(); break;
                     case 113: func = new EmptyNode113(); break;
@@ -258,8 +258,10 @@ namespace SoulsFormatsExtensions
 
             public class ActionCallNode : FXNode
             {
+                [XmlAttribute]
                 public int ActionType;
                 public FXContainer Container;
+                [XmlAttribute]
                 public int Unk;
 
                 internal override void InnerToXIDs(FXR1 fxr)
@@ -1172,15 +1174,15 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class ColorSequenceNodeNode91 : FXNode
+            public class FloatSequenceNodeNode91 : FXNode
             {
-                public List<ColorTick> Ticks;
+                public List<FloatTick> Ticks;
                 public FXNode Node;
                 internal override void ReadInner(BinaryReaderEx br, FxrEnvironment env)
                 {
                     br.AssertFXR1Varint(91);
 
-                    Ticks = ColorTick.ReadListInFXNode(br);
+                    Ticks = FloatTick.ReadListInFXNode(br);
                     br.AssertFXR1Varint(1);
                     long paramOffset = br.ReadFXR1Varint();
                     Node = env.GetFXNode(br, paramOffset);
@@ -1190,15 +1192,15 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(91);
 
-                    ColorTick.WriteListInFXNode(bw, env, Ticks);
+                    FloatTick.WriteListInFXNode(bw, env, Ticks);
                     bw.WriteFXR1Varint(1);
                     env.RegisterPointer(Node);
                 }
             }
 
-            public class ColorSequenceNodeNode95 : FXNode
+            public class FloatSequenceNodeNode95 : FXNode
             {
-                public List<ColorTick> Ticks;
+                public List<FloatTick> Ticks;
                 public FXNode Node;
 
                 internal override void InnerToXIDs(FXR1 fxr)
@@ -1215,7 +1217,7 @@ namespace SoulsFormatsExtensions
                 {
                     br.AssertFXR1Varint(95);
 
-                    Ticks = ColorTick.ReadListInFXNode(br);
+                    Ticks = FloatTick.ReadListInFXNode(br);
                     br.AssertFXR1Varint(1);
                     long paramOffset = br.ReadFXR1Varint();
                     Node = env.GetFXNode(br, paramOffset);
@@ -1225,7 +1227,7 @@ namespace SoulsFormatsExtensions
                 {
                     bw.WriteFXR1Varint(95);
 
-                    ColorTick.WriteListInFXNode(bw, env, Ticks);
+                    FloatTick.WriteListInFXNode(bw, env, Ticks);
                     bw.WriteFXR1Varint(1);
                     env.RegisterPointer(Node);
                 }

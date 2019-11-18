@@ -23,28 +23,28 @@ namespace SoulsFormatsExtensions
             public byte UnkFlag3;
 
             public List<FXNode> FXNodes;
-            public FXBehavior Behavior;
-            public FXTemplate Template;
+            public FXActionData ActionData;
+            public FXModifier Modifier;
 
             public virtual bool ShouldSerializeUnkFlag1() => true;
             public virtual bool ShouldSerializeUnkFlag2() => true;
             public virtual bool ShouldSerializeUnkFlag3() => true;
             public virtual bool ShouldSerializeFXNodes() => true;
-            public virtual bool ShouldSerializeBehavior() => true;
-            public virtual bool ShouldSerializeTemplate() => true;
+            public virtual bool ShouldSerializeActionData() => true;
+            public virtual bool ShouldSerializeModifier() => true;
 
             internal override void ToXIDs(FXR1 fxr)
             {
-                Behavior = fxr.ReferenceFXBehavior(Behavior);
-                Template = fxr.ReferenceTemplate(Template);
+                ActionData = fxr.ReferenceFXActionData(ActionData);
+                Modifier = fxr.ReferenceModifier(Modifier);
                 for (int i = 0; i < FXNodes.Count; i++)
                     FXNodes[i] = fxr.ReferenceFXNode(FXNodes[i]);
             }
 
             internal override void FromXIDs(FXR1 fxr)
             {
-                Behavior = fxr.DereferenceFXBehavior(Behavior);
-                Template = fxr.DereferenceTemplate(Template);
+                ActionData = fxr.DereferenceFXActionData(ActionData);
+                Modifier = fxr.DereferenceModifier(Modifier);
                 for (int i = 0; i < FXNodes.Count; i++)
                     FXNodes[i] = fxr.DereferenceFXNode(FXNodes[i]);
             }
@@ -79,8 +79,8 @@ namespace SoulsFormatsExtensions
                 }
                 br.StepOut();
 
-                Behavior = env.GetFXBehavior(br, commandPool2Offset);
-                Template = env.GetFXTemplate(br, commandPool3Offset);
+                ActionData = env.GetFXActionData(br, commandPool2Offset);
+                Modifier = env.GetFXModifier(br, commandPool3Offset);
             }
 
             internal void Write(BinaryWriterEx bw, FxrEnvironment env)
@@ -94,8 +94,8 @@ namespace SoulsFormatsExtensions
                     nodePointers.Add(new FXNodePointer() { Node = FXNodes[i] });
                 }
 
-                if (Behavior != null)
-                    Behavior.ContainingContainer = this;
+                if (ActionData != null)
+                    ActionData.ContainingContainer = this;
 
                 env.RegisterPointer(nodePointers);
                 bw.WriteInt32(nodePointers.Count);
@@ -105,8 +105,8 @@ namespace SoulsFormatsExtensions
                 bw.WriteByte(UnkFlag3);
                 bw.WriteByte(0);
                 bw.WriteFXR1Garbage();
-                env.RegisterPointer(Behavior);
-                env.RegisterPointer(Template);
+                env.RegisterPointer(ActionData);
+                env.RegisterPointer(Modifier);
             }
         }
 
@@ -119,8 +119,8 @@ namespace SoulsFormatsExtensions
             public override bool ShouldSerializeUnkFlag2() => false;
             public override bool ShouldSerializeUnkFlag3() => false;
             public override bool ShouldSerializeFXNodes() => false;
-            public override bool ShouldSerializeBehavior() => false;
-            public override bool ShouldSerializeTemplate() => false;
+            public override bool ShouldSerializeActionData() => false;
+            public override bool ShouldSerializeModifier() => false;
 
             public FXContainerRef(FXContainer refVal)
             {

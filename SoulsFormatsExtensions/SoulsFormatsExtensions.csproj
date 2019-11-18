@@ -50,10 +50,10 @@
     <Compile Include="FXR1\FXAction.cs" />
     <Compile Include="FXR1\FXTransition.cs" />
     <Compile Include="FXR1\FXState.cs" />
-    <Compile Include="FXR1\FXTemplate.cs" />
+    <Compile Include="FXR1\FXModifier.cs" />
     <Compile Include="FXR1\FXField.cs" />
     <Compile Include="FXR1\FXNode.cs" />
-    <Compile Include="FXR1\FXBehavior.cs" />
+    <Compile Include="FXR1\FXActionData.cs" />
     <Compile Include="FXR1\FXR1.cs" />
     <Compile Include="FXR1\FxrEnvironment.cs" />
     <Compile Include="FXR1\Ticks.cs" />

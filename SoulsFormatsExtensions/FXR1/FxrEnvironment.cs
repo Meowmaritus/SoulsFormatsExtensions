@@ -70,14 +70,14 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public FXBehavior GetFXBehavior(BinaryReaderEx br, long offset)
+            public FXActionData GetFXActionData(BinaryReaderEx br, long offset)
             {
                 if (offset == 0)
                     return null;
 
                 if (ObjectsByOffset.ContainsKey(offset))
                 {
-                    if (ObjectsByOffset[offset] is FXBehavior v)
+                    if (ObjectsByOffset[offset] is FXActionData v)
                         return v;
                     else
                         throw new InvalidOperationException();
@@ -85,7 +85,7 @@ namespace SoulsFormatsExtensions
                 else
                 {
                     br.StepIn(offset);
-                    var newVal = FXBehavior.Read(br, this);
+                    var newVal = FXActionData.Read(br, this);
                     RegisterOffset(offset, newVal);
                     newVal.XID = $"0x{offset:X}";
                     br.StepOut();
@@ -94,14 +94,14 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public FXTemplate GetFXTemplate(BinaryReaderEx br, long offset)
+            public FXModifier GetFXModifier(BinaryReaderEx br, long offset)
             {
                 if (offset == 0)
                     return null;
 
                 if (ObjectsByOffset.ContainsKey(offset))
                 {
-                    if (ObjectsByOffset[offset] is FXTemplate v)
+                    if (ObjectsByOffset[offset] is FXModifier v)
                         return v;
                     else
                         throw new InvalidOperationException();
@@ -109,7 +109,7 @@ namespace SoulsFormatsExtensions
                 else
                 {
                     br.StepIn(offset);
-                    var newVal = FXTemplate.GetProperType(br, this);
+                    var newVal = FXModifier.GetProperType(br, this);
                     RegisterOffset(offset, newVal);
                     newVal.XID = $"0x{offset:X}";
                     newVal.Read(br, this);
@@ -256,12 +256,23 @@ namespace SoulsFormatsExtensions
             //    bw.WriteUInt32(0xEFBEADDE); //DEADBEEF
             //}
 
-            public void RegisterPointer(object pointToObject, bool useExistingPointerOnly = false)
+            public void RegisterPointer(object pointToObject, 
+                bool useExistingPointerOnly = false, 
+                bool assertNotNull = false)
             {
                 if (pointToObject == null)
                 {
-                    bw.WriteFXR1Varint(0);
-                    return;
+                    if (assertNotNull)
+                    {
+                        if (useExistingPointerOnly)
+                            throw new InvalidOperationException("Assertion that pointer is not null failed.");
+                    }
+                    else
+                    {
+                        bw.WriteFXR1Varint(0);
+                        return;
+                    }
+                    
                 }
 
                 if (!PointerOffsets.Contains(bw.Position))
@@ -314,8 +325,8 @@ namespace SoulsFormatsExtensions
                         switch (data)
                         {
                             case FXNodePointer asEffectFXNode: asEffectFXNode.Write(bw, this); break;
-                            case FXBehavior asBehavior: asBehavior.Write(bw, this); break;
-                            case FXTemplate asTemplate: asTemplate.Write(bw, this); break;
+                            case FXActionData asActionData: asActionData.Write(bw, this); break;
+                            case FXModifier asModifier: asModifier.Write(bw, this); break;
                             case FXContainer asEffect: asEffect.Write(bw, this); break;
                             case FXAction asFXAction: asFXAction.Write(bw, this); break;
                             case FXTransition asTransition: asTransition.Write(bw, this); break;

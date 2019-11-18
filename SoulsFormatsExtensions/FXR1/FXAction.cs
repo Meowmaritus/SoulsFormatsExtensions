@@ -15,6 +15,7 @@ namespace SoulsFormatsExtensions
         {
             public override bool ShouldSerializeXID() => FXR1.FlattenFXActions;
 
+            [XmlAttribute]
             public int ActionType;
             public FXContainer Container;
 

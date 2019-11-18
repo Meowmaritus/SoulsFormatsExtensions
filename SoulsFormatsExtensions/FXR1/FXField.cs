@@ -25,9 +25,9 @@ namespace SoulsFormatsExtensions
         [XmlInclude(typeof(RangedFloatSequenceB))]
         [XmlInclude(typeof(NewFloat3Sequence))]
         [XmlInclude(typeof(ConstFloat))]
-        [XmlInclude(typeof(NodeType25))]
-        [XmlInclude(typeof(NodeType26))]
-        [XmlInclude(typeof(NodeType27))]
+        [XmlInclude(typeof(FieldType25))]
+        [XmlInclude(typeof(FieldType26))]
+        [XmlInclude(typeof(FieldType27))]
         [XmlInclude(typeof(Empty))]
         public abstract class FXField
         {
@@ -61,9 +61,9 @@ namespace SoulsFormatsExtensions
                     case 17: v = new RangedFloatSequenceB(); break;
                     case 20: v = new NewFloat3Sequence(); break; //DS1R Only
                     case 24: v = new ConstFloat(); break;
-                    case 25: v = new NodeType25(); break;
-                    case 26: v = new NodeType26(); break;
-                    case 27: v = new NodeType27(); break;
+                    case 25: v = new FieldType25(); break;
+                    case 26: v = new FieldType26(); break;
+                    case 27: v = new FieldType27(); break;
                     case 28: v = new Empty(); break;
                     default: throw new NotImplementedException();
                 }
@@ -339,7 +339,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class NodeType25 : FXField
+            public class FieldType25 : FXField
             {
                 public override int Type => 25;
 
@@ -364,7 +364,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class NodeType26 : FXField
+            public class FieldType26 : FXField
             {
                 public override int Type => 26;
 
@@ -385,7 +385,7 @@ namespace SoulsFormatsExtensions
                 }
             }
 
-            public class NodeType27 : FXField
+            public class FieldType27 : FXField
             {
                 public override int Type => 27;
 
