@@ -128,7 +128,9 @@ namespace SoulsFormatsExtensions
                 bw.WriteInt32(Type);
                 bw.ReserveInt32("ActionData.Size");
                 bw.WriteFXR1Varint(Resources.Count);
+                env.RegisterPointerOffset(bw.Position);
                 bw.ReserveInt32("ActionData.Resources.Numbers");
+                env.RegisterPointerOffset(bw.Position);
                 bw.ReserveInt32("ActionData.Resources.Datas");
                 env.RegisterPointer(ContainingContainer, useExistingPointerOnly: true, assertNotNull: true);
 
