@@ -95,7 +95,7 @@ namespace SoulsFormatsExtensions
                 }
 
                 if (ActionData != null)
-                    ActionData.ContainingContainer = this;
+                    ActionData.ParentContainer = this;
 
                 env.RegisterPointer(nodePointers);
                 bw.WriteInt32(nodePointers.Count);

@@ -429,7 +429,7 @@ namespace SoulsFormatsExtensions
 
             env.RegisterPointer(RootFXNode);
 
-            bw.ReserveFXR1Varint("OffsetToTable");
+            bw.ReserveInt32("OffsetToTable");
 
             bw.ReserveInt32("TablePointerCount");
             bw.ReserveInt32("TableFXNodeCount");
@@ -442,7 +442,8 @@ namespace SoulsFormatsExtensions
             // Write RootFXNode and everything else.
             env.FinishRecursiveWrite();
 
-            bw.FillFXR1Varint("OffsetToTable", (int)bw.Position);
+            //bw.Pad(16);
+            bw.FillInt32("OffsetToTable", (int)bw.Position);
             env.WritePointerTable("TablePointerCount");
             env.WriteFXNodeTable("TableFXNodeCount");
         }

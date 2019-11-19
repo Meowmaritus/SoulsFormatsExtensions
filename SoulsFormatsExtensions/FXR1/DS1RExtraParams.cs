@@ -40,11 +40,11 @@ namespace SoulsFormatsExtensions
 
             internal void Write(BinaryWriterEx bw, FXActionData beh)
             {
-                beh.WriteNode(Unk1);
-                beh.WriteNode(Unk2);
-                beh.WriteNode(Unk3);
-                beh.WriteNode(Unk4);
-                beh.WriteNode(Unk5);
+                beh.WriteField(Unk1);
+                beh.WriteField(Unk2);
+                beh.WriteField(Unk3);
+                beh.WriteField(Unk4);
+                beh.WriteField(Unk5);
                 bw.WriteSingle(Unk6);
                 bw.WriteInt32(Unk7);
                 bw.WriteInt32(Unk8);

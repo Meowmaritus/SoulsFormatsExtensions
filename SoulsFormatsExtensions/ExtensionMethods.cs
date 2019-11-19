@@ -50,8 +50,10 @@ namespace SoulsFormatsExtensions
 
         public static void WriteFXR1Garbage(this BinaryWriterEx bw)
         {
+            //if (bw.VarintLong)
+            //    bw.WriteUInt32(0xCDCDCDCD);
             if (bw.VarintLong)
-                bw.WriteUInt32(0xCDCDCDCD);
+                bw.WriteUInt32(0);
         }
 
         public static void WriteFXR1Varint(this BinaryWriterEx bw, int v)
@@ -69,7 +71,7 @@ namespace SoulsFormatsExtensions
         public static void FillFXR1Varint(this BinaryWriterEx bw, string name, int v)
         {
             bw.FillInt32(name, v);
-            bw.WriteFXR1Garbage();
+            //bw.WriteFXR1Garbage();
         }
 
         public static void WriteFXR1Single(this BinaryWriterEx bw, float v)

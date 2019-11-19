@@ -241,7 +241,7 @@ namespace SoulsFormatsExtensions
 
                     EffectID = br.ReadFXR1Varint();
                     int astOffset = br.ReadFXR1Varint();
-                    Unk = br.ReadInt32();
+                    Unk = br.ReadFXR1Varint();
 
                     Container = env.GetFXContainer(br, astOffset);
                 }
@@ -252,7 +252,7 @@ namespace SoulsFormatsExtensions
 
                     bw.WriteFXR1Varint(EffectID);
                     env.RegisterPointer(Container);
-                    bw.WriteInt32(Unk);
+                    bw.WriteFXR1Varint(Unk);
                 }
             }
 
@@ -280,7 +280,7 @@ namespace SoulsFormatsExtensions
 
                     ActionType = br.ReadFXR1Varint();
                     int astOffset = br.ReadFXR1Varint();
-                    Unk = br.ReadInt32();
+                    Unk = br.ReadFXR1Varint();
 
                     Container = env.GetFXContainer(br, astOffset);
                 }
@@ -291,7 +291,7 @@ namespace SoulsFormatsExtensions
 
                     bw.WriteFXR1Varint(ActionType);
                     env.RegisterPointer(Container);
-                    bw.WriteInt32(Unk);
+                    bw.WriteFXR1Varint(Unk);
                 }
             }
 
@@ -1063,16 +1063,16 @@ namespace SoulsFormatsExtensions
                 {
                     br.AssertFXR1Varint(79);
 
-                    X = br.ReadFXR1Varint();
-                    Y = br.ReadFXR1Varint();
+                    X = br.ReadInt32();
+                    Y = br.ReadInt32();
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(79);
 
-                    bw.WriteFXR1Varint(X);
-                    bw.WriteFXR1Varint(Y);
+                    bw.WriteInt32(X);
+                    bw.WriteInt32(Y);
                 }
             }
 
@@ -1087,16 +1087,16 @@ namespace SoulsFormatsExtensions
                 {
                     br.AssertFXR1Varint(81);
 
-                    X = br.ReadFXR1Single();
-                    Y = br.ReadFXR1Single();
+                    X = br.ReadSingle();
+                    Y = br.ReadSingle();
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(81);
 
-                    bw.WriteFXR1Single(X);
-                    bw.WriteFXR1Single(Y);
+                    bw.WriteSingle(X);
+                    bw.WriteSingle(Y);
                 }
             }
 
@@ -1111,16 +1111,16 @@ namespace SoulsFormatsExtensions
                 {
                     br.AssertFXR1Varint(85);
 
-                    Tick1 = br.ReadFXR1Single();
-                    Tick2 = br.ReadFXR1Single();
+                    Tick1 = br.ReadSingle();
+                    Tick2 = br.ReadSingle();
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(85);
 
-                    bw.WriteFXR1Single(Tick1);
-                    bw.WriteFXR1Single(Tick2);
+                    bw.WriteSingle(Tick1);
+                    bw.WriteSingle(Tick2);
                 }
             }
 
@@ -1768,16 +1768,16 @@ namespace SoulsFormatsExtensions
                 {
                     br.AssertFXR1Varint(140);
 
-                    Unk1 = br.ReadFXR1Varint();
-                    Unk2 = br.ReadFXR1Varint();
+                    Unk1 = br.ReadInt32();
+                    Unk2 = br.ReadInt32();
                 }
 
                 internal override void WriteInner(BinaryWriterEx bw, FxrEnvironment env)
                 {
                     bw.WriteFXR1Varint(140);
 
-                    bw.WriteFXR1Varint(Unk1);
-                    bw.WriteFXR1Varint(Unk2);
+                    bw.WriteInt32(Unk1);
+                    bw.WriteInt32(Unk2);
                 }
             }
 
