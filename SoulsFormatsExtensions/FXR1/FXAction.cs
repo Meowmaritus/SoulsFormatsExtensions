@@ -44,7 +44,6 @@ namespace SoulsFormatsExtensions
 
             internal void Write(BinaryWriterEx bw, FxrEnvironment env)
             {
-                //bw.Pad(8);
                 env.RegisterOffset(bw.Position, this);
                 bw.WriteFXR1Varint(ActionType);
                 Container.Write(bw, env);

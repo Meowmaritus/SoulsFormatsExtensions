@@ -311,9 +311,9 @@ namespace SoulsFormatsExtensions
             //env.ReadPointerTable();
             //br.StepOut();
 
-            br.Pad(16);
+            //br.Pad(16);
 
-            RootFXNode = env.GetFXNode(br, br.Position);
+            RootFXNode = env.GetFXNode(br, mainDataOffset);
 
             void Register<T>(string type, long offset, List<T> list, T thing)
                 where T : XIDable
@@ -442,7 +442,7 @@ namespace SoulsFormatsExtensions
             // Write RootFXNode and everything else.
             env.FinishRecursiveWrite();
 
-            //bw.Pad(16);
+            bw.Pad(8);
             bw.FillInt32("OffsetToTable", (int)bw.Position);
             env.WritePointerTable("TablePointerCount");
             env.WriteFXNodeTable("TableFXNodeCount");

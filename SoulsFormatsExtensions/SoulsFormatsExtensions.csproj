@@ -46,7 +46,7 @@
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="FXR1\DS1RExtraParams.cs" />
     <Compile Include="FXR1\FXContainer.cs" />
-    <Compile Include="FXR1\FXParamPointer.cs" />
+    <Compile Include="FXR1\FXNodePointer.cs" />
     <Compile Include="FXR1\FXAction.cs" />
     <Compile Include="FXR1\FXTransition.cs" />
     <Compile Include="FXR1\FXState.cs" />

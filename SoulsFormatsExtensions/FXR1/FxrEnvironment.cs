@@ -316,7 +316,7 @@ namespace SoulsFormatsExtensions
 
                 foreach (var kvp in currentWriteFeed)
                 {
-                    //bw.Pad(8);
+                    bw.Pad(8);
 
                     // Register this as an offset for recursive write and pointer shit
                     RegisterOffset(bw.Position, kvp.Key);

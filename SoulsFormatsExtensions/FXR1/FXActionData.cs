@@ -147,12 +147,12 @@ namespace SoulsFormatsExtensions
 
                 foreach (var kvp in fieldWriteLocations)
                 {
-                    long offsetOfThisNode = bw.Position;
+                    long offsetOfThisField = bw.Position;
 
                     foreach (var location in kvp.Value)
                     {
                         bw.StepIn(location);
-                        bw.WriteInt32((int)offsetOfThisNode);
+                        bw.WriteFXR1Varint((int)offsetOfThisField);
                         bw.StepOut();
                     }
 
@@ -161,8 +161,11 @@ namespace SoulsFormatsExtensions
 
                 int writtenSize = (int)(bw.Position - startPos);
 
-                //if (DEBUG_SizeOnRead != -1 && writtenSize != DEBUG_SizeOnRead)
-                //    throw new Exception("sdfsgfdsgfds");
+                if (DEBUG_SizeOnRead != -1 && writtenSize != DEBUG_SizeOnRead)
+                {
+                    //throw new Exception("sdfsgfdsgfds");
+                    Console.WriteLine($"Warning: ActionDataType[{this.GetType().Name}] Read data size {DEBUG_SizeOnRead} but wrote {writtenSize} bytes.");
+                }
 
                 bw.FillInt32("ActionData.Size", writtenSize);
 
@@ -213,18 +216,15 @@ namespace SoulsFormatsExtensions
 
                 env.RegisterOffset(startOffset, data);
 
-                //TEMPORARY
+                //Testing
                 data.DEBUG_SizeOnRead = size;
 
                 data.InnerRead(br, env);
-
-                //data.TEMP_DATA = br.GetBytes(startOffset, size);
 
                 data.ParentContainer = parentEffect;
 
                 data.Resources = new List<ResourceEntry>(preDataCount);
 
-                //pre data nubmers go here during write
                 br.StepIn(offsetToResourceNumbers);
                 for (int i = 0; i < preDataCount; i++)
                 {
@@ -235,15 +235,12 @@ namespace SoulsFormatsExtensions
                 }
                 br.StepOut();
 
-                //pre data subtypes go here during write
                 br.StepIn(offsetToResourceNodes);
                 for (int i = 0; i < preDataCount; i++)
                 {
                     data.Resources[i].Data = FXField.Read(br, env);
                 }
                 br.StepOut();
-
-                //the packed shit from switch(subType) all goes here during write?
 
                 br.Position = startOffset + size;
 
@@ -1394,15 +1391,19 @@ namespace SoulsFormatsExtensions
                     Unk3 = br.ReadSingle();
                     Unk4 = br.ReadInt32();
                     Unk5 = br.ReadSingle();
+
                     if (br.VarintLong)
                         br.AssertInt32(0);
+
                     TextureID = br.ReadInt32();
                     Unk7 = br.ReadInt32();
                     Unk8 = br.ReadInt32();
                     Unk9 = br.ReadInt32();
                     Unk10 = br.ReadInt32();
+
                     if (br.VarintLong)
                         br.AssertInt32(0);
+
                     Scale1X = FXField.Read(br, env);
                     Scale1Y = FXField.Read(br, env);
                     Scale2X = FXField.Read(br, env);
@@ -1413,8 +1414,10 @@ namespace SoulsFormatsExtensions
                     RotSpeedX = FXField.Read(br, env);
                     RotSpeedY = FXField.Read(br, env);
                     RotSpeedZ = FXField.Read(br, env);
+
                     Unk12 = br.ReadInt32();
                     Unk13 = br.ReadInt32();
+
                     Unk14_1 = FXField.Read(br, env);
                     Unk14_2 = FXField.Read(br, env);
                     Color1R = FXField.Read(br, env);
@@ -1460,15 +1463,19 @@ namespace SoulsFormatsExtensions
                     bw.WriteSingle(Unk3);
                     bw.WriteInt32(Unk4);
                     bw.WriteSingle(Unk5);
+
                     if (bw.VarintLong)
                         bw.WriteInt32(0);
+
                     bw.WriteInt32(TextureID);
                     bw.WriteInt32(Unk7);
                     bw.WriteInt32(Unk8);
                     bw.WriteInt32(Unk9);
                     bw.WriteInt32(Unk10);
+
                     if (bw.VarintLong)
                         bw.WriteInt32(0);
+
                     WriteField(Scale1X);
                     WriteField(Scale1Y);
                     WriteField(Scale2X);
@@ -1479,8 +1486,10 @@ namespace SoulsFormatsExtensions
                     WriteField(RotSpeedX);
                     WriteField(RotSpeedY);
                     WriteField(RotSpeedZ);
+
                     bw.WriteInt32(Unk12);
                     bw.WriteInt32(Unk13);
+
                     WriteField(Unk14_1);
                     WriteField(Unk14_2);
                     WriteField(Color1R);
