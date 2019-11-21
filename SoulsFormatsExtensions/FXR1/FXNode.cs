@@ -86,6 +86,8 @@ namespace SoulsFormatsExtensions
             internal abstract void ReadInner(BinaryReaderEx br, FxrEnvironment env);
             internal abstract void WriteInner(BinaryWriterEx bw, FxrEnvironment env);
 
+            //long DEBUG_DataSizeOnRead = -1;
+
             internal override void ToXIDs(FXR1 fxr)
             {
                 InnerToXIDs(fxr);
@@ -110,7 +112,15 @@ namespace SoulsFormatsExtensions
             {
                 env.RegisterOffset(bw.Position, this);
                 env.RegisterFXNodeOffsetHere();
+                //long start = bw.Position;
+                Console.WriteLine($"TYPE: {GetType().Name}");
                 WriteInner(bw, env);
+                //long end = bw.Position;
+                //long dataLength = end - start;
+                //if (dataLength != DEBUG_DataSizeOnRead)
+                //{
+                //    Console.WriteLine($"Warning: NodeType[{GetType().Name}] Read {DEBUG_DataSizeOnRead} bytes of data but wrote {dataLength} bytes.");
+                //}
             }
 
             internal static FXNode GetProperFXNodeType(BinaryReaderEx br, FxrEnvironment env)
@@ -191,7 +201,10 @@ namespace SoulsFormatsExtensions
 
             internal void Read(BinaryReaderEx br, FxrEnvironment env)
             {
+                //long start = br.Position;
                 ReadInner(br, env);
+                //long end = br.Position;
+                //DEBUG_DataSizeOnRead = end - start;
             }
 
             public class FXNodeRef : FXNode

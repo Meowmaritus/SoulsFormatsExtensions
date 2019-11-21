@@ -11,6 +11,22 @@ namespace SoulsFormatsExtensions
     {
         internal class FxrEnvironment
         {
+            public List<long> DEBUG_PointerTable = new List<long>();
+            public List<long> DEBUG_PointerTable_Unused = new List<long>();
+
+            public void DEBUG_PointerTableCheck(BinaryReaderEx br)
+            {
+                //if (DEBUG_PointerTable.Contains(br.Position))
+                //{
+                //    if (DEBUG_PointerTable_Unused.Contains(br.Position))
+                //        DEBUG_PointerTable_Unused.Remove(br.Position);
+                //}
+                //else
+                //{
+                //    Console.WriteLine($"WARNING: OFFSET 0x{br.Position:X} NOT IN POINTER TABLE.");
+                //}
+            }
+
             public BinaryWriterEx bw;
 
             public FXR1 fxr;
@@ -51,6 +67,9 @@ namespace SoulsFormatsExtensions
                 if (offset == 0)
                     return null;
 
+                if (offset != br.Position)
+                    DEBUG_PointerTableCheck(br);
+
                 if (ObjectsByOffset.ContainsKey(offset))
                 {
                     if (ObjectsByOffset[offset] is FXNodePointer v)
@@ -74,6 +93,9 @@ namespace SoulsFormatsExtensions
             {
                 if (offset == 0)
                     return null;
+
+                if (offset != br.Position)
+                    DEBUG_PointerTableCheck(br);
 
                 if (ObjectsByOffset.ContainsKey(offset))
                 {
@@ -99,6 +121,9 @@ namespace SoulsFormatsExtensions
                 if (offset == 0)
                     return null;
 
+                if (offset != br.Position)
+                    DEBUG_PointerTableCheck(br);
+
                 if (ObjectsByOffset.ContainsKey(offset))
                 {
                     if (ObjectsByOffset[offset] is FXModifier v)
@@ -123,6 +148,9 @@ namespace SoulsFormatsExtensions
             {
                 if (offset == 0)
                     return null;
+
+                if (offset != br.Position)
+                    DEBUG_PointerTableCheck(br);
 
                 if (ObjectsByOffset.ContainsKey(offset))
                 {
@@ -150,6 +178,9 @@ namespace SoulsFormatsExtensions
                 if (offset == 0)
                     return null;
 
+                if (offset != br.Position)
+                    DEBUG_PointerTableCheck(br);
+
                 if (ObjectsByOffset.ContainsKey(offset))
                 {
                     if (ObjectsByOffset[offset] is FXContainer v)
@@ -173,6 +204,9 @@ namespace SoulsFormatsExtensions
             {
                 if (offset == 0)
                     return null;
+
+                if (offset != br.Position)
+                    DEBUG_PointerTableCheck(br);
 
                 if (ObjectsByOffset.ContainsKey(offset))
                 {
@@ -199,6 +233,9 @@ namespace SoulsFormatsExtensions
                 if (offset == 0)
                     return null;
 
+                if (offset != br.Position)
+                    DEBUG_PointerTableCheck(br);
+
                 if (ObjectsByOffset.ContainsKey(offset))
                 {
                     if (ObjectsByOffset[offset] is FXTransition v)
@@ -223,6 +260,9 @@ namespace SoulsFormatsExtensions
             {
                 if (offset == 0)
                     return null;
+
+                if (offset != br.Position)
+                    DEBUG_PointerTableCheck(br);
 
                 if (ObjectsByOffset.ContainsKey(offset))
                 {
@@ -256,6 +296,20 @@ namespace SoulsFormatsExtensions
             //    bw.WriteUInt32(0xEFBEADDE); //DEADBEEF
             //}
 
+            private int GetListObjectCount(object obj)
+            {
+                switch (obj)
+                {
+                    case List<int> intList: return intList.Count;
+                    case List<float> floatList: return floatList.Count;
+                    case List<FXState> fxStateList: return fxStateList.Count;
+                    case List<FXTransition> fxTransitionList: return fxTransitionList.Count;
+                    case List<FXAction> fxActionList: return fxActionList.Count;
+                    case List<FXNode> nodeList: return nodeList.Count;
+                    default: return -1;
+                }
+            }
+
             public void RegisterPointer(object pointToObject, 
                 bool useExistingPointerOnly = false, 
                 bool assertNotNull = false)
@@ -263,7 +317,7 @@ namespace SoulsFormatsExtensions
                 //idk wtf im doing
                 //bw.Pad(8);
 
-                if (pointToObject == null)
+                if (pointToObject == null || GetListObjectCount(pointToObject) == 0)
                 {
                     if (assertNotNull)
                     {
@@ -441,9 +495,14 @@ namespace SoulsFormatsExtensions
 
             internal void ReadPointerTable(BinaryReaderEx br, int count)
             {
-                PointerOffsets = new List<long>();
+                DEBUG_PointerTable = new List<long>(count);
+                DEBUG_PointerTable_Unused = new List<long>(count);
                 for (int i = 0; i < count; i++)
-                    PointerOffsets.Add(br.ReadFXR1Varint());
+                {
+                    int next = br.ReadFXR1Varint();
+                    DEBUG_PointerTable.Add(next);
+                    DEBUG_PointerTable_Unused.Add(next);
+                }
             }
         }
     }

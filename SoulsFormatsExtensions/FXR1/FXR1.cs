@@ -307,9 +307,9 @@ namespace SoulsFormatsExtensions
 
             env.fxr = this;
 
-            //br.StepIn(metadataTableOffset);
-            //env.ReadPointerTable();
-            //br.StepOut();
+            br.StepIn(metadataTableOffset);
+            env.ReadPointerTable(br, pointerTableCount);
+            br.StepOut();
 
             //br.Pad(16);
 
@@ -442,7 +442,7 @@ namespace SoulsFormatsExtensions
             // Write RootFXNode and everything else.
             env.FinishRecursiveWrite();
 
-            bw.Pad(8);
+            bw.Pad(16);
             bw.FillInt32("OffsetToTable", (int)bw.Position);
             env.WritePointerTable("TablePointerCount");
             env.WriteFXNodeTable("TableFXNodeCount");
