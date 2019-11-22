@@ -164,7 +164,7 @@ namespace SoulsFormatsExtensions
                 if (DEBUG_SizeOnRead != -1 && writtenSize != DEBUG_SizeOnRead)
                 {
                     //throw new Exception("sdfsgfdsgfds");
-                    Console.WriteLine($"Warning: ActionDataType[{this.GetType().Name}] Read data size {DEBUG_SizeOnRead} but wrote {writtenSize} bytes.");
+                    //Console.WriteLine($"Warning: ActionDataType[{this.GetType().Name}] Read data size {DEBUG_SizeOnRead} but wrote {writtenSize} bytes.");
                 }
 
                 bw.FillInt32("ActionData.Size", writtenSize);
