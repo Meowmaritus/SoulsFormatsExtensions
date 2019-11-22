@@ -448,5 +448,13 @@ namespace SoulsFormatsExtensions
             env.WriteFXNodeTable("TableFXNodeCount");
         }
 
+        protected override bool Is(BinaryReaderEx br)
+        {
+            if (br.GetASCII(0, 4) != "FXR\0")
+                return false;
+
+            var version = br.GetInt32(4);
+            return version == 0x10000 || version == 0x100;
+        }
     }
 }
