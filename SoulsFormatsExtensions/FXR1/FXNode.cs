@@ -113,7 +113,7 @@ namespace SoulsFormatsExtensions
                 env.RegisterOffset(bw.Position, this);
                 env.RegisterFXNodeOffsetHere();
                 //long start = bw.Position;
-                Console.WriteLine($"TYPE: {GetType().Name}");
+                //Console.WriteLine($"TYPE: {GetType().Name}");
                 WriteInner(bw, env);
                 //long end = bw.Position;
                 //long dataLength = end - start;
